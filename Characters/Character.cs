@@ -17,7 +17,7 @@ public abstract class Character(
     private int MaxHealth { get; set; } = maxHealth;
     private int CurrentHealth { get; set; } = maxHealth;
     protected int PhysicalAttack { get; set; } = physicalAttack;
-    private int MagicalAttack { get; set; } = magicalAttack;
+    protected int MagicalAttack { get; set; } = magicalAttack;
     private ArmorType Armor { get; set; } = armor;
     private decimal DodgeChance { get; set; } = dodgeChance;
     private decimal ParadeChance { get; set; } = paradeChance;

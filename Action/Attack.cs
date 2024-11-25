@@ -10,12 +10,13 @@ public class Attack(string name, Character attacker, Character target, int damag
     public int Damage { get; private set; } = damage;
     public DamageType AttackType { get; private set; } = attackType;
 
-    public void Execute()
+    public int Execute()
     {
         Console.WriteLine($"{Attacker.Name} fait {Name} sur {Target.Name}");
         var damage = Target.Defend(this);
         Console.WriteLine($"{Name} à fais {damage} dégât(s) à {Target.Name}.");
 
         Target.CheckAlive(true);
+        return damage;
     }
 }

@@ -86,6 +86,7 @@ public abstract class Character(
     }
 
     public void TakeDamage(int damage) => CurrentHealth = Math.Max(0, CurrentHealth - damage);
+    protected void HealDamage(int healthPoint) => CurrentHealth = Math.Min(MaxHealth, CurrentHealth + healthPoint);
 
     //
 

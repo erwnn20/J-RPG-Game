@@ -31,7 +31,7 @@ public abstract class Character(
     }
 
     public abstract void Attack(Character character);
-    public abstract int Defend(Attack taken);
+    public abstract int Defend(Attack attack);
     public abstract void Heal();
 
     protected decimal ArmorReduction(DamageType damageType)
@@ -58,25 +58,31 @@ public abstract class Character(
         };
     }
 
-    protected bool Dodge(DamageType damageType)
+    protected bool Dodge(Attack attack)
     {
-        if (damageType == DamageType.Physical)
-            return (decimal)new Random().NextDouble() <= DodgeChance;
-        return false;
+        if (attack.AttackType != DamageType.Physical
+            || (decimal)new Random().NextDouble() > DodgeChance) return false;
+
+        Console.WriteLine($"{Name} a réussi à esquiver {attack.Name}");
+        return true;
     }
 
-    protected bool Parade(DamageType damageType)
+    protected bool Parade(Attack attack)
     {
-        if (damageType == DamageType.Physical)
-            return (decimal)new Random().NextDouble() <= ParadeChance;
-        return false;
+        if (attack.AttackType != DamageType.Physical
+            || (decimal)new Random().NextDouble() > ParadeChance) return false;
+
+        Console.WriteLine($"{Name} a réussi à parer une partie de {attack.Name}");
+        return true;
     }
 
-    protected bool SpellResistance(DamageType damageType)
+    protected bool SpellResistance(Attack attack)
     {
-        if (damageType == DamageType.Magical)
-            return (decimal)new Random().NextDouble() <= SpellResistanceChance;
-        return false;
+        if (attack.AttackType != DamageType.Magical
+            || (decimal)new Random().NextDouble() > SpellResistanceChance) return false;
+
+        Console.WriteLine($"{Name} a réussi à resister à {attack.Name}");
+        return true;
     }
 
     public void TakeDamage(int damage) => CurrentHealth = Math.Max(0, CurrentHealth - damage);

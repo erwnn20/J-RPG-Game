@@ -14,14 +14,14 @@ public abstract class Character(
     decimal spellResistanceChance)
 {
     public string Name { get; private set; } = name;
-    private int MaxHealth { get; set; } = maxHealth;
-    private int CurrentHealth { get; set; } = maxHealth;
+    public int MaxHealth { get; private set; } = maxHealth;
+    public int CurrentHealth { get; private set; } = maxHealth;
     protected int PhysicalAttack { get; set; } = physicalAttack;
     protected int MagicalAttack { get; set; } = magicalAttack;
     private ArmorType Armor { get; set; } = armor;
-    private decimal DodgeChance { get; set; } = dodgeChance;
+    protected decimal DodgeChance { get; set; } = dodgeChance;
     private decimal ParadeChance { get; set; } = paradeChance;
-    private decimal SpellResistanceChance { get; set; } = spellResistanceChance;
+    protected decimal SpellResistanceChance { get; set; } = spellResistanceChance;
 
     public bool CheckAlive(bool message)
     {

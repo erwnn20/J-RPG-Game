@@ -30,6 +30,7 @@ public abstract class Character(
         return CurrentHealth > 0;
     }
 
+    public abstract void SpecialAbility();
     public abstract void Attack(Character character);
     public abstract int Defend(Attack attack);
     public abstract void Heal();

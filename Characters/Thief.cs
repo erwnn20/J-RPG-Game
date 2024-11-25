@@ -15,10 +15,13 @@ public class Thief(string name) :
         spellResistanceChance: 0.25m
     )
 {
-    public void Escape()
+    public override void SpecialAbility()
     {
         DodgeChance = Math.Min(0.5m, DodgeChance + 0.2m);
         SpellResistanceChance = Math.Min(0.5m, SpellResistanceChance + 0.2m);
+        Console.WriteLine($"{Name} utilise sa capacité spéciale : \"Evasion\"\n" +
+                          $"-> Augmente les chances d'esquive ({DodgeChance:P}{(DodgeChance == 0.5m ? " MAX" : string.Empty)})\n" +
+                          $"-> Augmente sa resistance aux sorts ({SpellResistanceChance:P}{(SpellResistanceChance == 0.5m ? " MAX" : string.Empty)})");
     }
 
     public override void Attack(Character character)

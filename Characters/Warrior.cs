@@ -15,7 +15,12 @@ public class Warrior(string name) :
         spellResistanceChance: 0.10m
     )
 {
-    public void BattleScream() => PhysicalAttack *= 2;
+    public override void SpecialAbility()
+    {
+        PhysicalAttack *= 2;
+        Console.WriteLine($"{Name} utilise sa capacité spéciale : \"Cri de bataille\"\n" +
+                          $"-> Les dégâts de ses attaques physiques sont multiplier par 2");
+    }
 
     private void CounterAttack(Character attacker, int damageTaken)
     {

@@ -15,6 +15,14 @@ public class Paladin(string name) :
         spellResistanceChance: 0.20m
     )
 {
+    public override void SpecialAbility()
+    {
+        var healthPoint = (int)(MagicalAttack * 1.25);
+        HealDamage(healthPoint);
+        Console.WriteLine($"{Name} utilise sa capacité spéciale : \"Eclair lumineux\"\n" +
+                          $"-> {Name} se soigne de {Math.Min(MaxHealth - CurrentHealth, healthPoint)}");
+    }
+
     private Attack SelectAttack(Character character)
     {
         var attackList = new List<string>
@@ -70,7 +78,6 @@ public class Paladin(string name) :
 
     public override void Heal()
     {
-        Console.WriteLine($"{Name} se soigne en faisant Eclair lumineux");
-        HealDamage((int)(MagicalAttack * 1.25));
+        throw new NotImplementedException();
     }
 }

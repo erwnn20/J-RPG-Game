@@ -19,7 +19,12 @@ public class Mage(string name) :
     private decimal ReduceDamageMagical { get; set; } = 0.50m;
     private int ReducedAttack { get; set; }
 
-    public void FrostBarrier() => ReducedAttack = 2;
+    public override void SpecialAbility()
+    {
+        ReducedAttack = 2;
+        Console.WriteLine($"{Name} utilise sa capacité spéciale : \"Barrière de givre\"\n" +
+                          $"-> Les deux prochaines attaques subies sont réduites");
+    }
 
     public override void Attack(Character character)
     {

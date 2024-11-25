@@ -1,0 +1,9 @@
+﻿# IDE-specific files
+.idea/
+
+# Artifacts and dependencies
+/bin/
+/obj/
+
+# Subjet power point
+subject.pptx

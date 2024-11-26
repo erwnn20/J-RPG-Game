@@ -24,7 +24,7 @@ public abstract class Character
         DodgeChance = dodgeChance;
         ParadeChance = paradeChance;
         SpellResistanceChance = spellResistanceChance;
-        
+
         List.Add(this);
     }
 
@@ -49,10 +49,33 @@ public abstract class Character
 
     public abstract void SpecialAbility();
     public abstract void Attack(Character character);
-    public abstract int Defend(Attack attack);
-    public abstract void Heal();
 
-    protected decimal ArmorReduction(DamageType damageType)
+    public virtual int Defend(Attack attack)
+    {
+        if (Dodge(attack)) return 0;
+        if (SpellResistance(attack)) return 0;
+
+        decimal damage = attack.Damage;
+
+        if (Parade(attack)) damage *= 0.5m;
+        damage *= 1 - ArmorReduction(attack.AttackType);
+
+        TakeDamage((int)damage);
+        return (int)damage;
+    }
+
+    protected int Heal(int healthPoint, bool message = true)
+    {
+        var healed = Math.Min(MaxHealth - CurrentHealth, healthPoint);
+        CurrentHealth += healed;
+
+        if (healed <= 0 || !message) return healed;
+        Console.WriteLine($"{Name} se soigne de {healed}");
+
+        return healed;
+    }
+
+    private decimal ArmorReduction(DamageType damageType)
     {
         return damageType switch
         {
@@ -76,7 +99,7 @@ public abstract class Character
         };
     }
 
-    protected bool Dodge(Attack attack)
+    private bool Dodge(Attack attack)
     {
         if (attack.AttackType != DamageType.Physical
             || (decimal)new Random().NextDouble() > DodgeChance) return false;
@@ -85,7 +108,7 @@ public abstract class Character
         return true;
     }
 
-    protected bool Parade(Attack attack)
+    private bool Parade(Attack attack)
     {
         if (attack.AttackType != DamageType.Physical
             || (decimal)new Random().NextDouble() > ParadeChance) return false;
@@ -94,7 +117,7 @@ public abstract class Character
         return true;
     }
 
-    protected bool SpellResistance(Attack attack)
+    private bool SpellResistance(Attack attack)
     {
         if (attack.AttackType != DamageType.Magical
             || (decimal)new Random().NextDouble() > SpellResistanceChance) return false;
@@ -104,7 +127,6 @@ public abstract class Character
     }
 
     public void TakeDamage(int damage) => CurrentHealth = Math.Max(0, CurrentHealth - damage);
-    protected void HealDamage(int healthPoint) => CurrentHealth = Math.Min(MaxHealth, CurrentHealth + healthPoint);
 
     //
 

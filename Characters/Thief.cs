@@ -35,23 +35,4 @@ public class Thief(string name) :
         );
         attack.Execute();
     }
-
-    public override int Defend(Attack attack)
-    {
-        if (Dodge(attack)) return 0;
-        if (SpellResistance(attack)) return 0;
-
-        decimal damage = attack.Damage;
-
-        if (Parade(attack)) damage *= 0.5m;
-        damage *= 1 - ArmorReduction(attack.AttackType);
-
-        TakeDamage((int)damage);
-        return (int)damage;
-    }
-
-    public override void Heal()
-    {
-        throw new NotImplementedException();
-    }
 }

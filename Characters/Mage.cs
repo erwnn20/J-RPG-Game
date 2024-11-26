@@ -40,31 +40,15 @@ public class Mage(string name) :
 
     public override int Defend(Attack attack)
     {
-        if (Dodge(attack)) return 0;
-        if (SpellResistance(attack)) return 0;
-
-        decimal damage = attack.Damage;
-
-        if (ReducedAttack > 0)
+        if (ReducedAttack <= 0) return base.Defend(attack);
+        attack.Damage *= (int)(1 - attack.AttackType switch
         {
-            damage *= 1 - attack.AttackType switch
-            {
-                DamageType.Physical => ReduceDamagePhysical,
-                DamageType.Magical => ReduceDamageMagical,
-                _ => 0
-            };
-            ReducedAttack--;
-        }
+            DamageType.Physical => ReduceDamagePhysical,
+            DamageType.Magical => ReduceDamageMagical,
+            _ => 0
+        });
+        ReducedAttack--;
 
-        if (Parade(attack)) damage *= 0.5m;
-        damage *= 1 - ArmorReduction(attack.AttackType);
-
-        TakeDamage((int)damage);
-        return (int)damage;
-    }
-
-    public override void Heal()
-    {
-        throw new NotImplementedException();
+        return base.Defend(attack);
     }
 }

@@ -18,9 +18,8 @@ public class Paladin(string name) :
     public override void SpecialAbility()
     {
         var healthPoint = (int)(MagicalAttack * 1.25);
-        HealDamage(healthPoint);
         Console.WriteLine($"{Name} utilise sa capacité spéciale : \"Eclair lumineux\"\n" +
-                          $"-> {Name} se soigne de {Math.Min(MaxHealth - CurrentHealth, healthPoint)}");
+                          $"-> {Name} se soigne de {Heal(healthPoint, false)}");
     }
 
     private Attack SelectAttack(Character character)
@@ -57,27 +56,6 @@ public class Paladin(string name) :
         var attack = SelectAttack(character);
         var damageHealed = (int)(attack.Execute() * 0.5);
 
-        if (damageHealed <= 0) return;
-        Console.WriteLine($"{Name} se soigne de {damageHealed}");
-        HealDamage(damageHealed);
-    }
-
-    public override int Defend(Attack attack)
-    {
-        if (Dodge(attack)) return 0;
-        if (SpellResistance(attack)) return 0;
-
-        decimal damage = attack.Damage;
-
-        if (Parade(attack)) damage *= 0.5m;
-        damage *= 1 - ArmorReduction(attack.AttackType);
-
-        TakeDamage((int)damage);
-        return (int)damage;
-    }
-
-    public override void Heal()
-    {
-        throw new NotImplementedException();
+        Heal(damageHealed);
     }
 }

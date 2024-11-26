@@ -3,25 +3,42 @@ using JRPG_Game.Armors;
 
 namespace JRPG_Game.Characters;
 
-public abstract class Character(
-    string name,
-    int maxHealth,
-    int physicalAttack,
-    int magicalAttack,
-    ArmorType armor,
-    decimal dodgeChance,
-    decimal paradeChance,
-    decimal spellResistanceChance)
+public abstract class Character
 {
-    public string Name { get; private set; } = name;
-    public int MaxHealth { get; private set; } = maxHealth;
-    public int CurrentHealth { get; private set; } = maxHealth;
-    protected int PhysicalAttack { get; set; } = physicalAttack;
-    protected int MagicalAttack { get; set; } = magicalAttack;
-    private ArmorType Armor { get; set; } = armor;
-    protected decimal DodgeChance { get; set; } = dodgeChance;
-    private decimal ParadeChance { get; set; } = paradeChance;
-    protected decimal SpellResistanceChance { get; set; } = spellResistanceChance;
+    protected Character(
+        string name,
+        int maxHealth,
+        int physicalAttack,
+        int magicalAttack,
+        ArmorType armor,
+        decimal dodgeChance,
+        decimal paradeChance,
+        decimal spellResistanceChance)
+    {
+        Name = name;
+        MaxHealth = maxHealth;
+        CurrentHealth = maxHealth;
+        PhysicalAttack = physicalAttack;
+        MagicalAttack = magicalAttack;
+        Armor = armor;
+        DodgeChance = dodgeChance;
+        ParadeChance = paradeChance;
+        SpellResistanceChance = spellResistanceChance;
+        
+        List.Add(this);
+    }
+
+    public string Name { get; private set; }
+    public int MaxHealth { get; private set; }
+    public int CurrentHealth { get; private set; }
+    protected int PhysicalAttack { get; set; }
+    protected int MagicalAttack { get; set; }
+    private ArmorType Armor { get; set; }
+    protected decimal DodgeChance { get; set; }
+    private decimal ParadeChance { get; set; }
+    protected decimal SpellResistanceChance { get; set; }
+
+    public static readonly List<Character> List = [];
 
     public bool CheckAlive(bool message)
     {

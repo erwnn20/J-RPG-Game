@@ -1,5 +1,6 @@
 ﻿using JRPG_Game.Action;
 using JRPG_Game.Armors;
+using JRPG_Game.Utils;
 
 namespace JRPG_Game.Characters;
 
@@ -24,31 +25,17 @@ public class Paladin(string name) :
 
     private Attack SelectAttack(Character character)
     {
-        var attackList = new List<string>
-            { "Frappe du croisé (attaque physique)", "Jugement (attaque magique)" };
-
-        Console.WriteLine("Choisissez une attaque a effectuer :");
-        foreach (var (item, index) in attackList.Select((item, index) => (item, index)))
-            Console.WriteLine($"\t{index + 1}: {item}");
-        do
-        {
-            Console.Write("-> ");
-            var valid = int.TryParse(Console.ReadLine(), out var input);
-
-            if (valid && 1 <= input && input <= attackList.Count)
+        return new PromptChoice("Choisissez une attaque a effectuer :",
+                "Frappe du croisé (attaque physique)", "Jugement (attaque magique)").MakeChoice()
+            switch
             {
-                return input switch
-                {
-                    1 => new Attack(name: "Frappe du croisé", attacker: this, target: character, damage: PhysicalAttack,
-                        attackType: DamageType.Physical),
-                    2 => new Attack(name: "Jugement", attacker: this, target: character, damage: MagicalAttack,
-                        attackType: DamageType.Magical),
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-            }
-
-            Console.WriteLine("Entrée invalide");
-        } while (true);
+                1 => new Attack(name: "Frappe du croisé", attacker: this, target: character, damage: PhysicalAttack,
+                    attackType: DamageType.Physical),
+                2 => new Attack(name: "Jugement", attacker: this, target: character, damage: MagicalAttack,
+                    attackType: DamageType.Magical),
+                _ => throw new InvalidOperationException(
+                    "L'attaque sélectionnée n'existe pas, la valeur doit être 1 ou 2.")
+            };
     }
 
     public override void Attack(Character character)

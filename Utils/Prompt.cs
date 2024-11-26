@@ -1,29 +1,18 @@
 ﻿namespace JRPG_Game.Utils;
 
-public class PromptChoice(string message, params object[] choices)
+public static class Prompt
 {
-    public PromptChoice(string message) : this(message, [])
+    private static int Select(string message, List<object> choices)
     {
-    }
-
-    public PromptChoice(params object[] choices) : this(string.Empty, choices)
-    {
-    }
-
-    private string Message { get; set; } = message;
-    private List<object> Choices { get; set; } = [..choices];
-
-    public int MakeChoice()
-    {
-        Console.WriteLine(Message);
-        for (var i = 0; i < Choices.Count; i++)
-            Console.WriteLine($"\t{i + 1} : {Choices[i]}");
+        Console.WriteLine(message);
+        for (var i = 0; i < choices.Count; i++)
+            Console.WriteLine($"\t{i + 1} : {choices[i]}");
         do
         {
             Console.Write("-> ");
             _ = int.TryParse(Input(), out var choice);
 
-            if (0 < choice && choice < Choices.Count)
+            if (0 < choice && choice < choices.Count)
             {
                 Console.WriteLine();
                 return choice;
@@ -32,6 +21,8 @@ public class PromptChoice(string message, params object[] choices)
             Console.WriteLine(" - Entrée invalide");
         } while (true);
     }
+
+    public static int Select(string message, params object[] choices) => Select(message, choices.ToList());
 
     private static string Input()
     {

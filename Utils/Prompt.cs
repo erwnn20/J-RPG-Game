@@ -2,12 +2,21 @@
 
 public static class Prompt
 {
-    private static int Select(string message, List<object> choices)
+    public static int Select(string message, List<object> choices)
     {
+        switch (choices.Count)
+        {
+            case 0:
+                throw new IndexOutOfRangeException("You must have at least one choice");
+            case 1:
+                return 0;
+        }
+
         Console.WriteLine(message);
         for (var i = 0; i < choices.Count; i++)
             Console.WriteLine($"\t{i + 1} : {choices[i]}");
-        do
+
+        while (true)
         {
             Console.Write("-> ");
             _ = int.TryParse(Input(), out var choice);
@@ -19,10 +28,30 @@ public static class Prompt
             }
 
             Console.WriteLine(" - Entrée invalide");
-        } while (true);
+        }
     }
 
     public static int Select(string message, params object[] choices) => Select(message, choices.ToList());
+
+    public static string GetValidInput(string message, List<string>? excluded = null)
+    {
+        excluded ??= [];
+
+        while (true)
+        {
+            Console.Write($"{message} ");
+            var input = Input();
+
+            if (string.IsNullOrWhiteSpace(input))
+                Console.WriteLine(" - Entrée invalide");
+            else if (excluded.Contains(input, StringComparer.OrdinalIgnoreCase))
+                Console.WriteLine($" - '{input}' est interdit. Veuillez en saisir un autre.");
+            else return input;
+        }
+    }
+
+    public static string GetValidInput(string message, params string[] excluded) =>
+        GetValidInput(message, excluded.ToList());
 
     private static string Input()
     {

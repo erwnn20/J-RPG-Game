@@ -103,7 +103,7 @@ public static class Prompt
                 input = input[..^1];
                 Console.Write("\b \b");
             }
-            else
+            else if (key.Key != ConsoleKey.Backspace)
             {
                 input += key.KeyChar;
                 Console.Write(key.KeyChar);

@@ -2,7 +2,7 @@
 
 public static class Prompt
 {
-    public static int Select(string message, List<object> choices)
+    public static int Select<T>(string message, Func<T, string> displayFunc, List<T> choices)
     {
         switch (choices.Count)
         {
@@ -14,14 +14,14 @@ public static class Prompt
 
         Console.WriteLine(message);
         for (var i = 0; i < choices.Count; i++)
-            Console.WriteLine($"\t{i + 1} : {choices[i]}");
+            Console.WriteLine($"\t{i + 1} : {displayFunc(choices[i])}");
 
         while (true)
         {
             Console.Write("-> ");
             _ = int.TryParse(Input(), out var choice);
 
-            if (0 < choice && choice < choices.Count)
+            if (0 < choice && choice <= choices.Count)
             {
                 Console.WriteLine();
                 return choice;
@@ -31,7 +31,8 @@ public static class Prompt
         }
     }
 
-    public static int Select(string message, params object[] choices) => Select(message, choices.ToList());
+    public static int Select<T>(string message, Func<T, string> displayFunc, params T[] choices) =>
+        Select(message, displayFunc, choices.ToList());
 
     public static string GetValidInput(string message, List<string>? excluded = null)
     {

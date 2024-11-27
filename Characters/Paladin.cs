@@ -25,7 +25,7 @@ public class Paladin(string name) :
 
     private Attack SelectAttack(Character character)
     {
-        return Prompt.Select("Choisissez une attaque a effectuer :",
+        return Prompt.Select("Choisissez une attaque a effectuer :", s => s,
                 "Frappe du croisé (attaque physique)", "Jugement (attaque magique)")
             switch
             {

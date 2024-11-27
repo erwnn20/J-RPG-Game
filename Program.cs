@@ -23,10 +23,25 @@ public static class Program
         Console.WriteLine($"{Character.List.Count} joueurs créés.");
         Console.WriteLine("Bon jeu !");
 
-        Thread.Sleep(1500);
-        Next();
+        Next(2000);
 
         // game start
+
+        while (Character.CombatIsOn())
+            foreach (var character in Character.List
+                         .TakeWhile(_ => Character.CombatIsOn())
+                         .Where(character => character.IsAlive(true)))
+            {
+                bool next;
+                do
+                {
+                    Console.WriteLine($"Au tour de {character.Name}");
+                    next = character.SelectAction();
+                } while (!next);
+
+                _ = Prompt.GetInput("Appuyez sur 'Entrée' pour finir le tour", key => key != ConsoleKey.Enter);
+                Next(0);
+            }
     }
 
     private static Character CreateCharacter()
@@ -34,19 +49,20 @@ public static class Program
         while (true)
         {
             List<Type> classList = [typeof(Mage), typeof(Paladin), typeof(Thief), typeof(Warrior)];
-            var characterType = classList.ElementAt(Prompt.Select("Choisissez votre classe :", c => c.Name, classList));
+            var characterType =
+                classList.ElementAt(Prompt.Select("Choisissez votre classe :", c => c.Name, classList) - 1);
 
-            if (Activator.CreateInstance(characterType, Prompt.GetString("Entrez votre nom :")) is Character
-                character)
+            if (Activator.CreateInstance(characterType, Prompt.GetString("Entrez votre nom :"))
+                is Character character)
                 return character;
 
             Console.WriteLine("Une erreur s'est produite : " + characterType);
         }
     }
 
-    private static void Next()
+    public static void Next(int millisecondsTimeout = 500)
     {
-        Thread.Sleep(500);
+        Thread.Sleep(millisecondsTimeout);
         Console.Clear();
     }
 }

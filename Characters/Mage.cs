@@ -19,14 +19,14 @@ public class Mage(string name) :
     private decimal ReduceDamageMagical { get; set; } = 0.50m;
     private int ReducedAttack { get; set; }
 
-    public override void SpecialAbility()
+    protected override void SpecialAbility()
     {
         ReducedAttack = 2;
         Console.WriteLine($"{Name} utilise sa capacité spéciale : \"Barrière de givre\"\n" +
-                          $"-> Les deux prochaines attaques subies sont réduites");
+                          $" -> Les deux prochaines attaques subies sont réduites");
     }
 
-    public override void Attack(Character character)
+    protected override void Attack(Character character)
     {
         var attack = new Attack(
             name: "Eclair de givre",
@@ -41,14 +41,20 @@ public class Mage(string name) :
     public override int Defend(Attack attack)
     {
         if (ReducedAttack <= 0) return base.Defend(attack);
-        attack.Damage *= (int)(1 - attack.AttackType switch
+        attack.Damage = (int)(attack.Damage * (1 - attack.AttackType switch
         {
             DamageType.Physical => ReduceDamagePhysical,
             DamageType.Magical => ReduceDamageMagical,
             _ => 0
-        });
+        }));
         ReducedAttack--;
 
         return base.Defend(attack);
+    }
+
+    public override string ToString()
+    {
+        return base.ToString() + "\n" +
+               (ReducedAttack > 0 ? $"Dégâts réduits pendant {ReducedAttack} attaque subie" : "");
     }
 }

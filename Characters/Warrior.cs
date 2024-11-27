@@ -24,17 +24,17 @@ public class Warrior(string name) :
         Console.WriteLine($"{Name} contre-attaque et inflige {damage} dégât(s) à {attacker.Name}.");
 
         attacker.TakeDamage(damage);
-        attacker.CheckAlive(true);
+        attacker.IsAlive(true);
     }
 
-    public override void SpecialAbility()
+    protected override void SpecialAbility()
     {
         PhysicalAttack *= 2;
         Console.WriteLine($"{Name} utilise sa capacité spéciale : \"Cri de bataille\"\n" +
-                          $"-> Les dégâts de ses attaques physiques sont multiplier par 2");
+                          $" -> Les dégâts de ses attaques physiques sont multiplier par 2");
     }
 
-    public override void Attack(Character character)
+    protected override void Attack(Character character)
     {
         var attack = new Attack(
             name: "Frappe héroïque",
@@ -50,7 +50,7 @@ public class Warrior(string name) :
     {
         var damage = base.Defend(attack);
 
-        if (CheckAlive(false) && new Random().NextDouble() <= 0.25) CounterAttack(attack.Attacker, damage);
+        if (IsAlive(false) && new Random().NextDouble() <= 0.25) CounterAttack(attack.Attacker, damage);
 
         return damage;
     }

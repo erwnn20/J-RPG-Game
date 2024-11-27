@@ -1,5 +1,6 @@
 ﻿using JRPG_Game.Action;
 using JRPG_Game.Armors;
+using JRPG_Game.Utils;
 
 namespace JRPG_Game.Characters;
 
@@ -40,15 +41,15 @@ public abstract class Character
 
     public static readonly List<Character> List = [];
 
-    public bool CheckAlive(bool message)
+    public bool IsAlive(bool message)
     {
         if (CurrentHealth <= 0 && message)
             Console.WriteLine($"{Name} est mort.");
         return CurrentHealth > 0;
     }
 
-    public abstract void SpecialAbility();
-    public abstract void Attack(Character character);
+    protected abstract void SpecialAbility();
+    protected abstract void Attack(Character character);
 
     public virtual int Defend(Attack attack)
     {
@@ -128,18 +129,100 @@ public abstract class Character
 
     public void TakeDamage(int damage) => CurrentHealth = Math.Max(0, CurrentHealth - damage);
 
+    public bool SelectAction()
+    {
+        var selected = Prompt.Select("Que voulez-vous faire ?", s => s,
+            "Afficher informations", "Attaquer un autre joueur", "Utiliser sa capacité spéciale",
+            "Effacer le terminal");
+        Console.WriteLine();
+
+        switch (selected)
+        {
+            case 1:
+                Console.WriteLine(this + "\n");
+                break;
+            case 2:
+                Character attackedPlayer;
+                do
+                {
+                    attackedPlayer = Select("Quel joueur voulez vous attaquer ?");
+                    Console.WriteLine();
+                } while (!ActionOn(attackedPlayer));
+
+                Attack(attackedPlayer);
+                Console.WriteLine();
+                return true;
+            case 3:
+                SpecialAbility();
+                Console.WriteLine();
+                return true;
+            case 4:
+                Program.Next();
+                break;
+            default:
+                Console.WriteLine("Action inconnue, veillez réessayer.");
+                break;
+        }
+
+        return false;
+    }
+
+    private bool ActionOn(Character player)
+    {
+        if (player == this)
+        {
+            Console.WriteLine("Vous ne pouvez pas pour attaquer vous même !\n");
+            Program.Next(2000);
+            return false;
+        }
+
+        while (true)
+        {
+            var selected = Prompt.Select(
+                $"Cible => {player.Name} ({player.CurrentHealth}/{player.MaxHealth} PV) - {player.GetType().Name}",
+                displayFunc: s => s,
+                "Afficher informations", "Confirmé", "Changer de joueur");
+            Console.WriteLine();
+
+            switch (selected)
+            {
+                case 1:
+                    Console.WriteLine(player + "\n");
+                    break;
+                case 2:
+                    return true;
+                case 3:
+                    Program.Next();
+                    return false;
+                default:
+                    Console.WriteLine("Action inconnue, veillez réessayer.");
+                    break;
+            }
+        }
+    }
+
+    //
+
+    public static bool CombatIsOn() => List.Count(character => character.IsAlive(false)) >= 2;
+
+    private static Character Select(string message = "Quel joueur voulez vous choisir ?")
+    {
+        var alivePlayer = List.FindAll(player => player.IsAlive(false));
+        return alivePlayer.ElementAt(
+            Prompt.Select(message, player => $"{player.Name} - ({player.GetType().Name})", alivePlayer) - 1
+        );
+    }
+
     //
 
     public override string ToString()
     {
-        return $"Character: {Name}\n" +
-               $"Max Health: {MaxHealth}\n" +
-               $"Current Health: {CurrentHealth}\n" +
-               $"Physical Attack: {PhysicalAttack}\n" +
-               $"Magical Attack: {MagicalAttack}\n" +
-               $"Armor: {Armor}\n" +
-               $"Dodge Chance: {DodgeChance:P}\n" +
-               $"Parade Chance: {ParadeChance:P}\n" +
-               $"Spell Resistance Chance: {SpellResistanceChance:P}";
+        return $"{GetType().Name}: {Name} ({CurrentHealth}/{MaxHealth} PV) - Armure: {Armor}\n" +
+               $"Stats :\n" +
+               $" - Attaque Physique: {PhysicalAttack}\n" +
+               $" - Attaque Magique: {MagicalAttack}\n" +
+               $" - Chances d'Esquiver: {DodgeChance:P}\n" +
+               $" - Chances de Parade: {ParadeChance:P}\n" +
+               $" - Chances de Resister aux Sorts: {SpellResistanceChance:P}";
     }
 }

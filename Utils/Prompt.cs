@@ -58,6 +58,36 @@ public static class Prompt
     public static string GetString(string message, params string[] excluded) =>
         GetString(message, excluded.ToList());
 
+    public static int GetInt(string message, Func<int, bool>? excludedCondition = null)
+    {
+        excludedCondition ??= _ => false;
+
+        while (true)
+        {
+            Console.Write($"{message} ");
+            var valid = int.TryParse(Input(), out var input);
+
+            if (!valid)
+                Console.WriteLine(" - Entrée invalide");
+            else if (excludedCondition(input))
+                Console.WriteLine($" - '{input}' est interdit. Veuillez en saisir un autre.");
+            else
+            {
+                Console.WriteLine();
+                return input;
+            }
+        }
+    }
+    
+    public static int GetInt(string message, params int[] excluded) =>
+        GetInt(message, excluded.Contains);
+    
+    public static int GetInt(string message, params Func<int, bool>[] excludedConditions) =>
+        GetInt(message, i => excludedConditions.Any(condition => condition(i)));
+    
+    public static int GetInt(string message, Func<int, bool> excludedCondition, params int[] excluded) =>
+        GetInt(message, excludedCondition, excluded.Contains);
+    
     //
 
     private static string Input()

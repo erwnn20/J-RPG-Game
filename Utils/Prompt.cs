@@ -34,7 +34,7 @@ public static class Prompt
     public static int Select<T>(string message, Func<T, string> displayFunc, params T[] choices) =>
         Select(message, displayFunc, choices.ToList());
 
-    public static string GetValidInput(string message, List<string>? excluded = null)
+    public static string GetString(string message, List<string>? excluded = null)
     {
         excluded ??= [];
 
@@ -47,12 +47,18 @@ public static class Prompt
                 Console.WriteLine(" - Entrée invalide");
             else if (excluded.Contains(input, StringComparer.OrdinalIgnoreCase))
                 Console.WriteLine($" - '{input}' est interdit. Veuillez en saisir un autre.");
-            else return input;
+            else
+            {
+                Console.WriteLine();
+                return input;
+            }
         }
     }
 
-    public static string GetValidInput(string message, params string[] excluded) =>
-        GetValidInput(message, excluded.ToList());
+    public static string GetString(string message, params string[] excluded) =>
+        GetString(message, excluded.ToList());
+
+    //
 
     private static string Input()
     {

@@ -21,10 +21,14 @@ public class Warrior(string name) :
 
         if (damage <= 0) return;
 
-        Console.WriteLine($"{Name} contre-attaque et inflige {damage} dégât(s) à {attacker.Name}.");
-
-        attacker.TakeDamage(damage);
-        attacker.IsAlive(true);
+        var conterAttack = new Attack(
+            name: "Contre Attaque",
+            attacker: this,
+            target: attacker,
+            damage: damage,
+            attackType: DamageType.Physical
+        );
+        conterAttack.Execute();
     }
 
     protected override void SpecialAbility()

@@ -7,6 +7,7 @@ public static class Program
 {
     public static void Main()
     {
+        // game start
         Console.WriteLine("Bienvenue dans le jeu !\n");
 
         var nbrPlayers = Prompt.GetInt("Entrez le nombre de joueurs :", i => i < 2);
@@ -25,8 +26,7 @@ public static class Program
 
         Next(2000);
 
-        // game start
-
+        // game content
         while (Character.CombatIsOn())
             foreach (var character in Character.List
                          .TakeWhile(_ => Character.CombatIsOn())
@@ -42,6 +42,23 @@ public static class Program
                 _ = Prompt.GetInput("Appuyez sur 'Entrée' pour finir le tour", key => key != ConsoleKey.Enter);
                 Next(0);
             }
+
+        // game end
+        var winners = Character.List.Where(player => player.IsAlive(true)).ToList();
+
+        switch (winners.Count)
+        {
+            case 1:
+                Console.WriteLine($"{winners.First().Name} a gagné, Félicitations !");
+                break;
+            case > 1:
+                Console.WriteLine("Une erreur est survenue : il n'y a pas qu'un seul gagnant.");
+                break;
+            default:
+                Console.WriteLine("Une erreur est survenue : aucun gagnant.");
+                break;
+        }
+
     }
 
     private static Character CreateCharacter()

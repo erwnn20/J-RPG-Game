@@ -10,7 +10,7 @@ public static class Program
         // game start
         Console.WriteLine("Bienvenue dans le jeu !\n");
 
-        var nbrPlayers = Prompt.GetInt("Entrez le nombre de joueurs :", i => i < 2);
+        var nbrPlayers = Prompt.Get<int>("Entrez le nombre de joueurs :", i => i < 2);
 
         Next();
 
@@ -69,7 +69,7 @@ public static class Program
             var characterType =
                 classList.ElementAt(Prompt.Select("Choisissez votre classe :", c => c.Name, classList) - 1);
 
-            if (Activator.CreateInstance(characterType, Prompt.GetString("Entrez votre nom :"))
+            if (Activator.CreateInstance(characterType, Prompt.Get<string>("Entrez votre nom :"))
                 is Character character)
                 return character;
 

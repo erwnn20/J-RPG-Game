@@ -16,77 +16,76 @@ public static class Prompt
         for (var i = 0; i < choices.Count; i++)
             Console.WriteLine($"\t{i + 1} : {displayFunc(choices[i])}");
 
-        while (true)
-        {
-            Console.Write("-> ");
-            _ = int.TryParse(Input(), out var choice);
-
-            if (0 < choice && choice <= choices.Count)
-            {
-                Console.WriteLine();
-                return choice;
-            }
-
-            Console.WriteLine(" - Entrée invalide");
-        }
+        return Get<int>("-> ", choice => choice < 1, choice => choice > choices.Count);
     }
 
     public static int Select<T>(string message, Func<T, string> displayFunc, params T[] choices) =>
         Select(message, displayFunc, choices.ToList());
 
-    public static string GetString(string message, List<string>? excluded = null)
-    {
-        excluded ??= [];
+    //
 
-        while (true)
-        {
-            Console.Write($"{message} ");
-            var input = Input();
-
-            if (string.IsNullOrWhiteSpace(input))
-                Console.WriteLine(" - Entrée invalide");
-            else if (excluded.Contains(input, StringComparer.OrdinalIgnoreCase))
-                Console.WriteLine($" - '{input}' est interdit. Veuillez en saisir un autre.");
-            else
-            {
-                Console.WriteLine();
-                return input;
-            }
-        }
-    }
-
-    public static string GetString(string message, params string[] excluded) =>
-        GetString(message, excluded.ToList());
-
-    public static int GetInt(string message, Func<int, bool>? excludedCondition = null)
+    public static T Get<T>(string message, Func<T, bool>? excludedCondition = null) where T : IConvertible
     {
         excludedCondition ??= _ => false;
 
         while (true)
         {
             Console.Write($"{message} ");
-            var valid = int.TryParse(Input(), out var input);
+            var input = Input();
 
-            if (!valid)
-                Console.WriteLine(" - Entrée invalide");
-            else if (excludedCondition(input))
-                Console.WriteLine($" - '{input}' est interdit. Veuillez en saisir un autre.");
-            else
+            try
             {
+                var value = (T)Convert.ChangeType(input, typeof(T));
+
+                if (excludedCondition(value))
+                {
+                    Console.WriteLine($" - '{input}' n'est pas une entrée valide. Veuillez en saisir un autre.");
+                    continue;
+                }
+
                 Console.WriteLine();
-                return input;
+                return value;
+            }
+            catch
+            {
+                Console.WriteLine($" - Entrée invalide.");
             }
         }
     }
 
-    public static int GetInt(string message, params int[] excluded) =>
-        GetInt(message, excluded.Contains);
+    public static T Get<T>(string message, List<T> excluded) where T : IConvertible =>
+        Get<T>(message, excluded.Contains);
 
-    public static int GetInt(string message, params Func<int, bool>[] excludedConditions) =>
-        GetInt(message, i => excludedConditions.Any(condition => condition(i)));
+    public static T Get<T>(string message, params T[] excluded) where T : IConvertible =>
+        Get(message, excluded.ToList());
 
-    public static int GetInt(string message, Func<int, bool> excludedCondition, params int[] excluded) =>
-        GetInt(message, excludedCondition, excluded.Contains);
+    public static T Get<T>(string message, params Func<T, bool>[] excludedConditions) where T : IConvertible =>
+        Get<T>(message, value => excludedConditions.Any(condition => condition(value)));
+
+    public static T Get<T>(string message, Func<T, bool> excludedCondition, params T[] excluded)
+        where T : IConvertible =>
+        Get(message, excludedCondition, excluded.Contains);
+
+    //
+
+    public static bool GetBool(string message, string trueValue, string falseValue)
+    {
+        do
+        {
+            var input = trueValue.Length == 1 && falseValue.Length == 1
+                ? GetInput(message,
+                    key => key != (ConsoleKey)char.ToUpper(trueValue[0])
+                           && key != (ConsoleKey)char.ToUpper(falseValue[0]))
+                : Get<string>(message,
+                    s => !s.Equals(trueValue, StringComparison.CurrentCultureIgnoreCase)
+                         && !s.Equals(falseValue, StringComparison.CurrentCultureIgnoreCase));
+
+            if (input.Equals(trueValue, StringComparison.CurrentCultureIgnoreCase)) return true;
+            if (input.Equals(falseValue, StringComparison.CurrentCultureIgnoreCase)) return false;
+
+            Console.WriteLine($" - '{input}' n'est pas une valide.");
+        } while (true);
+    }
 
     //
 

@@ -1,5 +1,5 @@
-﻿using JRPG_Game.Action;
-using JRPG_Game.Armors;
+﻿using JRPG_Game.Characters.Skills;
+using JRPG_Game.Enums;
 using JRPG_Game.Utils;
 
 namespace JRPG_Game.Characters;

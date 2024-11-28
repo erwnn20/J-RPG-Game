@@ -1,6 +1,6 @@
-﻿using JRPG_Game.Characters;
+﻿using JRPG_Game.Enums;
 
-namespace JRPG_Game.Action;
+namespace JRPG_Game.Characters.Skills;
 
 public class Attack(string name, Character attacker, Character target, int damage, DamageType attackType)
 {

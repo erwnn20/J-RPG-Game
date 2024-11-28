@@ -1,4 +1,4 @@
-﻿namespace JRPG_Game.Action;
+﻿namespace JRPG_Game.Enums;
 
 public enum DamageType
 {

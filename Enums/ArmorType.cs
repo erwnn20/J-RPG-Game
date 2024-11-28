@@ -1,4 +1,4 @@
-﻿namespace JRPG_Game.Armors;
+﻿namespace JRPG_Game.Enums;
 
 public enum ArmorType
 {

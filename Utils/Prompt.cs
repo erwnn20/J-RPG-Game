@@ -37,7 +37,7 @@ public static class Prompt
             {
                 var value = (T)Convert.ChangeType(input, typeof(T));
 
-                if (excludedCondition(value))
+                if (excludedCondition(value) || (value is string s && string.IsNullOrWhiteSpace(s)))
                 {
                     Console.WriteLine($" - '{input}' n'est pas une entrée valide. Veuillez en saisir un autre.");
                     continue;
@@ -73,7 +73,7 @@ public static class Prompt
         do
         {
             var input = trueValue.Length == 1 && falseValue.Length == 1
-                ? GetInput(message,
+                ? Input(message,
                     key => key != (ConsoleKey)char.ToUpper(trueValue[0])
                            && key != (ConsoleKey)char.ToUpper(falseValue[0]))
                 : Get<string>(message,
@@ -89,11 +89,12 @@ public static class Prompt
 
     //
 
-    public static string GetInput(string message, Func<ConsoleKey, bool>? excludedCondition = null)
+    public static string Input(string? message = null, Func<ConsoleKey, bool>? excludedCondition = null)
     {
         excludedCondition ??= _ => false;
 
-        Console.Write($"{message} ");
+        if (message != null) Console.Write($"{message} ");
+
         var input = "";
         while (true)
         {
@@ -115,37 +116,13 @@ public static class Prompt
         return input;
     }
 
-    public static string GetInput(string message, params ConsoleKey[] excluded) =>
-        GetInput(message, excluded.Contains);
+    public static string Input(string message, params ConsoleKey[] excluded) =>
+        Input(message, excluded.Contains);
 
-    public static string GetInput(string message, params Func<ConsoleKey, bool>[] excludedConditions) =>
-        GetInput(message, i => excludedConditions.Any(condition => condition(i)));
+    public static string Input(string message, params Func<ConsoleKey, bool>[] excludedConditions) =>
+        Input(message, i => excludedConditions.Any(condition => condition(i)));
 
-    public static string GetInput(string message, Func<ConsoleKey, bool> excludedCondition, params ConsoleKey[] excluded) =>
-        GetInput(message, excludedCondition, excluded.Contains);
-
-    //
-
-    private static string Input()
-    {
-        var input = "";
-        while (true)
-        {
-            var key = Console.ReadKey(intercept: true);
-
-            if (key.Key == ConsoleKey.Enter) break;
-            if (key.Key == ConsoleKey.Backspace && input.Length > 0)
-            {
-                input = input[..^1];
-                Console.Write("\b \b");
-            }
-            else if (key.Key != ConsoleKey.Backspace)
-            {
-                input += key.KeyChar;
-                Console.Write(key.KeyChar);
-            }
-        }
-
-        return input;
-    }
+    public static string Input(string message, Func<ConsoleKey, bool> excludedCondition,
+        params ConsoleKey[] excluded) =>
+        Input(message, excludedCondition, excluded.Contains);
 }

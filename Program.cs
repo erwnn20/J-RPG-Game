@@ -39,7 +39,7 @@ public static class Program
                     next = character.SelectAction();
                 } while (!next);
 
-                _ = Prompt.GetInput("Appuyez sur 'Entrée' pour finir le tour", key => key != ConsoleKey.Enter);
+                _ = Prompt.Input("Appuyez sur 'Entrée' pour finir le tour", key => key != ConsoleKey.Enter);
                 Next(0);
             }
 

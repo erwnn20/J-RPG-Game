@@ -110,6 +110,19 @@ public class Mage : Character, IMana
     private int ReducedAttack { get; set; }
     private bool SpellReturn { get; set; }
 
+    //
+
+    public override string ToString()
+    {
+        return base.ToString() + "\n" +
+               $" - Mana: {CurrentMana}/{MaxMana}" +
+               (ReducedAttack > 0
+                   ? $"\n Dégâts réduits pendant {(ReducedAttack > 1 ? $"les {ReducedAttack} prochaines attaques subies." : "la prochaine attaque subie.")}"
+                   : string.Empty) +
+               (SpellReturn ? "\n La prochaine attaque magique subie sera renvoyée." : string.Empty);
+    }
+
+
     /*protected override void SpecialAbility()
     {
         ReducedAttack = 2;
@@ -152,17 +165,5 @@ public class Mage : Character, IMana
     protected override void Attack(Character character)
     {
         throw new NotImplementedException();
-    }
-
-    //
-
-    public override string ToString()
-    {
-        return base.ToString() + "\n" +
-               $" - Mana: {CurrentMana}/{MaxMana}" +
-               (ReducedAttack > 0
-                   ? $"\n Dégâts réduits pendant {(ReducedAttack > 1 ? $"les {ReducedAttack} prochaines attaques subies." : "la prochaine attaque subie.")}"
-                   : string.Empty) +
-               (SpellReturn ? "\n La prochaine attaque magique subie sera renvoyée." : string.Empty);
     }
 }

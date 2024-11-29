@@ -1,30 +1,35 @@
 ﻿using JRPG_Game.Characters.Skills;
 using JRPG_Game.Enums;
+using JRPG_Game.Interfaces;
 using JRPG_Game.Utils;
 
 namespace JRPG_Game.Characters;
 
-public abstract class Character
+public abstract class Character : ITarget
 {
     protected Character(
         string name,
         int maxHealth,
+        int speed,
         int physicalAttack,
         int magicalAttack,
         ArmorType armor,
         decimal dodgeChance,
         decimal paradeChance,
-        decimal spellResistanceChance)
+        decimal spellResistanceChance,
+        List<Skill> skills)
     {
         Name = name;
         MaxHealth = maxHealth;
         CurrentHealth = maxHealth;
+        Speed = speed;
         PhysicalAttack = physicalAttack;
         MagicalAttack = magicalAttack;
         Armor = armor;
         DodgeChance = dodgeChance;
         ParadeChance = paradeChance;
         SpellResistanceChance = spellResistanceChance;
+        Skills = skills;
 
         List.Add(this);
     }
@@ -32,12 +37,14 @@ public abstract class Character
     public string Name { get; private set; }
     public int MaxHealth { get; private set; }
     public int CurrentHealth { get; private set; }
-    protected int PhysicalAttack { get; set; }
+    public int Speed { get; set; }
+    public int PhysicalAttack { get; set; }
     protected int MagicalAttack { get; set; }
     private ArmorType Armor { get; set; }
     protected decimal DodgeChance { get; set; }
     private decimal ParadeChance { get; set; }
     protected decimal SpellResistanceChance { get; set; }
+    protected List<Skill> Skills { get; set; }
 
     public static readonly List<Character> List = [];
 
@@ -51,27 +58,27 @@ public abstract class Character
     protected abstract void SpecialAbility();
     protected abstract void Attack(Character character);
 
-    public virtual int Defend(Attack attack)
+    public virtual int Defend<T1, T2, T3>(Attack<T1, T2, T3> from, T3 damageParameter)
     {
-        if (Dodge(attack)) return 0;
-        if (SpellResistance(attack)) return 0;
+        if (Dodge(from)) return 0;
+        if (SpellResistance(from)) return 0;
 
-        decimal damage = attack.Damage;
+        decimal damage = from.Damage(damageParameter);
 
-        if (Parade(attack)) damage *= 0.5m;
-        damage *= 1 - ArmorReduction(attack.AttackType);
+        if (Parade(from)) damage *= 0.5m;
+        damage *= 1 - ArmorReduction(from.AttackType);
 
         TakeDamage((int)damage);
         return (int)damage;
     }
 
-    protected int Heal(int healthPoint, bool message = true)
+    public int Heal(int healthPoint, bool message = true)
     {
         var healed = Math.Min(MaxHealth - CurrentHealth, healthPoint);
         CurrentHealth += healed;
 
         if (healed <= 0 || !message) return healed;
-        Console.WriteLine($"{Name} se soigne de {healed}");
+        Console.WriteLine($"{Name} à été soigné de {healed}");
 
         return healed;
     }
@@ -100,7 +107,7 @@ public abstract class Character
         };
     }
 
-    private bool Dodge(Attack attack)
+    private bool Dodge<T1, T2, T3>(Attack<T1, T2, T3> attack)
     {
         if (attack.AttackType != DamageType.Physical
             || (decimal)new Random().NextDouble() > DodgeChance) return false;
@@ -109,7 +116,7 @@ public abstract class Character
         return true;
     }
 
-    private bool Parade(Attack attack)
+    private bool Parade<T1, T2, T3>(Attack<T1, T2, T3> attack)
     {
         if (attack.AttackType != DamageType.Physical
             || (decimal)new Random().NextDouble() > ParadeChance) return false;
@@ -118,7 +125,7 @@ public abstract class Character
         return true;
     }
 
-    private bool SpellResistance(Attack attack)
+    private bool SpellResistance<T1, T2, T3>(Attack<T1, T2, T3> attack)
     {
         if (attack.AttackType != DamageType.Magical
             || (decimal)new Random().NextDouble() > SpellResistanceChance) return false;
@@ -127,7 +134,7 @@ public abstract class Character
         return true;
     }
 
-    public void TakeDamage(int damage) => CurrentHealth = Math.Max(0, CurrentHealth - damage);
+    private void TakeDamage(int damage) => CurrentHealth = Math.Max(0, CurrentHealth - damage);
 
     public bool SelectAction()
     {

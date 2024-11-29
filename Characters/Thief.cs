@@ -3,19 +3,53 @@ using JRPG_Game.Enums;
 
 namespace JRPG_Game.Characters;
 
-public class Thief(string name) :
-    Character(
-        name: name,
-        maxHealth: 80,
-        armor: ArmorType.Leather,
-        physicalAttack: 55,
-        magicalAttack: 0,
-        dodgeChance: 0.15m,
-        paradeChance: 0.25m,
-        spellResistanceChance: 0.25m
-    )
+public class Thief : Character
 {
-    protected override void SpecialAbility()
+    public Thief(string name)
+        : base(
+            name: name,
+            maxHealth: 80,
+            speed: 100,
+            armor: ArmorType.Leather,
+            physicalAttack: 55,
+            magicalAttack: 0,
+            dodgeChance: 0.15m,
+            paradeChance: 0.25m,
+            spellResistanceChance: 0.25m,
+            skills: [])
+    {
+        Skills.AddRange([
+            new Attack<object?, object?, Character>(
+                name: "Coup bas",
+                description: $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.\n" +
+                             $"Inflige 150% si la cible a moins de la moitié de ses points de vie.",
+                owner: this,
+                target: TargetType.Other,
+                reloadTime: 1,
+                manaCost: 0,
+                damage: target =>
+                    (int)(PhysicalAttack *
+                          (target.CurrentHealth < target.MaxHealth / 2 ? 1.50m : 1.00m)),
+                attackType: DamageType.Physical),
+            new SpecialAbility<object?, object?>(
+                name: "Evasion",
+                description:
+                $"Augmente les chances d'esquive de 20% ({DodgeChance:P} {(DodgeChance == 0.5m ? "MAX" : $"+ {0.20m:P}")})\n" +
+                $"Augmente les chances de resister aux sorts de 20% ({SpellResistanceChance:P} {(SpellResistanceChance == 0.5m ? "MAX" : $"+ {0.20m:P}")})",
+                owner: this,
+                target: TargetType.Self,
+                reloadTime: 1,
+                manaCost: 0,
+                effect: _ =>
+                {
+                    DodgeChance = Math.Min(0.5m, DodgeChance + 0.2m);
+                    SpellResistanceChance = Math.Min(0.5m, SpellResistanceChance + 0.2m);
+                    return true;
+                })
+        ]);
+    }
+
+    /*protected override void SpecialAbility()
     {
         DodgeChance = Math.Min(0.5m, DodgeChance + 0.2m);
         SpellResistanceChance = Math.Min(0.5m, SpellResistanceChance + 0.2m);
@@ -34,5 +68,14 @@ public class Thief(string name) :
             attackType: DamageType.Physical
         );
         attack.Execute();
+    }*/
+    protected override void SpecialAbility()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override void Attack(Character character)
+    {
+        throw new NotImplementedException();
     }
 }

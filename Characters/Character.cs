@@ -55,6 +55,17 @@ public abstract class Character : ITarget
         return CurrentHealth > 0;
     }
 
+    public int Heal(int healthPoint, bool message = true)
+    {
+        var healed = Math.Min(MaxHealth - CurrentHealth, healthPoint);
+        CurrentHealth += healed;
+
+        if (healed <= 0 || !message) return healed;
+        Console.WriteLine($"{Name} à été soigné de {healed}");
+
+        return healed;
+    }
+
     public Skill? SelectSkill()
     {
         if (!Skills.Any(skill => skill.IsUsable()))
@@ -103,34 +114,31 @@ public abstract class Character : ITarget
         } while (true);
     }
 
-    //
-
-    protected abstract void SpecialAbility();
-    protected abstract void Attack(Character character);
-
-    public virtual int Defend<T1, T2, T3>(Attack<T1, T2, T3> from, T3 damageParameter)
+    private bool Dodge<TTarget>(Attack<TTarget> attack) where TTarget : ITarget
     {
-        if (Dodge(from)) return 0;
-        if (SpellResistance(from)) return 0;
+        if (attack.AttackType != DamageType.Physical
+            || (decimal)new Random().NextDouble() > DodgeChance) return false;
 
-        decimal damage = from.Damage(damageParameter);
-
-        if (Parade(from)) damage *= 0.5m;
-        damage *= 1 - ArmorReduction(from.AttackType);
-
-        TakeDamage((int)damage);
-        return (int)damage;
+        Console.WriteLine($"{Name} a réussi à esquiver {attack.Name}");
+        return true;
     }
 
-    public int Heal(int healthPoint, bool message = true)
+    private bool Parade<TTarget>(Attack<TTarget> attack) where TTarget : ITarget
     {
-        var healed = Math.Min(MaxHealth - CurrentHealth, healthPoint);
-        CurrentHealth += healed;
+        if (attack.AttackType != DamageType.Physical
+            || (decimal)new Random().NextDouble() > ParadeChance) return false;
 
-        if (healed <= 0 || !message) return healed;
-        Console.WriteLine($"{Name} à été soigné de {healed}");
+        Console.WriteLine($"{Name} a réussi à parer de {attack.Name}");
+        return true;
+    }
 
-        return healed;
+    private bool SpellResistance<TTarget>(Attack<TTarget> attack) where TTarget : ITarget
+    {
+        if (attack.AttackType != DamageType.Magical
+            || (decimal)new Random().NextDouble() > SpellResistanceChance) return false;
+
+        Console.WriteLine($"{Name} a réussi à resister à {attack.Name}");
+        return true;
     }
 
     private decimal ArmorReduction(DamageType damageType)
@@ -157,32 +165,38 @@ public abstract class Character : ITarget
         };
     }
 
-    private bool Dodge<T1, T2, T3>(Attack<T1, T2, T3> attack)
+    public virtual int Defend<TTarget>(Attack<TTarget> from, TTarget damageParameter) where TTarget : ITarget
     {
-        if (attack.AttackType != DamageType.Physical
-            || (decimal)new Random().NextDouble() > DodgeChance) return false;
+        if (Dodge(from))
+        {
+            from.Dodged = true;
+            return 0;
+        }
 
-        Console.WriteLine($"{Name} a réussi à esquiver {attack.Name}");
-        return true;
+        if (SpellResistance(from))
+        {
+            from.Resisted = true;
+            return 0;
+        }
+
+        decimal damage = from.Damage(damageParameter);
+
+        if (Parade(from))
+        {
+            from.Blocked = true;
+            damage *= 0.5m;
+        }
+
+        damage *= 1 - ArmorReduction(from.AttackType);
+
+        // TakeDamage((int)damage);
+        return (int)damage;
     }
 
-    private bool Parade<T1, T2, T3>(Attack<T1, T2, T3> attack)
-    {
-        if (attack.AttackType != DamageType.Physical
-            || (decimal)new Random().NextDouble() > ParadeChance) return false;
+    //
 
-        Console.WriteLine($"{Name} a réussi à parer une partie de {attack.Name}");
-        return true;
-    }
-
-    private bool SpellResistance<T1, T2, T3>(Attack<T1, T2, T3> attack)
-    {
-        if (attack.AttackType != DamageType.Magical
-            || (decimal)new Random().NextDouble() > SpellResistanceChance) return false;
-
-        Console.WriteLine($"{Name} a réussi à resister à {attack.Name}");
-        return true;
-    }
+    protected abstract void SpecialAbility();
+    protected abstract void Attack(Character character);
 
     private void TakeDamage(int damage) => CurrentHealth = Math.Max(0, CurrentHealth - damage);
 
@@ -258,8 +272,6 @@ public abstract class Character : ITarget
         }
     }
 
-    //
-
     public static bool CombatIsOn() => List.Count(character => character.IsAlive(false)) >= 2;
 
     private static Character Select(string message = "Quel joueur voulez vous choisir ?")
@@ -282,6 +294,7 @@ public abstract class Character : ITarget
                $" - Chances d'Esquiver: {DodgeChance:P}\n" +
                $" - Chances de Parade: {ParadeChance:P}\n" +
                $" - Chances de Resister aux Sorts: {SpellResistanceChance:P}\n" +
-               $" - Compétences :\n" + string.Join("\n", Skills.Select(skill => $"\t- {skill.Name} ({skill.GetType().Name})"));
+               $" - Compétences :\n" +
+               string.Join("\n", Skills.Select(skill => $"\t- {skill.Name} ({skill.GetType().Name})"));
     }
 }

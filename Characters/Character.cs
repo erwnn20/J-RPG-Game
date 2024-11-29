@@ -55,6 +55,56 @@ public abstract class Character : ITarget
         return CurrentHealth > 0;
     }
 
+    public Skill? SelectSkill()
+    {
+        if (!Skills.Any(skill => skill.IsUsable()))
+        {
+            Console.WriteLine("Aucune compétence utilisable actuellement.");
+            return null;
+        }
+
+        do
+        {
+            var selectedSkill = Skills.ElementAt(Prompt.Select("Quel compétence voulez vous utiliser ?",
+                skill =>
+                    $"{skill.Name} ({skill.GetType().Name}){(!skill.IsUsable() ? $" - Disponible dans : {skill.ReloadCooldown} tour(s)" : string.Empty)}",
+                Skills) - 1);
+            Console.WriteLine();
+
+            List<string> choices = ["Afficher details", "Sélectionné une autre capacité"];
+            if (selectedSkill.IsUsable())
+                choices.Add("Confirmer");
+            else
+                Console.WriteLine(
+                    $"Vous ne pouvez pas utiliser {selectedSkill.Name} actuellement. Disponible dans : {selectedSkill.ReloadCooldown} tour(s)");
+
+            var exit = false;
+            do
+            {
+                var selected = Prompt.Select($"{selectedSkill.Name} ({selectedSkill.GetType().Name})", s => s, choices);
+                Console.WriteLine();
+
+                switch (selected)
+                {
+                    case 1:
+                        Console.WriteLine(selectedSkill + "\n");
+                        break;
+                    case 2:
+                        Program.Next();
+                        exit = true;
+                        break;
+                    case 3:
+                        return selectedSkill;
+                    default:
+                        Console.WriteLine("Une erreur s'est produite, veuillez réessayer.");
+                        break;
+                }
+            } while (!exit);
+        } while (true);
+    }
+
+    //
+
     protected abstract void SpecialAbility();
     protected abstract void Attack(Character character);
 

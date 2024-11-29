@@ -55,6 +55,14 @@ public class Paladin : Character, IMana
         ]);
     }
 
+    //
+
+    public override string ToString()
+    {
+        return base.ToString() + "\n" +
+               $" - Mana: {CurrentMana}/{MaxMana}";
+    }
+
     /*protected override void SpecialAbility()
     {
         var healthPoint = (int)(MagicalAttack * 1.25);
@@ -92,13 +100,5 @@ public class Paladin : Character, IMana
     protected override void Attack(Character character)
     {
         throw new NotImplementedException();
-    }
-
-    //
-
-    public override string ToString()
-    {
-        return base.ToString() + "\n" +
-               $" - Mana: {CurrentMana}/{MaxMana}";
     }
 }

@@ -55,6 +55,13 @@ public class Paladin : Character, IMana
         ]);
     }
 
+    public override int Defend<TTarget>(Attack<TTarget> from, TTarget damageParameter)
+    {
+        var damage = base.Defend(from, damageParameter);
+        TakeDamage(damage);
+        return damage;
+    }
+
     //
 
     public override string ToString()

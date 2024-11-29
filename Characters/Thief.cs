@@ -1,5 +1,6 @@
 ﻿using JRPG_Game.Characters.Skills;
 using JRPG_Game.Enums;
+using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters;
 
@@ -47,6 +48,34 @@ public class Thief : Character
                     return true;
                 })
         ]);
+    }
+
+    public override int Defend<TTarget>(Attack<TTarget> from, TTarget damageParameter)
+    {
+        var damage = base.Defend(from, damageParameter);
+
+        if (from.Dodged)
+        {
+            var counterAttack = new Attack<ITarget>(
+                name: "Poignard dans le dos",
+                owner: this,
+                description:
+                "Lorsque le voleur esquive une attaque ennemie, il déclenche une attaque qui inflige 15 points de dégâts physiques à l’attaquant.",
+                target: from.Owner,
+                targetType: TargetType.Other,
+                reloadTime: 0,
+                manaCost: 0,
+                damage: 15,
+                attackType: DamageType.Physical
+            );
+
+            if (from.Additional != null)
+                from.Additional.Add(() => counterAttack.Execute());
+            else from.Additional = [() => counterAttack.Execute()];
+        }
+
+        TakeDamage(damage);
+        return damage;
     }
 
     /*protected override void SpecialAbility()

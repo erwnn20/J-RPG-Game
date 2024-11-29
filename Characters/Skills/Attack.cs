@@ -114,7 +114,7 @@ public class Attack<TTarget>(
         Target.IsAlive(true);
         return damage;
     }*/
-    protected override void Execute(ITarget target)
+    public override void Execute()
     {
         throw new NotImplementedException();
     }

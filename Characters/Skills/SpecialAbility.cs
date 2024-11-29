@@ -45,7 +45,7 @@ public class SpecialAbility(
     {
     }
 
-    protected override void Execute(ITarget target)
+    public override void Execute()
     {
         throw new NotImplementedException();
     }

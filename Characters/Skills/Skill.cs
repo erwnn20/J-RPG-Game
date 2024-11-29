@@ -13,10 +13,10 @@ public abstract class Skill(
     int manaCost)
 {
     public string Name { get; set; } = name;
-    private Character Owner { get; set; } = owner;
+    public Character Owner { get; set; } = owner;
     private TargetType TargetType { get; set; } = targetType;
     private ITarget? Target { get; set; } = target;
-    private string Description { get; set; } = description;
+    public string Description { get; set; } = description;
     private int ReloadTime { get; set; } = reloadTime;
     public int ReloadCooldown { get; private set; }
     private int ManaCost { get; set; } = manaCost;
@@ -31,11 +31,22 @@ public abstract class Skill(
     {
     }
 
-    public virtual bool Use(ITarget target)
+    public virtual bool Use(ITarget? target = null)
     {
         if (!IsUsable())
         {
             Console.WriteLine($"{Name} est en recharge pour {ReloadCooldown} tour(s).");
+            return false;
+        }
+
+        if (target != null)
+            Target = target;
+        if (!IsTargetCorrect())
+        {
+            Console.WriteLine(Target != null
+                ? $"La cible sélectionnée ({Target.Name} - {Target.GetType().Name}) ne correspond pas au type de cible de la compétence ({TargetType})."
+                : "Pas de cible sélectionné.");
+
             return false;
         }
 
@@ -62,12 +73,11 @@ public abstract class Skill(
         }
 
         ReloadCooldown = ReloadTime;
-        Execute(target);
-        // Console.WriteLine($"{utilisateur.Name} utilise {Nom} sur {cible.Name}.");
+        Execute();
         return true;
     }
 
-    protected abstract void Execute(ITarget target);
+    public abstract void Execute();
 
     public bool IsUsable() => ReloadCooldown <= 0;
 

@@ -85,6 +85,18 @@ public class Mage : Character, IMana
                     var manaTaken = Math.Max(40, t.CurrentMana / 2);
                     return t.LoseMana(manaTaken);
                 }),
+            new SpecialAbility<object?, object?>(
+                name: "Renvoi de sort",
+                description: "Renvoie la prochaine attaque magique subie à l’assaillant",
+                owner: this,
+                target: TargetType.Self,
+                reloadTime: 1,
+                manaCost: 25,
+                effect: _ =>
+                {
+                    SpellReturn = true;
+                    return true;
+                }),
             ((IMana)this).Drink(this)
         ]);
     }
@@ -92,6 +104,7 @@ public class Mage : Character, IMana
     private decimal ReduceDamagePhysical { get; set; } = 0.60m;
     private decimal ReduceDamageMagical { get; set; } = 0.50m;
     private int ReducedAttack { get; set; }
+    private bool SpellReturn { get; set; }
 
     /*protected override void SpecialAbility()
     {
@@ -145,6 +158,7 @@ public class Mage : Character, IMana
                $" - Mana: {CurrentMana}/{MaxMana}" +
                (ReducedAttack > 0
                    ? $"\n Dégâts réduits pendant {(ReducedAttack > 1 ? $"les {ReducedAttack} prochaines attaques subies." : "la prochaine attaque subie.")}"
-                   : string.Empty);
+                   : string.Empty) +
+               (SpellReturn ? "\n La prochaine attaque magique subie sera renvoyée." : string.Empty);
     }
 }

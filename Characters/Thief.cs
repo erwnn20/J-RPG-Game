@@ -24,7 +24,7 @@ public class Thief : Character
                 description: $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.\n" +
                              $"Inflige 150% si la cible a moins de la moitié de ses points de vie.",
                 owner: this,
-                target: TargetType.Other,
+                targetType: TargetType.Other,
                 reloadTime: 1,
                 manaCost: 0,
                 damage: target =>
@@ -37,7 +37,7 @@ public class Thief : Character
                 $"Augmente les chances d'esquive de 20% ({DodgeChance:P} {(DodgeChance == 0.5m ? "MAX" : $"+ {0.20m:P}")})\n" +
                 $"Augmente les chances de resister aux sorts de 20% ({SpellResistanceChance:P} {(SpellResistanceChance == 0.5m ? "MAX" : $"+ {0.20m:P}")})",
                 owner: this,
-                target: TargetType.Self,
+                targetType: TargetType.Self,
                 reloadTime: 1,
                 manaCost: 0,
                 effect: () =>

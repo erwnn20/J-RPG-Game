@@ -6,7 +6,8 @@ namespace JRPG_Game.Characters.Skills;
 public class SpecialAbility(
     string name,
     Character owner,
-    TargetType target,
+    ITarget? target,
+    TargetType targetType,
     string description,
     int reloadTime,
     int manaCost,
@@ -15,12 +16,34 @@ public class SpecialAbility(
         name: name,
         owner: owner,
         target: target,
+        targetType: targetType,
         description: description,
         reloadTime: reloadTime,
         manaCost: manaCost
     )
 {
     public Delegate Effect { get; set; } = effect;
+
+    public SpecialAbility(
+        string name,
+        Character owner,
+        TargetType targetType,
+        string description,
+        int reloadTime,
+        int manaCost,
+        Delegate effect) :
+        this(
+            name: name,
+            owner: owner,
+            target: null,
+            targetType: targetType,
+            description: description,
+            reloadTime: reloadTime,
+            manaCost: manaCost,
+            effect: effect
+        )
+    {
+    }
 
     protected override void Execute(ITarget target)
     {

@@ -24,7 +24,7 @@ public class Warrior : Character
                 name: "Frappe héroïque",
                 description: $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.",
                 owner: this,
-                target: TargetType.Other,
+                targetType: TargetType.Other,
                 reloadTime: 1,
                 manaCost: 0,
                 damage: PhysicalAttack,
@@ -33,7 +33,7 @@ public class Warrior : Character
                 name: "Cri de bataille",
                 description: "Augmente de 25 la puissance d’attaque physique de tous les personnages de l’équipe.",
                 owner: this,
-                target: TargetType.Team,
+                targetType: TargetType.Team,
                 reloadTime: 2,
                 manaCost: 0,
                 effect: (Team.Team team) =>
@@ -48,7 +48,7 @@ public class Warrior : Character
                 description:
                 $"Inflige 33% de la puissance d’attaque physique ({(int)(PhysicalAttack * (1 / 3.0m))}) toute l’équipe ciblé.",
                 owner: this,
-                target: TargetType.Team,
+                targetType: TargetType.Team,
                 reloadTime: 2,
                 manaCost: 0,
                 damage: (int)(PhysicalAttack * (1 / 3.0m)),

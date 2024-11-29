@@ -13,7 +13,7 @@ public interface IMana
         name: "Boire une potion",
         description: $"Régénère le mana de 50% (actuellement : {CurrentMana}/{MaxMana})",
         owner: character,
-        target: TargetType.Self,
+        targetType: TargetType.Self,
         reloadTime: 1,
         manaCost: 0,
         effect: () => CurrentMana += Math.Min(MaxMana - CurrentMana, MaxMana / 2));

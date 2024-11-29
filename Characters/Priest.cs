@@ -29,7 +29,7 @@ public class Priest : Character, IMana
                 description: $"Inflige 75% de la puissance d’attaque magique ({MagicalAttack}) à la cible.\n" +
                              $"Inflige 150% à la cible si celle ci n'est ni un {nameof(Priest)} ni un {nameof(Paladin)}.",
                 owner: this,
-                target: TargetType.Other,
+                targetType: TargetType.Other,
                 reloadTime: 1,
                 manaCost: 15,
                 damage: target =>
@@ -41,7 +41,7 @@ public class Priest : Character, IMana
                 name: "Cercle de soins",
                 description: $"Soigne toute l'équipe sélectionné de {(int)(MagicalAttack * 0.75m)} PV.",
                 owner: this,
-                target: TargetType.Team,
+                targetType: TargetType.Team,
                 reloadTime: 2,
                 manaCost: 30,
                 effect: (Team.Team team) =>

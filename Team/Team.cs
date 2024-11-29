@@ -7,7 +7,7 @@ namespace JRPG_Game.Team;
 public class Team : ITarget
 {
     public List<Character> Characters { get; set; }
-
+    public string Name { get; set; }
 
     public int Defend<TTarget>(Attack<TTarget> from, TTarget damageParameter) where TTarget : ITarget
     {

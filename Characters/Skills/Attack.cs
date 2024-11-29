@@ -6,7 +6,8 @@ namespace JRPG_Game.Characters.Skills;
 public class Attack<TTarget>(
     string name,
     Character owner,
-    TargetType target,
+    ITarget? target,
+    TargetType targetType,
     string description,
     int reloadTime,
     int manaCost,
@@ -16,6 +17,7 @@ public class Attack<TTarget>(
     : Skill(name: name,
         owner: owner,
         target: target,
+        targetType: targetType,
         description: description,
         reloadTime: reloadTime,
         manaCost: manaCost) where TTarget : ITarget
@@ -30,7 +32,33 @@ public class Attack<TTarget>(
     public Attack(
         string name,
         Character owner,
-        TargetType target,
+        TargetType targetType,
+        string description,
+        int reloadTime,
+        int manaCost,
+        Func<TTarget, int> damage,
+        DamageType attackType,
+        Delegate? additional = null) :
+        this(
+            name: name,
+            owner: owner,
+            target: null,
+            targetType: targetType,
+            description: description,
+            reloadTime: reloadTime,
+            manaCost: manaCost,
+            damage: damage,
+            attackType: attackType,
+            additional: additional
+        )
+    {
+    }
+
+    public Attack(
+        string name,
+        Character owner,
+        TTarget? target,
+        TargetType targetType,
         string description,
         int reloadTime,
         int manaCost,
@@ -41,6 +69,32 @@ public class Attack<TTarget>(
             name: name,
             owner: owner,
             target: target,
+            targetType: targetType,
+            description: description,
+            reloadTime: reloadTime,
+            manaCost: manaCost,
+            damage: _ => damage,
+            attackType: attackType,
+            additional: additional
+        )
+    {
+    }
+
+    public Attack(
+        string name,
+        Character owner,
+        TargetType targetType,
+        string description,
+        int reloadTime,
+        int manaCost,
+        int damage,
+        DamageType attackType,
+        Delegate? additional = null) :
+        this(
+            name: name,
+            owner: owner,
+            target: null,
+            targetType: targetType,
             description: description,
             reloadTime: reloadTime,
             manaCost: manaCost,

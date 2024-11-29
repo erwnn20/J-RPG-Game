@@ -56,22 +56,45 @@ public class Warrior : Character
         ]);
     }
 
-    /*private void CounterAttack(Character attacker, int damageTaken)
+    public override int Defend<TTarget>(Attack<TTarget> from, TTarget damageParameter)
     {
-        var damage = (int)(damageTaken * 0.5);
+        var damage = base.Defend(from, damageParameter);
 
-        if (damage <= 0) return;
-
-        var conterAttack = new Attack(
-            name: "Contre Attaque",
-            attacker: this,
-            target: attacker,
-            damage: damage,
+        var counterAttack = new Attack<ITarget>(
+            name: "Contre-attaque",
+            owner: this,
+            description:
+            "Lorsque le guerrier reçoit une attaque physique\n" +
+            " - Il a 25% de chances de contre attaque en infligeant 50% des dégâts qu’il a subi à l’attaquant\n" +
+            " - Si il a paré l’attaque, les chances sont de 100%, et les dégâts de 150%\n",
+            target: from.Owner,
+            targetType: TargetType.Other,
+            reloadTime: 0,
+            manaCost: 0,
+            damage: 0, // defined later
             attackType: DamageType.Physical
         );
-        conterAttack.Execute();
+
+        if (from.Blocked)
+        {
+            counterAttack.Damage = _ => (int)(PhysicalAttack * 1.50m);
+            if (from.Additional != null)
+                from.Additional.Add(() => counterAttack.Execute());
+            else from.Additional = [() => counterAttack.Execute()];
+        }
+        else if (new Random().NextDouble() < 0.25)
+        {
+            counterAttack.Damage = _ => (int)(PhysicalAttack * 0.50m);
+            if (from.Additional != null)
+                from.Additional.Add(() => counterAttack.Execute());
+            else from.Additional = [() => counterAttack.Execute()];
+        }
+        
+        TakeDamage(damage);
+        return damage;
     }
 
+    /*
     protected override void SpecialAbility()
     {
         PhysicalAttack *= 2;
@@ -90,15 +113,7 @@ public class Warrior : Character
         );
         attack.Execute();
     }
-
-    public override int Defend(Attack attack)
-    {
-        var damage = base.Defend(attack);
-
-        if (IsAlive(false) && new Random().NextDouble() <= 0.25) CounterAttack(attack.Attacker, damage);
-
-        return damage;
-    }*/
+*/
     protected override void SpecialAbility()
     {
         throw new NotImplementedException();

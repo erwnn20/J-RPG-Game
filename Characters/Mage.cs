@@ -110,6 +110,60 @@ public class Mage : Character, IMana
     private int ReducedAttack { get; set; }
     private bool SpellReturn { get; set; }
 
+    public override int Defend<TTarget>(Attack<TTarget> from, TTarget damageParameter)
+    {
+        if (ReducedAttack <= 0 && !SpellReturn)
+        {
+            var damageBase = base.Defend(from, damageParameter);
+            TakeDamage(damageBase);
+            return damageBase;
+        }
+
+        if (SpellReturn)
+        {
+            from.Resisted = true;
+            var spellReturn = () =>
+            {
+                var spellReturned = new Attack<TTarget>(
+                    name: from.Name,
+                    owner: this,
+                    description: from.Description,
+                    target: from.Owner,
+                    targetType: TargetType.Other,
+                    reloadTime: 0,
+                    manaCost: 0,
+                    damage: from.Damage,
+                    attackType: from.AttackType,
+                    additional: from.Additional
+                );
+                Console.WriteLine($"{Name} revoie {from.Name}.");
+                spellReturned.Execute();
+            };
+            
+            if (from.Additional != null)
+                from.Additional.Add(spellReturn);
+            else from.Additional = [spellReturn];
+            
+            SpellReturn = false;
+        }
+        
+        decimal damage = base.Defend(from, damageParameter);
+
+        if (ReducedAttack > 0)
+        {
+            damage *=  1 - from.AttackType switch
+            {
+                DamageType.Physical => ReduceDamagePhysical,
+                DamageType.Magical => ReduceDamageMagical,
+                _ => 0
+            };
+            ReducedAttack--;
+        }
+
+        TakeDamage((int)damage);
+        return (int)damage;
+    }
+
     //
 
     public override string ToString()
@@ -140,20 +194,6 @@ public class Mage : Character, IMana
             attackType: DamageType.Magical
         );
         attack.Execute();
-    }
-
-    public override int Defend(Attack attack)
-    {
-        if (ReducedAttack <= 0) return base.Defend(attack);
-        attack.Damage = (int)(attack.Damage * (1 - attack.AttackType switch
-        {
-            DamageType.Physical => ReduceDamagePhysical,
-            DamageType.Magical => ReduceDamageMagical,
-            _ => 0
-        }));
-        ReducedAttack--;
-
-        return base.Defend(attack);
     }
 
     */

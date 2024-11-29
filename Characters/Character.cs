@@ -189,7 +189,6 @@ public abstract class Character : ITarget
 
         damage *= 1 - ArmorReduction(from.AttackType);
 
-        // TakeDamage((int)damage);
         return (int)damage;
     }
 
@@ -198,7 +197,7 @@ public abstract class Character : ITarget
     protected abstract void SpecialAbility();
     protected abstract void Attack(Character character);
 
-    private void TakeDamage(int damage) => CurrentHealth = Math.Max(0, CurrentHealth - damage);
+    protected void TakeDamage(int damage) => CurrentHealth = Math.Max(0, CurrentHealth - damage);
 
     public bool SelectAction()
     {

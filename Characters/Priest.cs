@@ -55,6 +55,16 @@ public class Priest : Character, IMana
         ]);
     }
 
+    //
+
+    public override string ToString()
+    {
+        return base.ToString() + "\n" +
+               $" - Mana: {CurrentMana}/{MaxMana}";
+    }
+    
+    /**/
+
     protected override void SpecialAbility()
     {
         throw new NotImplementedException();
@@ -63,13 +73,5 @@ public class Priest : Character, IMana
     protected override void Attack(Character character)
     {
         throw new NotImplementedException();
-    }
-
-    //
-
-    public override string ToString()
-    {
-        return base.ToString() + "\n" +
-               $" - Mana: {CurrentMana}/{MaxMana}";
     }
 }

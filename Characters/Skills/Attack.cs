@@ -3,29 +3,29 @@ using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters.Skills;
 
-public class Attack<T1, T2, T3>(
+public class Attack<TTarget>(
     string name,
     Character owner,
     TargetType target,
     string description,
     int reloadTime,
     int manaCost,
-    Func<T3, int> damage,
+    Func<TTarget, int> damage,
     DamageType attackType,
-    Func<T1, T2>? additional = null)
+    Delegate? additional = null)
     : Skill(name: name,
         owner: owner,
         target: target,
         description: description,
         reloadTime: reloadTime,
-        manaCost: manaCost)
+        manaCost: manaCost) where TTarget : ITarget
 {
-    public Func<T3, int> Damage { get; set; } = damage;
+    public Func<TTarget, int> Damage { get; set; } = damage;
     public DamageType AttackType { get; private set; } = attackType;
-    public Func<T1, T2>? Additional { get; set; } = additional;
-    private bool Dodged { get; set; } = false;
-    private bool Resisted { get; set; } = false;
-    private bool Blocked { get; set; } = false;
+    public Delegate? Additional { get; set; } = additional;
+    public bool Dodged { get; set; }
+    public bool Resisted { get; set; }
+    public bool Blocked { get; set; }
 
     public Attack(
         string name,
@@ -36,7 +36,7 @@ public class Attack<T1, T2, T3>(
         int manaCost,
         int damage,
         DamageType attackType,
-        Func<T1, T2>? additional = null) :
+        Delegate? additional = null) :
         this(
             name: name,
             owner: owner,

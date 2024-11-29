@@ -3,14 +3,14 @@ using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters.Skills;
 
-public class SpecialAbility<T1, T2>(
+public class SpecialAbility(
     string name,
     Character owner,
     TargetType target,
     string description,
     int reloadTime,
     int manaCost,
-    Func<T1, T2> effect) :
+    Delegate effect) :
     Skill(
         name: name,
         owner: owner,
@@ -20,7 +20,7 @@ public class SpecialAbility<T1, T2>(
         manaCost: manaCost
     )
 {
-    public Func<T1, T2> Effect { get; set; } = effect;
+    public Delegate Effect { get; set; } = effect;
 
     protected override void Execute(ITarget target)
     {

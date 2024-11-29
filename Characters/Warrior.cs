@@ -1,5 +1,6 @@
 ﻿using JRPG_Game.Characters.Skills;
 using JRPG_Game.Enums;
+using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters;
 
@@ -19,7 +20,7 @@ public class Warrior : Character
             skills: [])
     {
         Skills.AddRange([
-            new Attack<object?, object?, object?>(
+            new Attack<ITarget>(
                 name: "Frappe héroïque",
                 description: $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.",
                 owner: this,
@@ -28,21 +29,21 @@ public class Warrior : Character
                 manaCost: 0,
                 damage: PhysicalAttack,
                 attackType: DamageType.Physical),
-            new SpecialAbility<Team.Team, object?>(
+            new SpecialAbility(
                 name: "Cri de bataille",
                 description: "Augmente de 25 la puissance d’attaque physique de tous les personnages de l’équipe.",
                 owner: this,
                 target: TargetType.Team,
                 reloadTime: 2,
                 manaCost: 0,
-                effect: team =>
+                effect: (Team.Team team) =>
                 {
                     team.Characters
                         .Where(c => c.IsAlive(false)).ToList()
                         .ForEach(c => c.PhysicalAttack += 25);
                     return false;
                 }),
-            new Attack<object?, object?, object?>(
+            new Attack<ITarget>(
                 name: "Tourbillon",
                 description:
                 $"Inflige 33% de la puissance d’attaque physique ({(int)(PhysicalAttack * (1 / 3.0m))}) toute l’équipe ciblé.",

@@ -24,7 +24,7 @@ public class Priest : Character, IMana
     {
         CurrentMana = MaxMana;
         Skills.AddRange([
-            new Attack<object?, object?, Character>(
+            new Attack<Character>(
                 name: "Châtiment",
                 description: $"Inflige 75% de la puissance d’attaque magique ({MagicalAttack}) à la cible.\n" +
                              $"Inflige 150% à la cible si celle ci n'est ni un {nameof(Priest)} ni un {nameof(Paladin)}.",
@@ -37,14 +37,14 @@ public class Priest : Character, IMana
                         ? 1.50m
                         : 0.75m)),
                 attackType: DamageType.Magical),
-            new SpecialAbility<Team.Team, object?>(
+            new SpecialAbility(
                 name: "Cercle de soins",
                 description: $"Soigne toute l'équipe sélectionné de {(int)(MagicalAttack * 0.75m)} PV.",
                 owner: this,
                 target: TargetType.Team,
                 reloadTime: 2,
                 manaCost: 30,
-                effect: team =>
+                effect: (Team.Team team) =>
                 {
                     team.Characters
                         .Where(c => c.IsAlive(false)).ToList()

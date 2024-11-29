@@ -19,7 +19,7 @@ public class Thief : Character
             skills: [])
     {
         Skills.AddRange([
-            new Attack<object?, object?, Character>(
+            new Attack<Character>(
                 name: "Coup bas",
                 description: $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.\n" +
                              $"Inflige 150% si la cible a moins de la moitié de ses points de vie.",
@@ -31,7 +31,7 @@ public class Thief : Character
                     (int)(PhysicalAttack *
                           (target.CurrentHealth < target.MaxHealth / 2 ? 1.50m : 1.00m)),
                 attackType: DamageType.Physical),
-            new SpecialAbility<object?, object?>(
+            new SpecialAbility(
                 name: "Evasion",
                 description:
                 $"Augmente les chances d'esquive de 20% ({DodgeChance:P} {(DodgeChance == 0.5m ? "MAX" : $"+ {0.20m:P}")})\n" +
@@ -40,7 +40,7 @@ public class Thief : Character
                 target: TargetType.Self,
                 reloadTime: 1,
                 manaCost: 0,
-                effect: _ =>
+                effect: () =>
                 {
                     DodgeChance = Math.Min(0.5m, DodgeChance + 0.2m);
                     SpellResistanceChance = Math.Min(0.5m, SpellResistanceChance + 0.2m);

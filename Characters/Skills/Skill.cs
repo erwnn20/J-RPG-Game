@@ -13,15 +13,15 @@ public abstract class Skill(
 {
     public string Name { get; set; } = name;
     private Character Owner { get; set; } = owner;
-    protected TargetType TargetType { get; set; } = target;
+    private TargetType TargetType { get; set; } = target;
     private string Description { get; set; } = description;
     private int ReloadTime { get; set; } = reloadTime;
-    private int ReloadCooldown { get; set; }
+    public int ReloadCooldown { get; private set; }
     private int ManaCost { get; set; } = manaCost;
 
     public virtual bool Use(ITarget target)
     {
-        if (ReloadCooldown > 0)
+        if (IsUsable())
         {
             Console.WriteLine($"{Name} est en recharge pour {ReloadCooldown} tour(s).");
             return false;
@@ -57,11 +57,25 @@ public abstract class Skill(
 
     protected abstract void Execute(ITarget target);
 
+    public bool IsUsable() => ReloadCooldown <= 0;
+
     /// <summary>
     /// Reduces the skill's reload time by 1 turn.
     /// </summary>
     public void ReduceReload()
     {
         if (ReloadCooldown > 0) ReloadCooldown--;
+    }
+
+    public override string ToString()
+    {
+        return $"{Name} ({GetType().Name}) : par {Owner.Name} à {TargetType switch {
+            TargetType.Self => "soi-même",
+            TargetType.Other => "un autre personnage",
+            TargetType.Team => "une équipe",
+            _ => throw new ArgumentOutOfRangeException() }}\n" +
+               $"  -> {Description.Replace("\n", "\n  ")}\n" +
+               $"Disponible {(IsUsable() ? "maintenant" : ReloadCooldown > 1 ? "au prochain tour" : $"dans {ReloadCooldown} tours")} - Temps de recharge : {ReloadTime} tour(s)." +
+               (ManaCost > 0 ? $"\nCoût en mana : {ManaCost}" : string.Empty);
     }
 }

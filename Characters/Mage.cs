@@ -126,11 +126,7 @@ public class Mage : Character, IMana
         return base.Defend(attack);
     }
 
-    public override string ToString()
-    {
-        return base.ToString() + "\n" +
-               (ReducedAttack > 0 ? $"Dégâts réduits pendant {ReducedAttack} attaque subie" : "");
-    }*/
+    */
     protected override void SpecialAbility()
     {
         throw new NotImplementedException();
@@ -139,5 +135,16 @@ public class Mage : Character, IMana
     protected override void Attack(Character character)
     {
         throw new NotImplementedException();
+    }
+
+    //
+
+    public override string ToString()
+    {
+        return base.ToString() + "\n" +
+               $" - Mana: {CurrentMana}/{MaxMana}" +
+               (ReducedAttack > 0
+                   ? $"\n Dégâts réduits pendant {(ReducedAttack > 1 ? $"les {ReducedAttack} prochaines attaques subies." : "la prochaine attaque subie.")}"
+                   : string.Empty);
     }
 }

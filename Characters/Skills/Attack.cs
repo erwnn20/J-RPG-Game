@@ -64,4 +64,10 @@ public class Attack<T1, T2, T3>(
     {
         throw new NotImplementedException();
     }
+
+    public override string ToString()
+    {
+        return base.ToString() + "\n" +
+               $"Attaque de Type {AttackType}";
+    }
 }

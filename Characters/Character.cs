@@ -226,10 +226,12 @@ public abstract class Character : ITarget
     {
         return $"{GetType().Name}: {Name} ({CurrentHealth}/{MaxHealth} PV) - Armure: {Armor}\n" +
                $"Stats :\n" +
+               $" - Vitesse: {Speed}\n" +
                $" - Attaque Physique: {PhysicalAttack}\n" +
                $" - Attaque Magique: {MagicalAttack}\n" +
                $" - Chances d'Esquiver: {DodgeChance:P}\n" +
                $" - Chances de Parade: {ParadeChance:P}\n" +
-               $" - Chances de Resister aux Sorts: {SpellResistanceChance:P}";
+               $" - Chances de Resister aux Sorts: {SpellResistanceChance:P}\n" +
+               $" - Compétences :\n" + string.Join("\n", Skills.Select(skill => $"\t- {skill.Name} ({skill.GetType().Name})"));
     }
 }

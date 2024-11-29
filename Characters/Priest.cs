@@ -64,4 +64,12 @@ public class Priest : Character, IMana
     {
         throw new NotImplementedException();
     }
+
+    //
+
+    public override string ToString()
+    {
+        return base.ToString() + "\n" +
+               $" - Mana: {CurrentMana}/{MaxMana}";
+    }
 }

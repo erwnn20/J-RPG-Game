@@ -3,15 +3,15 @@ using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters.Skills;
 
-public class Attack<TTarget>(
+public class Attack<TTarget, TDamagePara>(
     string name,
-    Character owner,
-    ITarget? target,
-    TargetType targetType,
     string description,
+    Character owner,
+    TTarget? target,
+    TargetType targetType,
     int reloadTime,
     int manaCost,
-    Func<TTarget, int> damage,
+    Func<TDamagePara, int> damage,
     DamageType attackType,
     List<Delegate>? additional = null)
     : Skill(name: name,
@@ -20,9 +20,10 @@ public class Attack<TTarget>(
         targetType: targetType,
         description: description,
         reloadTime: reloadTime,
-        manaCost: manaCost) where TTarget : ITarget
+        manaCost: manaCost)
+    where TTarget : class, ITarget
 {
-    public Func<TTarget, int> Damage { get; set; } = damage;
+    public Func<TDamagePara, int> Damage { get; set; } = damage;
     public DamageType AttackType { get; private set; } = attackType;
     public List<Delegate>? Additional { get; set; } = additional;
     public bool Dodged { get; set; }
@@ -31,12 +32,12 @@ public class Attack<TTarget>(
 
     public Attack(
         string name,
+        string description,
         Character owner,
         TargetType targetType,
-        string description,
         int reloadTime,
         int manaCost,
-        Func<TTarget, int> damage,
+        Func<TDamagePara, int> damage,
         DamageType attackType,
         List<Delegate>? additional = null) :
         this(
@@ -56,10 +57,10 @@ public class Attack<TTarget>(
 
     public Attack(
         string name,
+        string description,
         Character owner,
         TTarget? target,
         TargetType targetType,
-        string description,
         int reloadTime,
         int manaCost,
         int damage,
@@ -82,9 +83,9 @@ public class Attack<TTarget>(
 
     public Attack(
         string name,
+        string description,
         Character owner,
         TargetType targetType,
-        string description,
         int reloadTime,
         int manaCost,
         int damage,
@@ -123,5 +124,33 @@ public class Attack<TTarget>(
     {
         return base.ToString() + "\n" +
                $"Attaque de Type {AttackType}";
+    }
+}
+
+public class Attack<TTarget> : Attack<TTarget, object?> where TTarget : class, ITarget
+{
+    public Attack(string name, string description, Character owner, TargetType targetType, int reloadTime, int manaCost,
+        Func<object?, int> damage, DamageType attackType, List<Delegate>? additional = null) : base(name, description,
+        owner, targetType, reloadTime, manaCost, damage, attackType, additional)
+    {
+    }
+
+    public Attack(string name, string description, Character owner, TTarget? target, TargetType targetType,
+        int reloadTime, int manaCost, int damage, DamageType attackType, List<Delegate>? additional = null) : base(name,
+        description, owner, target, targetType, reloadTime, manaCost, damage, attackType, additional)
+    {
+    }
+
+    public Attack(string name, string description, Character owner, TargetType targetType, int reloadTime, int manaCost,
+        int damage, DamageType attackType, List<Delegate>? additional = null) : base(name, description, owner,
+        targetType, reloadTime, manaCost, damage, attackType, additional)
+    {
+    }
+
+    public Attack(string name, string description, Character owner, TTarget? target, TargetType targetType,
+        int reloadTime, int manaCost, Func<object?, int> damage, DamageType attackType,
+        List<Delegate>? additional = null) : base(name, description, owner, target, targetType, reloadTime, manaCost,
+        damage, attackType, additional)
+    {
     }
 }

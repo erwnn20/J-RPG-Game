@@ -3,10 +3,10 @@ using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters.Skills;
 
-public class SpecialAbility(
+public class SpecialAbility<TTarget>(
     string name,
     Character owner,
-    ITarget? target,
+    TTarget? target,
     TargetType targetType,
     string description,
     int reloadTime,
@@ -20,7 +20,7 @@ public class SpecialAbility(
         description: description,
         reloadTime: reloadTime,
         manaCost: manaCost
-    )
+    ) where TTarget : class, ITarget
 {
     public Delegate Effect { get; set; } = effect;
 

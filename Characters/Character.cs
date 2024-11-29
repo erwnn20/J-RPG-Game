@@ -114,31 +114,22 @@ public abstract class Character : ITarget
         } while (true);
     }
 
-    private bool Dodge<TTarget>(Attack<TTarget> attack) where TTarget : ITarget
+    public bool Dodge<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> attack) where TTarget : class, ITarget
     {
-        if (attack.AttackType != DamageType.Physical
-            || (decimal)new Random().NextDouble() > DodgeChance) return false;
-
-        Console.WriteLine($"{Name} a réussi à esquiver {attack.Name}");
-        return true;
+        return attack.AttackType == DamageType.Physical
+               && (decimal)new Random().NextDouble() <= DodgeChance;
     }
 
-    private bool Parade<TTarget>(Attack<TTarget> attack) where TTarget : ITarget
+    public bool Parade<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> attack) where TTarget : class, ITarget
     {
-        if (attack.AttackType != DamageType.Physical
-            || (decimal)new Random().NextDouble() > ParadeChance) return false;
-
-        Console.WriteLine($"{Name} a réussi à parer de {attack.Name}");
-        return true;
+        return attack.AttackType == DamageType.Physical
+               && (decimal)new Random().NextDouble() <= ParadeChance;
     }
 
-    private bool SpellResistance<TTarget>(Attack<TTarget> attack) where TTarget : ITarget
+    public bool SpellResistance<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> attack) where TTarget : class, ITarget
     {
-        if (attack.AttackType != DamageType.Magical
-            || (decimal)new Random().NextDouble() > SpellResistanceChance) return false;
-
-        Console.WriteLine($"{Name} a réussi à resister à {attack.Name}");
-        return true;
+        return attack.AttackType == DamageType.Magical
+               && (decimal)new Random().NextDouble() <= SpellResistanceChance;
     }
 
     private decimal ArmorReduction(DamageType damageType)

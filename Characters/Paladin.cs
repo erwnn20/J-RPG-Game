@@ -24,7 +24,7 @@ public class Paladin : Character, IMana
     {
         CurrentMana = MaxMana;
         Skills.AddRange([
-            new Attack<ITarget>(
+            new Attack<Character>(
                 name: "Frappe du croisé",
                 description: $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.",
                 owner: this,
@@ -33,7 +33,7 @@ public class Paladin : Character, IMana
                 manaCost: 5,
                 damage: PhysicalAttack,
                 attackType: DamageType.Physical),
-            new Attack<ITarget>(
+            new Attack<Character>(
                 name: "Jugement",
                 description: $"Inflige 100% de la puissance d’attaque magique ({MagicalAttack}) à la cible.",
                 owner: this,
@@ -42,7 +42,7 @@ public class Paladin : Character, IMana
                 manaCost: 10,
                 damage: MagicalAttack,
                 attackType: DamageType.Magical),
-            new SpecialAbility(
+            new SpecialAbility<Character>(
                 name: "Eclair lumineux",
                 description:
                 $"Soigne la cible d’un montant de 125% de la puissance d’attaque magique ({(int)(MagicalAttack * 1.25m)} PV).",
@@ -55,7 +55,7 @@ public class Paladin : Character, IMana
         ]);
     }
 
-    public override int Defend<TTarget>(Attack<TTarget> from, TTarget damageParameter)
+    public override int Defend<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> from, TDamagePara damageParameter)
     {
         var damage = base.Defend(from, damageParameter);
         TakeDamage(damage);

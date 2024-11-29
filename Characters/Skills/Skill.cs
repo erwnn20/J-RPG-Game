@@ -15,7 +15,7 @@ public abstract class Skill(
     public string Name { get; set; } = name;
     public Character Owner { get; set; } = owner;
     private TargetType TargetType { get; set; } = targetType;
-    private ITarget? Target { get; set; } = target;
+    protected ITarget? Target { get; private set; } = target;
     public string Description { get; set; } = description;
     private int ReloadTime { get; set; } = reloadTime;
     public int ReloadCooldown { get; private set; }
@@ -89,7 +89,7 @@ public abstract class Skill(
         if (ReloadCooldown > 0) ReloadCooldown--;
     }
 
-    public bool IsTargetCorrect()
+    private bool IsTargetCorrect()
     {
         if (Target is null) return false;
 

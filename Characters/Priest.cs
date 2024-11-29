@@ -24,7 +24,7 @@ public class Priest : Character, IMana
     {
         CurrentMana = MaxMana;
         Skills.AddRange([
-            new Attack<Character>(
+            new Attack<Character, Character>(
                 name: "Châtiment",
                 description: $"Inflige 75% de la puissance d’attaque magique ({MagicalAttack}) à la cible.\n" +
                              $"Inflige 150% à la cible si celle ci n'est ni un {nameof(Priest)} ni un {nameof(Paladin)}.",
@@ -37,7 +37,7 @@ public class Priest : Character, IMana
                         ? 1.50m
                         : 0.75m)),
                 attackType: DamageType.Magical),
-            new SpecialAbility(
+            new SpecialAbility<Team.Team>(
                 name: "Cercle de soins",
                 description: $"Soigne toute l'équipe sélectionné de {(int)(MagicalAttack * 0.75m)} PV.",
                 owner: this,
@@ -54,8 +54,8 @@ public class Priest : Character, IMana
             ((IMana)this).Drink(this)
         ]);
     }
-    
-    public override int Defend<TTarget>(Attack<TTarget> from, TTarget damageParameter)
+
+    public override int Defend<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> from, TDamagePara damageParameter)
     {
         var damage = base.Defend(from, damageParameter);
         TakeDamage(damage);
@@ -69,7 +69,7 @@ public class Priest : Character, IMana
         return base.ToString() + "\n" +
                $" - Mana: {CurrentMana}/{MaxMana}";
     }
-    
+
     /**/
 
     protected override void SpecialAbility()

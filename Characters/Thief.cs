@@ -1,6 +1,5 @@
 ﻿using JRPG_Game.Characters.Skills;
 using JRPG_Game.Enums;
-using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters;
 
@@ -20,7 +19,7 @@ public class Thief : Character
             skills: [])
     {
         Skills.AddRange([
-            new Attack<Character>(
+            new Attack<Character, Character>(
                 name: "Coup bas",
                 description: $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.\n" +
                              $"Inflige 150% si la cible a moins de la moitié de ses points de vie.",
@@ -32,7 +31,7 @@ public class Thief : Character
                     (int)(PhysicalAttack *
                           (target.CurrentHealth < target.MaxHealth / 2 ? 1.50m : 1.00m)),
                 attackType: DamageType.Physical),
-            new SpecialAbility(
+            new SpecialAbility<Character>(
                 name: "Evasion",
                 description:
                 $"Augmente les chances d'esquive de 20% ({DodgeChance:P} {(DodgeChance == 0.5m ? "MAX" : $"+ {0.20m:P}")})\n" +
@@ -50,13 +49,13 @@ public class Thief : Character
         ]);
     }
 
-    public override int Defend<TTarget>(Attack<TTarget> from, TTarget damageParameter)
+    public override int Defend<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> from, TDamagePara damageParameter)
     {
         var damage = base.Defend(from, damageParameter);
 
         if (from.Dodged)
         {
-            var counterAttack = new Attack<ITarget>(
+            var counterAttack = new Attack<Character>(
                 name: "Poignard dans le dos",
                 owner: this,
                 description:

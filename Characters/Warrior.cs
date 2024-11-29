@@ -20,7 +20,7 @@ public class Warrior : Character
             skills: [])
     {
         Skills.AddRange([
-            new Attack<ITarget>(
+            new Attack<Character>(
                 name: "Frappe héroïque",
                 description: $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.",
                 owner: this,
@@ -29,7 +29,7 @@ public class Warrior : Character
                 manaCost: 0,
                 damage: PhysicalAttack,
                 attackType: DamageType.Physical),
-            new SpecialAbility(
+            new SpecialAbility<Team.Team>(
                 name: "Cri de bataille",
                 description: "Augmente de 25 la puissance d’attaque physique de tous les personnages de l’équipe.",
                 owner: this,
@@ -43,7 +43,7 @@ public class Warrior : Character
                         .ForEach(c => c.PhysicalAttack += 25);
                     return false;
                 }),
-            new Attack<ITarget>(
+            new Attack<Team.Team>(
                 name: "Tourbillon",
                 description:
                 $"Inflige 33% de la puissance d’attaque physique ({(int)(PhysicalAttack * (1 / 3.0m))}) toute l’équipe ciblé.",
@@ -56,11 +56,11 @@ public class Warrior : Character
         ]);
     }
 
-    public override int Defend<TTarget>(Attack<TTarget> from, TTarget damageParameter)
+    public override int Defend<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> from, TDamagePara damageParameter)
     {
         var damage = base.Defend(from, damageParameter);
 
-        var counterAttack = new Attack<ITarget>(
+        var counterAttack = new Attack<Character>(
             name: "Contre-attaque",
             owner: this,
             description:

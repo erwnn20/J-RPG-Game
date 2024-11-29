@@ -9,7 +9,7 @@ public interface IMana
     int MaxMana { get; set; }
     int CurrentMana { get; set; }
 
-    public SpecialAbility Drink(Character character) => new(
+    public SpecialAbility<ITarget> Drink(Character character) => new(
         name: "Boire une potion",
         description: $"Régénère le mana de 50% (actuellement : {CurrentMana}/{MaxMana})",
         owner: character,

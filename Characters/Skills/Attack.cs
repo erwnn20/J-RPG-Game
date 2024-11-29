@@ -13,7 +13,7 @@ public class Attack<TTarget>(
     int manaCost,
     Func<TTarget, int> damage,
     DamageType attackType,
-    Delegate? additional = null)
+    List<Delegate>? additional = null)
     : Skill(name: name,
         owner: owner,
         target: target,
@@ -24,7 +24,7 @@ public class Attack<TTarget>(
 {
     public Func<TTarget, int> Damage { get; set; } = damage;
     public DamageType AttackType { get; private set; } = attackType;
-    public Delegate? Additional { get; set; } = additional;
+    public List<Delegate>? Additional { get; set; } = additional;
     public bool Dodged { get; set; }
     public bool Resisted { get; set; }
     public bool Blocked { get; set; }
@@ -38,7 +38,7 @@ public class Attack<TTarget>(
         int manaCost,
         Func<TTarget, int> damage,
         DamageType attackType,
-        Delegate? additional = null) :
+        List<Delegate>? additional = null) :
         this(
             name: name,
             owner: owner,
@@ -64,7 +64,7 @@ public class Attack<TTarget>(
         int manaCost,
         int damage,
         DamageType attackType,
-        Delegate? additional = null) :
+        List<Delegate>? additional = null) :
         this(
             name: name,
             owner: owner,
@@ -89,7 +89,7 @@ public class Attack<TTarget>(
         int manaCost,
         int damage,
         DamageType attackType,
-        Delegate? additional = null) :
+        List<Delegate>? additional = null) :
         this(
             name: name,
             owner: owner,

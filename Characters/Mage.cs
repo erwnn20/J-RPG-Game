@@ -34,13 +34,16 @@ public class Mage : Character, IMana
                 manaCost: 15,
                 damage: MagicalAttack,
                 attackType: DamageType.Magical,
-                additional: (bool resisted, Character target) =>
-                {
-                    if (resisted) return; // if target resist (SpellResistance)
+                additional:
+                [
+                    (bool resisted, Character target) =>
+                    {
+                        if (resisted) return; // if target resist (SpellResistance)
 
-                    target.Speed = (int)(target.Speed * 0.75m);
-                    Console.WriteLine($"La vitesse de {target.Name} à diminué de 25%");
-                }),
+                        target.Speed = (int)(target.Speed * 0.75m);
+                        Console.WriteLine($"La vitesse de {target.Name} à diminué de 25%");
+                    }
+                ]),
             new SpecialAbility(
                 name: "Barrière de givre",
                 description: $"Réduit les dégâts des deux prochaines attaques subies.\n" +
@@ -62,13 +65,16 @@ public class Mage : Character, IMana
                 manaCost: 25,
                 damage: (int)(MagicalAttack * 0.5m),
                 attackType: DamageType.Magical,
-                additional: (bool resisted, Character target) =>
-                {
-                    if (resisted) return; // if target resist (SpellResistance)
-                    
-                    target.Speed = (int)(target.Speed * 0.85m);
-                    Console.WriteLine($"La vitesse de {target.Name} à diminué de 15%");
-                }),
+                additional:
+                [
+                    (bool resisted, Character target) =>
+                    {
+                        if (resisted) return; // if target resist (SpellResistance)
+
+                        target.Speed = (int)(target.Speed * 0.85m);
+                        Console.WriteLine($"La vitesse de {target.Name} à diminué de 15%");
+                    }
+                ]),
             new SpecialAbility(
                 name: "Brulure de mana",
                 description: "Réduit de moitié la quantité de points de mana de la cible.",

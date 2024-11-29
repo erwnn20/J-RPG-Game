@@ -51,9 +51,10 @@ public class Thief : Character
 
     public override int Defend<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> from, TDamagePara damageParameter)
     {
-        var damage = base.Defend(from, damageParameter);
+        from.StatusInfo.Set(from, (false, false, false));
+        from.StatusInfo.SetDamage(from, damageParameter);
 
-        if (from.Dodged)
+        if (from.StatusInfo.Dodged)
         {
             var counterAttack = new Attack<Character>(
                 name: "Poignard dans le dos",
@@ -73,8 +74,8 @@ public class Thief : Character
             else from.Additional = [() => counterAttack.Execute()];
         }
 
-        TakeDamage(damage);
-        return damage;
+        TakeDamage((int)from.StatusInfo.Damage);
+        return (int)from.StatusInfo.Damage;
     }
 
     /*protected override void SpecialAbility()

@@ -26,9 +26,7 @@ public class Attack<TTarget, TDamagePara>(
     public Func<TDamagePara, int> Damage { get; set; } = damage;
     public DamageType AttackType { get; private set; } = attackType;
     public List<Delegate>? Additional { get; set; } = additional;
-    public bool Dodged { get; set; }
-    public bool Resisted { get; set; }
-    public bool Blocked { get; set; }
+    public Status StatusInfo { get; set; } = new();
 
     public Attack(
         string name,
@@ -124,6 +122,39 @@ public class Attack<TTarget, TDamagePara>(
     {
         return base.ToString() + "\n" +
                $"Attaque de Type {AttackType}";
+    }
+
+    public class Status
+    {
+        public decimal Damage { get; set; }
+        public bool Dodged { get; private set; }
+        private bool Resisted { get; set; }
+        public bool Blocked { get; private set; }
+
+        public void Set(Attack<TTarget, TDamagePara> attack,
+            (bool Dodged, bool Resisted, bool Blocked) attackStatus = default)
+        {
+            if (attack.Target is Character target)
+            {
+                if (attackStatus.Dodged || target.Dodge(attack)) Dodged = true;
+                else if (attackStatus.Resisted || target.SpellResistance(attack)) Resisted = true;
+                else if (attackStatus.Blocked || target.Parade(attack)) Blocked = true;
+            }
+        }
+
+        public decimal SetDamage(Attack<TTarget, TDamagePara> attack, TDamagePara damageParameter)
+        {
+            if (attack.Target is Character target)
+            {
+                if (Dodged || Resisted) return 0;
+
+                Damage = attack.Damage(damageParameter);
+                if (Blocked) Damage *= 0.5m;
+                Damage *= 1 - target.ArmorReduction(attack.AttackType);
+            }
+
+            return Damage;
+        }
     }
 }
 

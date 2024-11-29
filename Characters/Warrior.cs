@@ -58,7 +58,8 @@ public class Warrior : Character
 
     public override int Defend<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> from, TDamagePara damageParameter)
     {
-        var damage = base.Defend(from, damageParameter);
+        from.StatusInfo.Set(from, (false, false, false));
+        from.StatusInfo.SetDamage(from, damageParameter);
 
         var counterAttack = new Attack<Character>(
             name: "Contre-attaque",
@@ -75,7 +76,7 @@ public class Warrior : Character
             attackType: DamageType.Physical
         );
 
-        if (from.Blocked)
+        if (from.StatusInfo.Blocked)
         {
             counterAttack.Damage = _ => (int)(PhysicalAttack * 1.50m);
             if (from.Additional != null)
@@ -89,9 +90,9 @@ public class Warrior : Character
                 from.Additional.Add(() => counterAttack.Execute());
             else from.Additional = [() => counterAttack.Execute()];
         }
-        
-        TakeDamage(damage);
-        return damage;
+
+        TakeDamage((int)from.StatusInfo.Damage);
+        return (int)from.StatusInfo.Damage;
     }
 
     /*

@@ -132,7 +132,7 @@ public abstract class Character : ITarget
                && (decimal)new Random().NextDouble() <= SpellResistanceChance;
     }
 
-    private decimal ArmorReduction(DamageType damageType)
+    public decimal ArmorReduction(DamageType damageType)
     {
         return damageType switch
         {
@@ -156,32 +156,7 @@ public abstract class Character : ITarget
         };
     }
 
-    public virtual int Defend<TTarget>(Attack<TTarget> from, TTarget damageParameter) where TTarget : ITarget
-    {
-        if (Dodge(from))
-        {
-            from.Dodged = true;
-            return 0;
-        }
-
-        if (SpellResistance(from))
-        {
-            from.Resisted = true;
-            return 0;
-        }
-
-        decimal damage = from.Damage(damageParameter);
-
-        if (Parade(from))
-        {
-            from.Blocked = true;
-            damage *= 0.5m;
-        }
-
-        damage *= 1 - ArmorReduction(from.AttackType);
-
-        return (int)damage;
-    }
+    public abstract int Defend<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> from, TDamagePara damageParameter) where TTarget : class, ITarget;
 
     //
 

@@ -112,16 +112,11 @@ public class Mage : Character, IMana
 
     public override int Defend<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> from, TDamagePara damageParameter)
     {
-        if (ReducedAttack <= 0 && !SpellReturn)
-        {
-            var damageBase = base.Defend(from, damageParameter);
-            TakeDamage(damageBase);
-            return damageBase;
-        }
+        from.StatusInfo.Set(from, (false, SpellReturn, false));
+        from.StatusInfo.SetDamage(from, damageParameter);
 
         if (SpellReturn)
         {
-            from.Resisted = true;
             var spellReturn = () =>
             {
                 var spellReturned = new Attack<Character, TDamagePara>(
@@ -146,12 +141,10 @@ public class Mage : Character, IMana
 
             SpellReturn = false;
         }
-        
-        decimal damage = base.Defend(from, damageParameter);
 
         if (ReducedAttack > 0)
         {
-            damage *=  1 - from.AttackType switch
+            from.StatusInfo.Damage *= 1 - from.AttackType switch
             {
                 DamageType.Physical => ReduceDamagePhysical,
                 DamageType.Magical => ReduceDamageMagical,
@@ -160,8 +153,8 @@ public class Mage : Character, IMana
             ReducedAttack--;
         }
 
-        TakeDamage((int)damage);
-        return (int)damage;
+        TakeDamage((int)from.StatusInfo.Damage);
+        return (int)from.StatusInfo.Damage;
     }
 
     //

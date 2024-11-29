@@ -54,6 +54,13 @@ public class Priest : Character, IMana
             ((IMana)this).Drink(this)
         ]);
     }
+    
+    public override int Defend<TTarget>(Attack<TTarget> from, TTarget damageParameter)
+    {
+        var damage = base.Defend(from, damageParameter);
+        TakeDamage(damage);
+        return damage;
+    }
 
     //
 

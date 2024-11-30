@@ -14,8 +14,8 @@ public abstract class Skill(
 {
     public string Name { get; set; } = name;
     public Character Owner { get; set; } = owner;
-    private TargetType TargetType { get; set; } = targetType;
-    protected ITarget? Target { get; private set; } = target;
+    protected TargetType TargetType { get; set; } = targetType;
+    public ITarget? Target { get; protected set; } = target;
     public string Description { get; set; } = description;
     private int ReloadTime { get; set; } = reloadTime;
     public int ReloadCooldown { get; private set; }

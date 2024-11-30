@@ -104,18 +104,97 @@ public class Attack<TTarget>(
     {
     }
 
-    /*public int Execute()
-    {
-        Console.WriteLine($"{Owner.Name} fait {Name} sur {Target.Name}");
-        var damage = Target.Defend(this);
-        Console.WriteLine($"{Name} à fais {damage} dégât(s) à {Target.Name}.");
-
-        Target.IsAlive(true);
-        return damage;
-    }*/
     public override void Execute()
     {
-        throw new NotImplementedException();
+        if (!IsTargetCorrect())
+        {
+            Console.WriteLine(Target != null
+                ? $"La cible sélectionnée ({Target.Name} - {Target.GetType().Name}) ne correspond pas au type de cible de la compétence ({TargetType})."
+                : "Pas de cible sélectionné.");
+
+            return;
+        }
+        
+        switch (Target)
+        {
+            case Character character:
+                Execute(character);
+                break;
+            case Team.Team team:
+                Execute(team);
+                break;
+            default:
+                Console.WriteLine(Target != null
+                    ? $"Erreur de type de cible sur {Name}. Attendu: {nameof(Character)} ou {nameof(Team.Team)}, Actuel: {Target.GetType().Name}."
+                    : $"Erreur de cible sur {Name}. La cible est null.");
+                break;
+        }
+
+        Target = null;
+        StatusInfo = new Status();
+    }
+
+    private void Execute(Character _, Func<Character, string>? message = null)
+    {
+        if (Target is not Character target || this is not Attack<Character> attack)
+        {
+            Console.WriteLine(Target != null
+                ? $"Erreur de cible sur {Name}. Attendu: {nameof(Character)}, Actuel: {Target.GetType().Name}.)"
+                : $"Erreur de cible sur {Name}. La cible est null.");
+            return;
+        }
+
+        if (!target.IsAlive(false))
+        {
+            Console.WriteLine($"La cible de {Name} est deja morte.");
+            return;
+        }
+
+        message ??= t => $"{Owner.Name} fait {Name} sur {t.Name}";
+        Console.WriteLine(message(target));
+
+        var damages = Target.Defend(attack, target);
+        if (damages != StatusInfo.Damage) Console.WriteLine("Erreur sur le calcul des dégâts.");
+
+        if (StatusInfo.Dodged) Console.WriteLine($"{Target.Name} a réussi à esquiver {Name}.");
+        else if (StatusInfo.Resisted) Console.WriteLine($"{Target.Name} a réussi à resister à {Name}.");
+        else
+        {
+            if (StatusInfo.Blocked) Console.WriteLine($"{Target.Name} a parer un partie des dégâts de {Name}.");
+            Console.WriteLine($"{Name} a fait {damages} à {Target.Name}.");
+        }
+
+        Additional?.ForEach(add => add(attack));
+    }
+
+    private void Execute(Team.Team _)
+    {
+        if (Target is not Team.Team team)
+        {
+            Console.WriteLine(Target != null
+                ? $"Erreur de cible sur {Name}. Attendu: {nameof(Team.Team)}, Actuel: {Target.GetType().Name}.)"
+                : $"Erreur de cible sur {Name}. La cible est null.");
+            return;
+        }
+
+        Console.WriteLine($"{Owner.Name} fait {Name} sur l'équipe {Target.Name}");
+        team.Characters
+            .Where(c => c.IsAlive(false)).ToList()
+            .ForEach(target =>
+            {
+                new Attack<Character>(
+                    name: Name,
+                    description: Description,
+                    owner: Owner,
+                    target: target,
+                    targetType: TargetType.Other,
+                    reloadTime: 0,
+                    manaCost: 0,
+                    damage: Damage,
+                    attackType: AttackType,
+                    additional: Additional
+                ).Execute(target, t => $"{Name} atteint {t.Name}");
+            });
     }
 
     public override string ToString()
@@ -128,7 +207,7 @@ public class Attack<TTarget>(
     {
         public decimal Damage { get; set; }
         public bool Dodged { get; private set; }
-        private bool Resisted { get; set; }
+        public bool Resisted { get; private set; }
         public bool Blocked { get; private set; }
 
         public void Set(Attack<TTarget> attack,

@@ -50,7 +50,7 @@ public class Paladin : Character, IMana
                 targetType: TargetType.Other,
                 reloadTime: 1,
                 manaCost: 25,
-                effect: (Character target) => target.Heal((int)(MagicalAttack * 1.25m))),
+                effect: target => $"{target.Name} est soigné de {target.Heal((int)(MagicalAttack * 1.25m))} PV"),
             ((IMana)this).Drink(this)
         ]);
     }

@@ -35,12 +35,10 @@ public class Warrior : Character
                 targetType: TargetType.Team,
                 reloadTime: 2,
                 manaCost: 0,
-                effect: (Team.Team team) =>
+                effect: target =>
                 {
-                    team.Characters
-                        .Where(c => c.IsAlive(false)).ToList()
-                        .ForEach(c => c.PhysicalAttack += 25);
-                    return false;
+                    target.PhysicalAttack += 25;
+                    return $"La puissance d'attaque de {target.Name} a été augmentée de 25";
                 }),
             new Attack<Team.Team>(
                 name: "Tourbillon",

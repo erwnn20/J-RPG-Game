@@ -44,13 +44,7 @@ public class Priest : Character, IMana
                 targetType: TargetType.Team,
                 reloadTime: 2,
                 manaCost: 30,
-                effect: (Team.Team team) =>
-                {
-                    team.Characters
-                        .Where(c => c.IsAlive(false)).ToList()
-                        .ForEach(c => c.Heal((int)(MagicalAttack * 0.75m)));
-                    return false;
-                }),
+                effect: target => $"{target.Name} a été soigné de {target.Heal((int)(MagicalAttack * 0.75m))}"),
             ((IMana)this).Drink(this)
         ]);
     }

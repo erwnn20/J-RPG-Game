@@ -11,7 +11,7 @@ public class SpecialAbility<TTarget>(
     string description,
     int reloadTime,
     int manaCost,
-    Delegate effect) :
+    Func<Character, string> effect) :
     Skill(
         name: name,
         owner: owner,
@@ -22,7 +22,7 @@ public class SpecialAbility<TTarget>(
         manaCost: manaCost
     ) where TTarget : class, ITarget
 {
-    public Delegate Effect { get; set; } = effect;
+    private Func<Character, string> Effect { get; set; } = effect;
 
     public SpecialAbility(
         string name,
@@ -31,7 +31,7 @@ public class SpecialAbility<TTarget>(
         string description,
         int reloadTime,
         int manaCost,
-        Delegate effect) :
+        Func<Character, string> effect) :
         this(
             name: name,
             owner: owner,

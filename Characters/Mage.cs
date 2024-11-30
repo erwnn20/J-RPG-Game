@@ -54,7 +54,12 @@ public class Mage : Character, IMana
                 targetType: TargetType.Self,
                 reloadTime: 2,
                 manaCost: 25,
-                effect: () => ReducedAttack += 2),
+                effect: _ =>
+                {
+                    const int attackReduced = 2;
+                    ReducedAttack += attackReduced;
+                    return $"Les {attackReduced} prochaines attaques subies par {Name} sont réduites.";
+                }),
             new Attack<Team.Team>(
                 name: "Blizzard",
                 description:
@@ -84,12 +89,12 @@ public class Mage : Character, IMana
                 targetType: TargetType.Other,
                 reloadTime: 3,
                 manaCost: 20,
-                effect: (Character target) =>
+                effect: target =>
                 {
-                    if (target is not IMana t) return 0;
+                    if (target is not IMana t) return "";
 
                     var manaTaken = Math.Max(40, t.CurrentMana / 2);
-                    return t.LoseMana(manaTaken);
+                    return $"{target.Name} perd {t.LoseMana(manaTaken)} de mana.";
                 }),
             new SpecialAbility<Character>(
                 name: "Renvoi de sort",
@@ -98,10 +103,10 @@ public class Mage : Character, IMana
                 targetType: TargetType.Self,
                 reloadTime: 1,
                 manaCost: 25,
-                effect: () =>
+                effect: _ =>
                 {
                     SpellReturn = true;
-                    return true;
+                    return $"la prochaine attaque subie par {Name} sera renvoyée.";
                 }),
             ((IMana)this).Drink(this)
         ]);

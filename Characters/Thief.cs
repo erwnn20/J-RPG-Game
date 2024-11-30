@@ -40,11 +40,22 @@ public class Thief : Character
                 targetType: TargetType.Self,
                 reloadTime: 1,
                 manaCost: 0,
-                effect: () =>
+                effect: _ =>
                 {
+                    var output = "";
+                    var oldDodgeChance = DodgeChance;
                     DodgeChance = Math.Min(0.5m, DodgeChance + 0.2m);
+                    output += oldDodgeChance != DodgeChance
+                        ? $"{Name} augmente ses chances d'esquive de {DodgeChance - oldDodgeChance:P} ({oldDodgeChance:P} -> {DodgeChance:P}{(DodgeChance == 0.5m ? " MAX" : string.Empty)})"
+                        : $"{Name} a ses chances d'esquive au max : {DodgeChance:P}{(DodgeChance == 0.5m ? " MAX" : string.Empty)}";
+
+                    var oldSpellResistanceChance = SpellResistanceChance;
                     SpellResistanceChance = Math.Min(0.5m, SpellResistanceChance + 0.2m);
-                    return true;
+                    output += oldSpellResistanceChance != SpellResistanceChance
+                        ? $"{Name} augmente ses chances  de resister aux sorts de {SpellResistanceChance - oldSpellResistanceChance:P} ({oldSpellResistanceChance:P} -> {SpellResistanceChance:P}{(SpellResistanceChance == 0.5m ? " MAX" : string.Empty)})"
+                        : $"{Name} a ses chances de resister aux sorts au maximum : {SpellResistanceChance:P}{(SpellResistanceChance == 0.5m ? " MAX" : string.Empty)}";
+
+                    return output;
                 })
         ]);
     }

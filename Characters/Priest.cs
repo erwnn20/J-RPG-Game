@@ -24,7 +24,7 @@ public class Priest : Character, IMana
     {
         CurrentMana = MaxMana;
         Skills.AddRange([
-            new Attack<Character, Character>(
+            new Attack<Character>(
                 name: "Châtiment",
                 description: $"Inflige 75% de la puissance d’attaque magique ({MagicalAttack}) à la cible.\n" +
                              $"Inflige 150% à la cible si celle ci n'est ni un {nameof(Priest)} ni un {nameof(Paladin)}.",
@@ -55,7 +55,7 @@ public class Priest : Character, IMana
         ]);
     }
 
-    public override int Defend<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> from, TDamagePara damageParameter)
+    public override int Defend<TTarget>(Attack<TTarget> from, Character damageParameter)
     {
         from.StatusInfo.Set(from, (false, false, false));
         from.StatusInfo.SetDamage(from, damageParameter);

@@ -19,7 +19,7 @@ public class Thief : Character
             skills: [])
     {
         Skills.AddRange([
-            new Attack<Character, Character>(
+            new Attack<Character>(
                 name: "Coup bas",
                 description: $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.\n" +
                              $"Inflige 150% si la cible a moins de la moitié de ses points de vie.",
@@ -49,7 +49,7 @@ public class Thief : Character
         ]);
     }
 
-    public override int Defend<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> from, TDamagePara damageParameter)
+    public override int Defend<TTarget>(Attack<TTarget> from, Character damageParameter)
     {
         from.StatusInfo.Set(from, (false, false, false));
         from.StatusInfo.SetDamage(from, damageParameter);
@@ -70,8 +70,8 @@ public class Thief : Character
             );
 
             if (from.Additional != null)
-                from.Additional.Add(() => counterAttack.Execute());
-            else from.Additional = [() => counterAttack.Execute()];
+                from.Additional.Add(_ => counterAttack.Execute());
+            else from.Additional = [_ => counterAttack.Execute()];
         }
 
         TakeDamage((int)from.StatusInfo.Damage);

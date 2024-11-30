@@ -36,9 +36,10 @@ public class Mage : Character, IMana
                 attackType: DamageType.Magical,
                 additional:
                 [
-                    (bool resisted, Character target) =>
+                    attack =>
                     {
-                        if (resisted) return; // if target resist (SpellResistance)
+                        if (attack.StatusInfo.Resisted) return; // if target resist (SpellResistance)
+                        if (attack.Target is not Character target) return;
 
                         target.Speed = (int)(target.Speed * 0.75m);
                         Console.WriteLine($"La vitesse de {target.Name} à diminué de 25%");
@@ -67,9 +68,10 @@ public class Mage : Character, IMana
                 attackType: DamageType.Magical,
                 additional:
                 [
-                    (bool resisted, Character target) =>
+                    attack =>
                     {
-                        if (resisted) return; // if target resist (SpellResistance)
+                        if (attack.StatusInfo.Resisted) return; // if target resist (SpellResistance)
+                        if (attack.Target is not Character target) return;
 
                         target.Speed = (int)(target.Speed * 0.85m);
                         Console.WriteLine($"La vitesse de {target.Name} à diminué de 15%");
@@ -110,16 +112,16 @@ public class Mage : Character, IMana
     private int ReducedAttack { get; set; }
     private bool SpellReturn { get; set; }
 
-    public override int Defend<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> from, TDamagePara damageParameter)
+    public override int Defend<TTarget>(Attack<TTarget> from, Character damageParameter)
     {
         from.StatusInfo.Set(from, (false, SpellReturn, false));
         from.StatusInfo.SetDamage(from, damageParameter);
 
         if (SpellReturn)
         {
-            var spellReturn = () =>
+            Action<Attack<Character>> spellReturn = _ =>
             {
-                var spellReturned = new Attack<Character, TDamagePara>(
+                var spellReturned = new Attack<Character>(
                     name: from.Name,
                     description: from.Description,
                     owner: this,

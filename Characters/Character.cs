@@ -114,19 +114,19 @@ public abstract class Character : ITarget
         } while (true);
     }
 
-    public bool Dodge<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> attack) where TTarget : class, ITarget
+    public bool Dodge<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
     {
         return attack.AttackType == DamageType.Physical
                && (decimal)new Random().NextDouble() <= DodgeChance;
     }
 
-    public bool Parade<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> attack) where TTarget : class, ITarget
+    public bool Parade<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
     {
         return attack.AttackType == DamageType.Physical
                && (decimal)new Random().NextDouble() <= ParadeChance;
     }
 
-    public bool SpellResistance<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> attack) where TTarget : class, ITarget
+    public bool SpellResistance<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
     {
         return attack.AttackType == DamageType.Magical
                && (decimal)new Random().NextDouble() <= SpellResistanceChance;
@@ -156,7 +156,7 @@ public abstract class Character : ITarget
         };
     }
 
-    public abstract int Defend<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> from, TDamagePara damageParameter) where TTarget : class, ITarget;
+    public abstract int Defend<TTarget>(Attack<TTarget> from, Character damageParameter) where TTarget : class, ITarget;
 
     //
 

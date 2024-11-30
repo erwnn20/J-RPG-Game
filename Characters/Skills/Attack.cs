@@ -3,7 +3,7 @@ using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters.Skills;
 
-public class Attack<TTarget, TDamagePara>(
+public class Attack<TTarget>(
     string name,
     string description,
     Character owner,
@@ -11,9 +11,9 @@ public class Attack<TTarget, TDamagePara>(
     TargetType targetType,
     int reloadTime,
     int manaCost,
-    Func<TDamagePara, int> damage,
+    Func<Character, int> damage,
     DamageType attackType,
-    List<Delegate>? additional = null)
+    List<Action<Attack<Character>>>? additional = null)
     : Skill(name: name,
         owner: owner,
         target: target,
@@ -23,10 +23,10 @@ public class Attack<TTarget, TDamagePara>(
         manaCost: manaCost)
     where TTarget : class, ITarget
 {
-    public Func<TDamagePara, int> Damage { get; set; } = damage;
+    public Func<Character, int> Damage { get; set; } = damage;
     public DamageType AttackType { get; private set; } = attackType;
-    public List<Delegate>? Additional { get; set; } = additional;
-    public Status StatusInfo { get; set; } = new();
+    public List<Action<Attack<Character>>>? Additional { get; set; } = additional;
+    public Status StatusInfo { get; private set; } = new();
 
     public Attack(
         string name,
@@ -35,9 +35,9 @@ public class Attack<TTarget, TDamagePara>(
         TargetType targetType,
         int reloadTime,
         int manaCost,
-        Func<TDamagePara, int> damage,
+        Func<Character, int> damage,
         DamageType attackType,
-        List<Delegate>? additional = null) :
+        List<Action<Attack<Character>>>? additional = null) :
         this(
             name: name,
             owner: owner,
@@ -63,7 +63,7 @@ public class Attack<TTarget, TDamagePara>(
         int manaCost,
         int damage,
         DamageType attackType,
-        List<Delegate>? additional = null) :
+        List<Action<Attack<Character>>>? additional = null) :
         this(
             name: name,
             owner: owner,
@@ -88,7 +88,7 @@ public class Attack<TTarget, TDamagePara>(
         int manaCost,
         int damage,
         DamageType attackType,
-        List<Delegate>? additional = null) :
+        List<Action<Attack<Character>>>? additional = null) :
         this(
             name: name,
             owner: owner,
@@ -131,7 +131,7 @@ public class Attack<TTarget, TDamagePara>(
         private bool Resisted { get; set; }
         public bool Blocked { get; private set; }
 
-        public void Set(Attack<TTarget, TDamagePara> attack,
+        public void Set(Attack<TTarget> attack,
             (bool Dodged, bool Resisted, bool Blocked) attackStatus = default)
         {
             if (attack.Target is Character target)
@@ -142,7 +142,7 @@ public class Attack<TTarget, TDamagePara>(
             }
         }
 
-        public decimal SetDamage(Attack<TTarget, TDamagePara> attack, TDamagePara damageParameter)
+        public decimal SetDamage(Attack<TTarget> attack, Character damageParameter)
         {
             if (attack.Target is Character target)
             {
@@ -155,33 +155,5 @@ public class Attack<TTarget, TDamagePara>(
 
             return Damage;
         }
-    }
-}
-
-public class Attack<TTarget> : Attack<TTarget, object?> where TTarget : class, ITarget
-{
-    public Attack(string name, string description, Character owner, TargetType targetType, int reloadTime, int manaCost,
-        Func<object?, int> damage, DamageType attackType, List<Delegate>? additional = null) : base(name, description,
-        owner, targetType, reloadTime, manaCost, damage, attackType, additional)
-    {
-    }
-
-    public Attack(string name, string description, Character owner, TTarget? target, TargetType targetType,
-        int reloadTime, int manaCost, int damage, DamageType attackType, List<Delegate>? additional = null) : base(name,
-        description, owner, target, targetType, reloadTime, manaCost, damage, attackType, additional)
-    {
-    }
-
-    public Attack(string name, string description, Character owner, TargetType targetType, int reloadTime, int manaCost,
-        int damage, DamageType attackType, List<Delegate>? additional = null) : base(name, description, owner,
-        targetType, reloadTime, manaCost, damage, attackType, additional)
-    {
-    }
-
-    public Attack(string name, string description, Character owner, TTarget? target, TargetType targetType,
-        int reloadTime, int manaCost, Func<object?, int> damage, DamageType attackType,
-        List<Delegate>? additional = null) : base(name, description, owner, target, targetType, reloadTime, manaCost,
-        damage, attackType, additional)
-    {
     }
 }

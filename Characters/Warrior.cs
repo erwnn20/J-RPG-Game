@@ -1,6 +1,5 @@
 ﻿using JRPG_Game.Characters.Skills;
 using JRPG_Game.Enums;
-using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters;
 
@@ -56,7 +55,7 @@ public class Warrior : Character
         ]);
     }
 
-    public override int Defend<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> from, TDamagePara damageParameter)
+    public override int Defend<TTarget>(Attack<TTarget> from, Character damageParameter)
     {
         from.StatusInfo.Set(from, (false, false, false));
         from.StatusInfo.SetDamage(from, damageParameter);
@@ -80,15 +79,15 @@ public class Warrior : Character
         {
             counterAttack.Damage = _ => (int)(PhysicalAttack * 1.50m);
             if (from.Additional != null)
-                from.Additional.Add(() => counterAttack.Execute());
-            else from.Additional = [() => counterAttack.Execute()];
+                from.Additional.Add(_ => counterAttack.Execute());
+            else from.Additional = [_ => counterAttack.Execute()];
         }
         else if (new Random().NextDouble() < 0.25)
         {
             counterAttack.Damage = _ => (int)(PhysicalAttack * 0.50m);
             if (from.Additional != null)
-                from.Additional.Add(() => counterAttack.Execute());
-            else from.Additional = [() => counterAttack.Execute()];
+                from.Additional.Add(_ => counterAttack.Execute());
+            else from.Additional = [_ => counterAttack.Execute()];
         }
 
         TakeDamage((int)from.StatusInfo.Damage);

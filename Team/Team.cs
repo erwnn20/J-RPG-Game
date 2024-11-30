@@ -9,8 +9,7 @@ public class Team : ITarget
     public List<Character> Characters { get; set; }
     public string Name { get; set; }
 
-    public int Defend<TTarget, TDamagePara>(Attack<TTarget, TDamagePara> from, TDamagePara damageParameter)
-        where TTarget : class, ITarget
+    public int Defend<TTarget>(Attack<TTarget> from, Character damageParameter) where TTarget : class, ITarget
     {
         throw new NotImplementedException();
     }

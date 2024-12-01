@@ -5,7 +5,7 @@ namespace JRPG_Game.Characters.Skills;
 
 public class Attack<TTarget>(
     string name,
-    string description,
+    Func<string> description,
     Character owner,
     TTarget? target,
     TargetType targetType,
@@ -30,7 +30,7 @@ public class Attack<TTarget>(
 
     public Attack(
         string name,
-        string description,
+        Func<string> description,
         Character owner,
         TargetType targetType,
         int reloadTime,
@@ -55,7 +55,7 @@ public class Attack<TTarget>(
 
     public Attack(
         string name,
-        string description,
+        Func<string> description,
         Character owner,
         TTarget? target,
         TargetType targetType,
@@ -81,7 +81,7 @@ public class Attack<TTarget>(
 
     public Attack(
         string name,
-        string description,
+        Func<string> description,
         Character owner,
         TargetType targetType,
         int reloadTime,

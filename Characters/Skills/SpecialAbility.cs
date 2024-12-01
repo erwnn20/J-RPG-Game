@@ -8,7 +8,7 @@ public class SpecialAbility<TTarget>(
     Character owner,
     TTarget? target,
     TargetType targetType,
-    string description,
+    Func<string> description,
     int reloadTime,
     int manaCost,
     Func<Character, string> effect) :
@@ -28,7 +28,7 @@ public class SpecialAbility<TTarget>(
         string name,
         Character owner,
         TargetType targetType,
-        string description,
+        Func<string> description,
         int reloadTime,
         int manaCost,
         Func<Character, string> effect) :
@@ -48,7 +48,7 @@ public class SpecialAbility<TTarget>(
     public override void Execute()
     {
         if (!Owner.IsAlive(false)) return;
-        
+
         if (!IsTargetCorrect())
         {
             Console.WriteLine(Target != null

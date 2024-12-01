@@ -22,8 +22,8 @@ public class Thief : Character
         Skills.AddRange([
             new Attack<Character>(
                 name: "Coup bas",
-                description: $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.\n" +
-                             $"Inflige 150% si la cible a moins de la moitié de ses points de vie.",
+                description: () => $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.\n" +
+                                   $"Inflige 150% si la cible a moins de la moitié de ses points de vie.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
@@ -34,9 +34,13 @@ public class Thief : Character
                 attackType: DamageType.Physical),
             new SpecialAbility<Character>(
                 name: "Evasion",
-                description:
-                $"Augmente les chances d'esquive de 20% ({DodgeChance:P} {(DodgeChance == 0.5m ? "MAX" : $"+ {0.20m:P}")})\n" +
-                $"Augmente les chances de resister aux sorts de 20% ({SpellResistanceChance:P} {(SpellResistanceChance == 0.5m ? "MAX" : $"+ {0.20m:P}")})",
+                description: () =>
+                    $"Augmente les chances d'esquive de 20% (max 50%) ({DodgeChance:P} {(DodgeChance == 0.5m
+                        ? "MAX"
+                        : $"-> {Math.Min(DodgeChance + 0.20m, 0.5m):P}{(Math.Min(DodgeChance + 0.20m, 0.5m) == 0.5m ? " MAX" : string.Empty)}")})\n" +
+                    $"Augmente les chances de resister aux sorts de 20% (max 50%) ({SpellResistanceChance:P} {(SpellResistanceChance == 0.5m
+                        ? "MAX"
+                        : $"-> {Math.Min(SpellResistanceChance + 0.20m, 0.5m):P}{(Math.Min(SpellResistanceChance + 0.20m, 0.5m) == 0.5m ? " MAX" : string.Empty)}")})",
                 owner: this,
                 targetType: TargetType.Self,
                 reloadTime: 1,
@@ -53,8 +57,8 @@ public class Thief : Character
                     var oldSpellResistanceChance = SpellResistanceChance;
                     SpellResistanceChance = Math.Min(0.5m, SpellResistanceChance + 0.2m);
                     output += oldSpellResistanceChance != SpellResistanceChance
-                        ? $"{Name} augmente ses chances  de resister aux sorts de {SpellResistanceChance - oldSpellResistanceChance:P} ({oldSpellResistanceChance:P} -> {SpellResistanceChance:P}{(SpellResistanceChance == 0.5m ? " MAX" : string.Empty)})"
-                        : $"{Name} a ses chances de resister aux sorts au maximum : {SpellResistanceChance:P}{(SpellResistanceChance == 0.5m ? " MAX" : string.Empty)}";
+                        ? $"\n{Name} augmente ses chances  de resister aux sorts de {SpellResistanceChance - oldSpellResistanceChance:P} ({oldSpellResistanceChance:P} -> {SpellResistanceChance:P}{(SpellResistanceChance == 0.5m ? " MAX" : string.Empty)})"
+                        : $"\n{Name} a ses chances de resister aux sorts au maximum : {SpellResistanceChance:P}{(SpellResistanceChance == 0.5m ? " MAX" : string.Empty)}";
 
                     return output;
                 })
@@ -71,8 +75,8 @@ public class Thief : Character
             var counterAttack = new Attack<Character>(
                 name: "Poignard dans le dos",
                 owner: this,
-                description:
-                "Lorsque le voleur esquive une attaque ennemie, il déclenche une attaque qui inflige 15 points de dégâts physiques à l’attaquant.",
+                description: () =>
+                    "Lorsque le voleur esquive une attaque ennemie, il déclenche une attaque qui inflige 15 points de dégâts physiques à l’attaquant.",
                 target: from.Owner,
                 targetType: TargetType.Enemy,
                 reloadTime: 0,

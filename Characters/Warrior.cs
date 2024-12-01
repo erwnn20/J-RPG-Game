@@ -22,7 +22,7 @@ public class Warrior : Character
         Skills.AddRange([
             new Attack<Character>(
                 name: "Frappe héroïque",
-                description: $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.",
+                description: () => $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
@@ -31,7 +31,8 @@ public class Warrior : Character
                 attackType: DamageType.Physical),
             new SpecialAbility<Team.Team>(
                 name: "Cri de bataille",
-                description: "Augmente de 25 la puissance d’attaque physique de tous les personnages de l’équipe.",
+                description: () =>
+                    "Augmente de 25 la puissance d’attaque physique de tous les personnages de l’équipe.",
                 owner: this,
                 targetType: TargetType.TeamAllied,
                 reloadTime: 2,
@@ -43,8 +44,8 @@ public class Warrior : Character
                 }),
             new Attack<Team.Team>(
                 name: "Tourbillon",
-                description:
-                $"Inflige 33% de la puissance d’attaque physique ({(int)(PhysicalAttack * (1 / 3.0m))}) toute l’équipe ciblé.",
+                description: () =>
+                    $"Inflige 33% de la puissance d’attaque physique ({(int)(PhysicalAttack * (1 / 3.0m))}) toute l’équipe ciblé.",
                 owner: this,
                 targetType: TargetType.TeamEnemy,
                 reloadTime: 2,
@@ -62,10 +63,10 @@ public class Warrior : Character
         var counterAttack = new Attack<Character>(
             name: "Contre-attaque",
             owner: this,
-            description:
-            "Lorsque le guerrier reçoit une attaque physique\n" +
-            " - Il a 25% de chances de contre attaque en infligeant 50% des dégâts qu’il a subi à l’attaquant\n" +
-            " - Si il a paré l’attaque, les chances sont de 100%, et les dégâts de 150%\n",
+            description: () =>
+                "Lorsque le guerrier reçoit une attaque physique\n" +
+                " - Il a 25% de chances de contre attaque en infligeant 50% des dégâts qu’il a subi à l’attaquant\n" +
+                " - Si il a paré l’attaque, les chances sont de 100%, et les dégâts de 150%\n",
             target: from.Owner,
             targetType: TargetType.Enemy,
             reloadTime: 0,

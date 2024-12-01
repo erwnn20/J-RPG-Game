@@ -9,19 +9,19 @@ public abstract class Skill
     public Character Owner { get; set; }
     public TargetType TargetType { get; set; }
     public ITarget? Target { get; protected set; }
-    public string Description { get; set; }
+    public Func<string> Description { get; set; }
     private int ReloadTime { get; set; }
     public int ReloadCooldown { get; private set; }
     private int ManaCost { get; set; }
 
-    private static List<Skill> List = [];
+    private static readonly List<Skill> List = [];
 
     protected Skill(
         string name,
         Character owner,
         ITarget? target,
         TargetType targetType,
-        string description,
+        Func<string> description,
         int reloadTime,
         int manaCost)
     {
@@ -32,7 +32,7 @@ public abstract class Skill
         Description = description;
         ReloadTime = reloadTime;
         ManaCost = manaCost;
-        
+
         List.Add(this);
     }
 
@@ -40,7 +40,7 @@ public abstract class Skill
         string name,
         Character owner,
         TargetType targetType,
-        string description,
+        Func<string> description,
         int reloadTime,
         int manaCost) : this(name, owner, null, targetType, description, reloadTime, manaCost)
     {
@@ -118,9 +118,9 @@ public abstract class Skill
     }
 
     //
-    
-    public static void UpdateReloadCooldowns() => List.ForEach(skill => skill.ReduceReload()); 
-    
+
+    public static void UpdateReloadCooldowns() => List.ForEach(skill => skill.ReduceReload());
+
     //
 
     public override string ToString()
@@ -134,7 +134,7 @@ public abstract class Skill
             TargetType.TeamEnemy => "une équipe ennemi",
             _ => throw new ArgumentOutOfRangeException()
         })}\n" +
-               $"  -> {Description.Replace("\n", "\n     ")}\n" +
+               $"  -> {Description().Replace("\n", "\n     ")}\n" +
                $"Disponible {(IsUsable() ? "maintenant" : ReloadCooldown > 1 ? "au prochain tour" : $"dans {ReloadCooldown} tours")} - Temps de recharge : {ReloadTime} tour(s)." +
                (ManaCost > 0 ? $"\nCoût en mana : {ManaCost}" : string.Empty);
     }

@@ -27,8 +27,8 @@ public class Priest : Character, IMana
         Skills.AddRange([
             new Attack<Character>(
                 name: "Châtiment",
-                description: $"Inflige 75% de la puissance d’attaque magique ({MagicalAttack}) à la cible.\n" +
-                             $"Inflige 150% à la cible si celle ci n'est ni un {nameof(Priest)} ni un {nameof(Paladin)}.",
+                description: () => $"Inflige 75% de la puissance d’attaque magique ({MagicalAttack}) à la cible.\n" +
+                                   $"Inflige 150% à la cible si celle ci n'est ni un {nameof(Priest)} ni un {nameof(Paladin)}.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
@@ -40,7 +40,7 @@ public class Priest : Character, IMana
                 attackType: DamageType.Magical),
             new SpecialAbility<Team.Team>(
                 name: "Cercle de soins",
-                description: $"Soigne toute l'équipe sélectionné de {(int)(MagicalAttack * 0.75m)} PV.",
+                description: () => $"Soigne toute l'équipe sélectionné de {(int)(MagicalAttack * 0.75m)} PV.",
                 owner: this,
                 targetType: TargetType.TeamAllied,
                 reloadTime: 2,

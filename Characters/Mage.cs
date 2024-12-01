@@ -27,8 +27,8 @@ public class Mage : Character, IMana
         Skills.AddRange([
             new Attack<Character>(
                 name: "Eclair de givre",
-                description: $"Inflige 100% de la puissance d’attaque magique ({MagicalAttack}) à la cible.\n" +
-                             $"Réduit la vitesse de la cible de 25% si celui ci n'a pas résisté à l'attaque.",
+                description: () => $"Inflige 100% de la puissance d’attaque magique ({MagicalAttack}) à la cible.\n" +
+                                   $"Réduit la vitesse de la cible de 25% si celui ci n'a pas résisté à l'attaque.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
@@ -48,9 +48,9 @@ public class Mage : Character, IMana
                 ]),
             new SpecialAbility<Character>(
                 name: "Barrière de givre",
-                description: $"Réduit les dégâts des deux prochaines attaques subies.\n" +
-                             $"\t- {ReduceDamagePhysical:P} sur les attaques physiques.\n" +
-                             $"\t- {ReduceDamageMagical:P} sur les attaques magiques.",
+                description: () => $"Réduit les dégâts des deux prochaines attaques subies.\n" +
+                                   $"\t- {ReduceDamagePhysical:P} sur les attaques physiques.\n" +
+                                   $"\t- {ReduceDamageMagical:P} sur les attaques magiques.",
                 owner: this,
                 targetType: TargetType.Self,
                 reloadTime: 2,
@@ -63,9 +63,9 @@ public class Mage : Character, IMana
                 }),
             new Attack<Team.Team>(
                 name: "Blizzard",
-                description:
-                $"Inflige 50% de la puissance d’attaque magique ({(int)(MagicalAttack * 0.50m)}) à toute l’équipe ciblé.\n" +
-                $"A une chance de baisser la vitesse de chaque cible de 15%.",
+                description: () =>
+                    $"Inflige 50% de la puissance d’attaque magique ({(int)(MagicalAttack * 0.50m)}) à toute l’équipe ciblé.\n" +
+                    $"A une chance de baisser la vitesse de chaque cible de 15%.",
                 owner: this,
                 targetType: TargetType.TeamEnemy,
                 reloadTime: 2,
@@ -85,7 +85,7 @@ public class Mage : Character, IMana
                 ]),
             new SpecialAbility<Character>(
                 name: "Brulure de mana",
-                description: "Réduit de moitié la quantité de points de mana de la cible.",
+                description: () => "Réduit de moitié la quantité de points de mana de la cible.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 3,
@@ -99,7 +99,7 @@ public class Mage : Character, IMana
                 }),
             new SpecialAbility<Character>(
                 name: "Renvoi de sort",
-                description: "Renvoie la prochaine attaque magique subie à l’assaillant",
+                description: () => "Renvoie la prochaine attaque magique subie à l’assaillant",
                 owner: this,
                 targetType: TargetType.Self,
                 reloadTime: 1,

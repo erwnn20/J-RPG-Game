@@ -9,7 +9,7 @@ public static class Prompt
             case 0:
                 throw new IndexOutOfRangeException("You must have at least one choice");
             case 1:
-                return 0;
+                return 1;
         }
 
         Console.WriteLine(message);
@@ -106,7 +106,8 @@ public static class Prompt
                 input = input[..^1];
                 Console.Write("\b \b");
             }
-            else if (key.Key != ConsoleKey.Backspace && !excludedCondition(key.Key))
+            else if (!new List<ConsoleKey> { ConsoleKey.Backspace, ConsoleKey.Tab }.Contains(key.Key) &&
+                     !excludedCondition(key.Key))
             {
                 input += key.KeyChar;
                 Console.Write(key.KeyChar);

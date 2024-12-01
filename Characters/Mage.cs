@@ -30,7 +30,7 @@ public class Mage : Character, IMana
                 description: $"Inflige 100% de la puissance d’attaque magique ({MagicalAttack}) à la cible.\n" +
                              $"Réduit la vitesse de la cible de 25% si celui ci n'a pas résisté à l'attaque.",
                 owner: this,
-                targetType: TargetType.Other,
+                targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 15,
                 damage: MagicalAttack,
@@ -67,7 +67,7 @@ public class Mage : Character, IMana
                 $"Inflige 50% de la puissance d’attaque magique ({(int)(MagicalAttack * 0.50m)}) à toute l’équipe ciblé.\n" +
                 $"A une chance de baisser la vitesse de chaque cible de 15%.",
                 owner: this,
-                targetType: TargetType.Team,
+                targetType: TargetType.TeamEnemy,
                 reloadTime: 2,
                 manaCost: 25,
                 damage: (int)(MagicalAttack * 0.5m),
@@ -87,7 +87,7 @@ public class Mage : Character, IMana
                 name: "Brulure de mana",
                 description: "Réduit de moitié la quantité de points de mana de la cible.",
                 owner: this,
-                targetType: TargetType.Other,
+                targetType: TargetType.Enemy,
                 reloadTime: 3,
                 manaCost: 20,
                 effect: target =>
@@ -132,7 +132,7 @@ public class Mage : Character, IMana
                     description: from.Description,
                     owner: this,
                     target: from.Owner,
-                    targetType: TargetType.Other,
+                    targetType: TargetType.Enemy,
                     reloadTime: 0,
                     manaCost: 0,
                     damage: from.Damage,

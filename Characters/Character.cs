@@ -37,7 +37,7 @@ public abstract class Character : ITarget
     }
 
     public string Name { get; private set; }
-    private Team.Team Team { get; set; }
+    public Team.Team Team { get; private set; }
     public int MaxHealth { get; private set; }
     public int CurrentHealth { get; private set; }
     public int Speed { get; set; }

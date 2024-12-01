@@ -95,9 +95,11 @@ public abstract class Skill(
 
         return TargetType switch
         {
-            TargetType.Self => Target == Owner,
-            TargetType.Other => Target.GetType() == typeof(Character),
-            TargetType.Team => Target.GetType() == typeof(Team.Team),
+            TargetType.Self => checkedTarget == Owner,
+            TargetType.Teammate => checkedTarget is Character t && t != Owner && t.Team == Owner.Team,
+            TargetType.Enemy => checkedTarget is Character t && t.Team != Owner.Team,
+            TargetType.TeamAllied => checkedTarget is Team.Team t && t == Owner.Team,
+            TargetType.TeamEnemy => checkedTarget is Team.Team t && t != Owner.Team,
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -109,8 +111,10 @@ public abstract class Skill(
         return $"{Name} ({GetType().Name}) : par {Owner.Name} à {(Target != null ? Target.Name : TargetType switch
         {
             TargetType.Self => "soi-même",
-            TargetType.Other => "un autre personnage",
-            TargetType.Team => "une équipe",
+            TargetType.Teammate => "un allié",
+            TargetType.Enemy => "un ennemi",
+            TargetType.TeamAllied => "son équipe",
+            TargetType.TeamEnemy => "une équipe ennemi",
             _ => throw new ArgumentOutOfRangeException()
         })}\n" +
                $"  -> {Description.Replace("\n", "\n  ")}\n" +

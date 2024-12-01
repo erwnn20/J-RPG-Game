@@ -3,6 +3,9 @@
 public enum TargetType
 {
     Self,
-    Other,
-    Team
+    Teammate,
+    Enemy,
+    
+    TeamAllied,
+    TeamEnemy
 }

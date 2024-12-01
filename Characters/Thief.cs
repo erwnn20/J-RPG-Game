@@ -25,7 +25,7 @@ public class Thief : Character
                 description: $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.\n" +
                              $"Inflige 150% si la cible a moins de la moitié de ses points de vie.",
                 owner: this,
-                targetType: TargetType.Other,
+                targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 0,
                 damage: target =>
@@ -74,7 +74,7 @@ public class Thief : Character
                 description:
                 "Lorsque le voleur esquive une attaque ennemie, il déclenche une attaque qui inflige 15 points de dégâts physiques à l’attaquant.",
                 target: from.Owner,
-                targetType: TargetType.Other,
+                targetType: TargetType.Enemy,
                 reloadTime: 0,
                 manaCost: 0,
                 damage: 15,

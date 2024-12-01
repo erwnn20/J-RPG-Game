@@ -116,7 +116,7 @@ public class SpecialAbility<TTarget>(
                     description: Description,
                     owner: Owner,
                     target: target,
-                    targetType: TargetType.Other,
+                    targetType: TargetType.Enemy,
                     reloadTime: 0,
                     manaCost: 0,
                     effect: Effect

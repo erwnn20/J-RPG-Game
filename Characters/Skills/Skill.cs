@@ -3,23 +3,38 @@ using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters.Skills;
 
-public abstract class Skill(
-    string name,
-    Character owner,
-    ITarget? target,
-    TargetType targetType,
-    string description,
-    int reloadTime,
-    int manaCost)
+public abstract class Skill
 {
-    public string Name { get; set; } = name;
-    public Character Owner { get; set; } = owner;
-    protected TargetType TargetType { get; set; } = targetType;
-    public ITarget? Target { get; protected set; } = target;
-    public string Description { get; set; } = description;
-    private int ReloadTime { get; set; } = reloadTime;
+    public string Name { get; set; }
+    public Character Owner { get; set; }
+    public TargetType TargetType { get; set; }
+    public ITarget? Target { get; protected set; }
+    public string Description { get; set; }
+    private int ReloadTime { get; set; }
     public int ReloadCooldown { get; private set; }
-    private int ManaCost { get; set; } = manaCost;
+    private int ManaCost { get; set; }
+
+    private static List<Skill> List = [];
+
+    protected Skill(
+        string name,
+        Character owner,
+        ITarget? target,
+        TargetType targetType,
+        string description,
+        int reloadTime,
+        int manaCost)
+    {
+        Name = name;
+        Owner = owner;
+        Target = target;
+        TargetType = targetType;
+        Description = description;
+        ReloadTime = reloadTime;
+        ManaCost = manaCost;
+        
+        List.Add(this);
+    }
 
     protected Skill(
         string name,
@@ -31,35 +46,33 @@ public abstract class Skill(
     {
     }
 
-    public virtual bool Use(ITarget? target = null)
+    public (bool Next, bool Execute) Use(ITarget? target = null)
     {
         if (!IsUsable())
         {
             Console.WriteLine($"{Name} est en recharge pour {ReloadCooldown} tour(s).");
-            return false;
+            return (false, false);
         }
 
-        if (target != null)
-            Target = target;
+        if (target != null) Target = target;
         if (!IsTargetCorrect())
         {
             Console.WriteLine(Target != null
                 ? $"La cible sélectionnée ({Target.Name} - {Target.GetType().Name}) ne correspond pas au type de cible de la compétence ({TargetType})."
-                : "Pas de cible sélectionné.");
+                : $"Pas de cible sélectionné pour {Name}.");
 
-            return false;
+            return (false, false);
         }
 
         if (ManaCost > 0)
         {
-            // avec Character Owner
             if (Owner is IMana owner)
             {
                 if (owner.CurrentMana < ManaCost)
                 {
                     Console.WriteLine(
                         $"{Owner.Name} n'a pas assez de mana pour utiliser {Name}. Besoin : {ManaCost}, Actuel : {owner.CurrentMana}");
-                    return true;
+                    return (true, false);
                 }
 
                 owner.LoseMana(ManaCost);
@@ -68,13 +81,12 @@ public abstract class Skill(
             {
                 Console.WriteLine(
                     $"{Owner.Name} ne peux pas utiliser {Name} qui a besoin de mana");
-                return true;
+                return (true, false);
             }
         }
 
         ReloadCooldown = ReloadTime;
-        Execute();
-        return true;
+        return (true, true);
     }
 
     public abstract void Execute();
@@ -84,14 +96,15 @@ public abstract class Skill(
     /// <summary>
     /// Reduces the skill's reload time by 1 turn.
     /// </summary>
-    public void ReduceReload()
+    private void ReduceReload()
     {
         if (ReloadCooldown > 0) ReloadCooldown--;
     }
 
-    private bool IsTargetCorrect()
+    protected bool IsTargetCorrect(ITarget? target = null)
     {
-        if (Target is null) return false;
+        var checkedTarget = target ?? Target;
+        if (checkedTarget is null) return false;
 
         return TargetType switch
         {
@@ -105,6 +118,10 @@ public abstract class Skill(
     }
 
     //
+    
+    public static void UpdateReloadCooldowns() => List.ForEach(skill => skill.ReduceReload()); 
+    
+    //
 
     public override string ToString()
     {
@@ -117,7 +134,7 @@ public abstract class Skill(
             TargetType.TeamEnemy => "une équipe ennemi",
             _ => throw new ArgumentOutOfRangeException()
         })}\n" +
-               $"  -> {Description.Replace("\n", "\n  ")}\n" +
+               $"  -> {Description.Replace("\n", "\n     ")}\n" +
                $"Disponible {(IsUsable() ? "maintenant" : ReloadCooldown > 1 ? "au prochain tour" : $"dans {ReloadCooldown} tours")} - Temps de recharge : {ReloadTime} tour(s)." +
                (ManaCost > 0 ? $"\nCoût en mana : {ManaCost}" : string.Empty);
     }

@@ -47,11 +47,13 @@ public class SpecialAbility<TTarget>(
 
     public override void Execute()
     {
+        if (!Owner.IsAlive(false)) return;
+        
         if (!IsTargetCorrect())
         {
             Console.WriteLine(Target != null
                 ? $"La cible sélectionnée ({Target.Name} - {Target.GetType().Name}) ne correspond pas au type de cible de la compétence ({TargetType})."
-                : "Pas de cible sélectionné.");
+                : $"Pas de cible sélectionné pour {Name}.");
 
             return;
         }

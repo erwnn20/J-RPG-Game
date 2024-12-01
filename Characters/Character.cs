@@ -49,8 +49,8 @@ public abstract class Character : ITarget
     protected decimal SpellResistanceChance { get; set; }
     protected List<Skill> Skills { get; set; }
 
-    public static readonly List<Character> List = [];
-    
+    private static readonly List<Character> List = [];
+
     //
 
     public bool IsAlive(bool message)
@@ -75,54 +75,6 @@ public abstract class Character : ITarget
         Console.WriteLine($"{Name} à été soigné de {healed}");
 
         return healed;
-    }
-
-    public Skill? SelectSkill()
-    {
-        if (!Skills.Any(skill => skill.IsUsable()))
-        {
-            Console.WriteLine("Aucune compétence utilisable actuellement.");
-            return null;
-        }
-
-        do
-        {
-            var selectedSkill = Skills.ElementAt(Prompt.Select("Quel compétence voulez vous utiliser ?",
-                skill =>
-                    $"{skill.Name} ({skill.GetType().Name}){(!skill.IsUsable() ? $" - Disponible dans : {skill.ReloadCooldown} tour(s)" : string.Empty)}",
-                Skills) - 1);
-            Console.WriteLine();
-
-            List<string> choices = ["Afficher details", "Sélectionné une autre capacité"];
-            if (selectedSkill.IsUsable())
-                choices.Add("Confirmer");
-            else
-                Console.WriteLine(
-                    $"Vous ne pouvez pas utiliser {selectedSkill.Name} actuellement. Disponible dans : {selectedSkill.ReloadCooldown} tour(s)");
-
-            var exit = false;
-            do
-            {
-                var selected = Prompt.Select($"{selectedSkill.Name} ({selectedSkill.GetType().Name})", s => s, choices);
-                Console.WriteLine();
-
-                switch (selected)
-                {
-                    case 1:
-                        Console.WriteLine(selectedSkill + "\n");
-                        break;
-                    case 2:
-                        Program.Next();
-                        exit = true;
-                        break;
-                    case 3:
-                        return selectedSkill;
-                    default:
-                        Console.WriteLine("Une erreur s'est produite, veuillez réessayer.");
-                        break;
-                }
-            } while (!exit);
-        } while (true);
     }
 
     public bool Dodge<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
@@ -171,16 +123,88 @@ public abstract class Character : ITarget
 
     //
 
-    protected abstract void SpecialAbility();
-    protected abstract void Attack(Character character);
+    private Skill? SelectSkill()
+    {
+        if (!Skills.Any(skill => skill.IsUsable()))
+        {
+            Console.WriteLine("Aucune compétence utilisable actuellement.");
+            return null;
+        }
 
-    protected void TakeDamage(int damage) => CurrentHealth = Math.Max(0, CurrentHealth - damage);
+        do
+        {
+            var selectedSkill = Skills.ElementAt(Prompt.Select("Quel compétence voulez vous utiliser ?",
+                skill =>
+                    $"{skill.Name} ({skill.GetType().Name}){(!skill.IsUsable() ? $" - Disponible dans : {skill.ReloadCooldown} tour(s)" : string.Empty)}",
+                Skills) - 1);
+            Console.WriteLine();
 
-    public bool SelectAction()
+            List<string> choices = ["Afficher details", "Sélectionné une autre capacité"];
+            if (selectedSkill.IsUsable())
+                choices.Add("Confirmer");
+            else
+                Console.WriteLine(
+                    $"Vous ne pouvez pas utiliser {selectedSkill.Name} actuellement. Disponible dans : {selectedSkill.ReloadCooldown} tour(s)");
+
+            var exit = false;
+            do
+            {
+                var selected = Prompt.Select($"{selectedSkill.Name} ({selectedSkill.GetType().Name})", s => s, choices);
+                Console.WriteLine();
+
+                switch (selected)
+                {
+                    case 1:
+                        Console.WriteLine(selectedSkill + "\n");
+                        break;
+                    case 2:
+                        exit = true;
+                        break;
+                    case 3:
+                        return selectedSkill;
+                    default:
+                        Console.WriteLine("Une erreur s'est produite, veuillez réessayer.");
+                        break;
+                }
+            } while (!exit);
+        } while (true);
+    }
+
+    private ITarget SelectTarget(TargetType targetType)
+    {
+        List<ITarget> targets;
+        switch (targetType)
+        {
+            case TargetType.Self:
+                return this;
+            case TargetType.Teammate:
+                targets = [..Team.Characters.Where(character => character.IsAlive(false))];
+                break;
+            case TargetType.Enemy:
+                targets = [..List.Where(character => character.Team != Team && character.IsAlive(false))];
+                break;
+            case TargetType.TeamAllied:
+                return Team;
+            case TargetType.TeamEnemy:
+                targets =
+                [
+                    ..JRPG_Game.Team.Team.List.Where(team =>
+                        team != Team && team.Characters.Any(character => character.IsAlive(false))).ToList()
+                ];
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(targetType), targetType,
+                    $"Erreur sur le paramètre targetType : {targetType}");
+        }
+
+        return targets.ElementAt(Prompt.Select("Sur qui voulez vous utiliser cette capacité ?", target => target.Name,
+            targets) - 1);
+    }
+
+    public (bool Next, Skill? Skill) SelectAction()
     {
         var selected = Prompt.Select("Que voulez-vous faire ?", s => s,
-            "Afficher informations", "Attaquer un autre joueur", "Utiliser sa capacité spéciale",
-            "Effacer le terminal");
+            "Afficher informations", "Utiliser une capacité", "Passer son tour", "Effacer le terminal");
         Console.WriteLine();
 
         switch (selected)
@@ -189,20 +213,14 @@ public abstract class Character : ITarget
                 Console.WriteLine(this + "\n");
                 break;
             case 2:
-                Character attackedPlayer;
-                do
-                {
-                    attackedPlayer = Select("Quel joueur voulez vous attaquer ?");
-                    Console.WriteLine();
-                } while (!ActionOn(attackedPlayer));
+                var skill = SelectSkill();
 
-                Attack(attackedPlayer);
-                Console.WriteLine();
-                return true;
+                if (skill == null) return (true, null);
+                var status = skill.Use(SelectTarget(skill.TargetType));
+
+                return (status.Next, status.Execute ? skill : null);
             case 3:
-                SpecialAbility();
-                Console.WriteLine();
-                return true;
+                return (true, null);
             case 4:
                 Program.Next();
                 break;
@@ -211,8 +229,13 @@ public abstract class Character : ITarget
                 break;
         }
 
-        return false;
+        return (false, null);
     }
+
+    //
+
+    protected abstract void SpecialAbility();
+    protected abstract void Attack(Character character);
 
     private bool ActionOn(Character player)
     {

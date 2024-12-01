@@ -60,6 +60,12 @@ public abstract class Character : ITarget
         return CurrentHealth > 0;
     }
 
+    protected int TakeDamage(int damage) {
+        var damageTaken = Math.Min(CurrentHealth, damage);
+        CurrentHealth -= damageTaken;
+        return damageTaken;
+    }
+
     public int Heal(int healthPoint, bool message = true)
     {
         var healed = Math.Min(MaxHealth - CurrentHealth, healthPoint);

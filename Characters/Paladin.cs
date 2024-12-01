@@ -61,8 +61,7 @@ public class Paladin : Character, IMana
         from.StatusInfo.Set(from, (false, false, false));
         from.StatusInfo.SetDamage(from, damageParameter);
 
-        TakeDamage((int)from.StatusInfo.Damage);
-        return (int)from.StatusInfo.Damage;
+        return TakeDamage((int)from.StatusInfo.Damage);
     }
 
     //

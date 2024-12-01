@@ -161,8 +161,7 @@ public class Mage : Character, IMana
             ReducedAttack--;
         }
 
-        TakeDamage((int)from.StatusInfo.Damage);
-        return (int)from.StatusInfo.Damage;
+        return TakeDamage((int)from.StatusInfo.Damage);
     }
 
     //

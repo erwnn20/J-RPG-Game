@@ -89,8 +89,7 @@ public class Warrior : Character
             else from.Additional = [_ => counterAttack.Execute()];
         }
 
-        TakeDamage((int)from.StatusInfo.Damage);
-        return (int)from.StatusInfo.Damage;
+        return TakeDamage((int)from.StatusInfo.Damage);
     }
 
     /*

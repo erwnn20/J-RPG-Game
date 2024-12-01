@@ -153,16 +153,13 @@ public class Attack<TTarget>(
         message ??= t => $"{Owner.Name} fait {Name} sur {t.Name}";
         Console.WriteLine(message(target));
 
-        var damages = Target.Defend(attack, target);
-        if (damages != StatusInfo.Damage) Console.WriteLine("Erreur sur le calcul des dégâts.");
+        StatusInfo.Damage = Target.Defend(attack, target);
 
         if (StatusInfo.Dodged) Console.WriteLine($"{Target.Name} a réussi à esquiver {Name}.");
-        else if (StatusInfo.Resisted) Console.WriteLine($"{Target.Name} a réussi à resister à {Name}.");
-        else
-        {
-            if (StatusInfo.Blocked) Console.WriteLine($"{Target.Name} a parer un partie des dégâts de {Name}.");
-            Console.WriteLine($"{Name} a fait {damages} à {Target.Name}.");
-        }
+        if (StatusInfo.Resisted) Console.WriteLine($"{Target.Name} a réussi à resister à {Name}.");
+        if (StatusInfo.Blocked) Console.WriteLine($"{Target.Name} a parer un partie des dégâts de {Name}.");
+        if (StatusInfo.Damage > 0) Console.WriteLine($"{Name} a fait {StatusInfo.Damage} de dégâts à {Target.Name}.");
+        target.IsAlive(true);
 
         Additional?.ForEach(add => add(attack));
     }

@@ -5,9 +5,10 @@ namespace JRPG_Game.Characters;
 
 public class Warrior : Character
 {
-    public Warrior(string name)
+    public Warrior(string name, Team.Team team)
         : base(
             name: name,
+            team: team,
             maxHealth: 100,
             speed: 50,
             armor: ArmorType.Plates,

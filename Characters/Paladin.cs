@@ -9,9 +9,10 @@ public class Paladin : Character, IMana
     public int MaxMana { get; set; } = 60;
     public int CurrentMana { get; set; }
 
-    public Paladin(string name)
+    public Paladin(string name, Team.Team team)
         : base(
             name: name,
+            team: team,
             maxHealth: 95,
             speed: 65,
             armor: ArmorType.Mesh,

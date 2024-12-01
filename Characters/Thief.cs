@@ -5,9 +5,10 @@ namespace JRPG_Game.Characters;
 
 public class Thief : Character
 {
-    public Thief(string name)
+    public Thief(string name, Team.Team team)
         : base(
             name: name,
+            team: team,
             maxHealth: 80,
             speed: 100,
             armor: ArmorType.Leather,

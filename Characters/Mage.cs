@@ -9,9 +9,10 @@ public class Mage : Character, IMana
     public int MaxMana { get; set; } = 100;
     public int CurrentMana { get; set; }
 
-    public Mage(string name)
+    public Mage(string name, Team.Team team)
         : base(
             name: name,
+            team: team,
             maxHealth: 60,
             speed: 75,
             armor: ArmorType.Textile,

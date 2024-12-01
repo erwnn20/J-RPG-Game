@@ -9,6 +9,7 @@ public abstract class Character : ITarget
 {
     protected Character(
         string name,
+        Team.Team team,
         int maxHealth,
         int speed,
         int physicalAttack,
@@ -20,6 +21,7 @@ public abstract class Character : ITarget
         List<Skill> skills)
     {
         Name = name;
+        Team = team;
         MaxHealth = maxHealth;
         CurrentHealth = maxHealth;
         Speed = speed;
@@ -35,6 +37,7 @@ public abstract class Character : ITarget
     }
 
     public string Name { get; private set; }
+    private Team.Team Team { get; set; }
     public int MaxHealth { get; private set; }
     public int CurrentHealth { get; private set; }
     public int Speed { get; set; }
@@ -47,6 +50,8 @@ public abstract class Character : ITarget
     protected List<Skill> Skills { get; set; }
 
     public static readonly List<Character> List = [];
+    
+    //
 
     public bool IsAlive(bool message)
     {
@@ -245,6 +250,22 @@ public abstract class Character : ITarget
         return alivePlayer.ElementAt(
             Prompt.Select(message, player => $"{player.Name} - ({player.GetType().Name})", alivePlayer) - 1
         );
+    }
+
+    public static Character Create(Team.Team team)
+    {
+        while (true)
+        {
+            List<Type> classList = [typeof(Mage), typeof(Paladin), typeof(Thief), typeof(Warrior)];
+            var characterType =
+                classList.ElementAt(Prompt.Select("Choisissez votre classe :", c => c.Name, classList) - 1);
+
+            if (Activator.CreateInstance(characterType, Prompt.Get<string>("Entrez le nom du personnage :"), team) is Character
+                character)
+                return character;
+
+            Console.WriteLine("Une erreur s'est produite : " + characterType);
+        }
     }
 
     //

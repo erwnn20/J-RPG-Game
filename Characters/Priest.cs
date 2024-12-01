@@ -9,9 +9,10 @@ public class Priest : Character, IMana
     public int MaxMana { get; set; } = 100;
     public int CurrentMana { get; set; }
 
-    public Priest(string name)
+    public Priest(string name, Team.Team team)
         : base(
             name: name,
+            team: team,
             maxHealth: 70,
             speed: 70,
             armor: ArmorType.Textile,

@@ -1,4 +1,5 @@
 ﻿using JRPG_Game.Characters;
+using JRPG_Game.Characters.Skills;
 using JRPG_Game.Utils;
 
 namespace JRPG_Game;
@@ -7,49 +8,87 @@ public static class Program
 {
     public static void Main()
     {
+        Console.Clear();
+
         // game start
         Console.WriteLine("Bienvenue dans le jeu !\n");
 
-        var nbrPlayers = Prompt.Get<int>("Entrez le nombre de joueurs :", i => i < 2);
+        var nbrTeam = Prompt.Get<int>("Entrez le nombre d'équipe :", i => i < 2);
+        var nbrCharacters = Prompt.Get<int>("Entrez le nombre de joueurs par équipe :", i => i < 1);
 
         Next();
 
-        for (var i = 0; i < nbrPlayers; i++)
+        for (var i = 0; i < nbrTeam; i++)
         {
-            Console.WriteLine("Creation de Joueur " + (i + 1) + ":");
-            CreateCharacter();
-            Next();
+            Console.WriteLine($"Creation de l'équipe {i + 1}");
+            Console.WriteLine($"L'équipe {Team.Team.Create(nbrCharacters).Name} a été créée");
+            Next(2000);
         }
 
-        Console.WriteLine($"{Character.List.Count} joueurs créés.");
+        Console.WriteLine($"{Team.Team.List.Count} équipes créées.");
         Console.WriteLine("Bon jeu !");
 
         Next(2000);
 
         // game content
-        while (Character.CombatIsOn())
-            foreach (var character in Character.List
-                         .TakeWhile(_ => Character.CombatIsOn())
-                         .Where(character => character.IsAlive(true)))
-            {
-                bool next;
-                do
-                {
-                    Console.WriteLine($"Au tour de {character.Name}");
-                    next = character.SelectAction();
-                } while (!next);
+        var turn = 1;
+        while (Team.Team.IsCombatOn())
+        {
+            Skill.UpdateReloadCooldowns();
+            Console.WriteLine($"{new string('=', 10)} Turn {turn++} {new string('=', 10)}");
 
-                _ = Prompt.Input("Appuyez sur 'Entrée' pour finir le tour", key => key != ConsoleKey.Enter);
-                Next(0);
-            }
+            List<Skill> turnActions = [];
+            Team.Team.List.ForEach(team =>
+            {
+                Console.WriteLine($"Au tour de l'équipe {team.Name}");
+                team.Characters
+                    .Where(character => character.IsAlive(true)).ToList()
+                    .ForEach(character =>
+                    {
+                        bool next;
+                        do
+                        {
+                            Console.WriteLine($"Au tour de {character.Name} - {character.Team.Name}\n");
+
+                            var status = character.SelectAction();
+
+                            next = status.Next;
+                            if (status.Skill != null) turnActions.Add(status.Skill);
+                        } while (!next);
+
+                        Prompt.Input("Appuyez sur 'Entrée' pour finir le tour du personnage",
+                            key => key != ConsoleKey.Enter);
+                        Next(0);
+                    });
+                Console.WriteLine($"L'équipe {team.Name} à fini de choisi ses action pour tout ses personnages.");
+                Next(2500);
+            });
+
+            Console.WriteLine($"Execution du tour {turn}...");
+
+            turnActions = turnActions.OrderByDescending(action => action.Owner.Speed).ToList();
+            turnActions.ForEach(action =>
+            {
+                action.Execute();
+                Console.WriteLine();
+            });
+
+            Prompt.Input("Appuyez sur 'Entrée' pour finir le tour", key => key != ConsoleKey.Enter);
+            Next(0);
+        }
 
         // game end
-        var winners = Character.List.Where(player => player.IsAlive(true)).ToList();
+        var winners = Team.Team.List.Where(team => team.Characters.Any(character => character.IsAlive(false))).ToList();
 
         switch (winners.Count)
         {
             case 1:
-                Console.WriteLine($"{winners.First().Name} a gagné, Félicitations !");
+                var winner = winners.First();
+                Console.WriteLine($"{winner.Name} a gagné, Félicitations !");
+                Console.WriteLine(
+                    $"Membres : {(winner.Characters.Count != 0
+                        ? string.Join(", ", winner.Characters.Select(character => $"{character.Name}{(!character.IsAlive(false) ? " (mort au combat)" : string.Empty)}"))
+                        : "Aucun personnage")}");
                 break;
             case > 1:
                 Console.WriteLine("Une erreur est survenue : il n'y a pas qu'un seul gagnant.");
@@ -58,7 +97,6 @@ public static class Program
                 Console.WriteLine("Une erreur est survenue : aucun gagnant.");
                 break;
         }
-
     }
 
     private static Character CreateCharacter()

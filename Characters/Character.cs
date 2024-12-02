@@ -203,7 +203,12 @@ public abstract class Character : ITarget
     public (bool Next, Skill? Skill) SelectAction()
     {
         var selected = Prompt.Select("Que voulez-vous faire ?", s => s,
-            "Afficher informations", "Utiliser une capacité", "Passer son tour", "Effacer le terminal");
+            "Afficher informations",
+            "Afficher équipe",
+            "Afficher le status de la partie",
+            "Utiliser une capacité",
+            "Passer son tour",
+            "Effacer le terminal");
         Console.WriteLine();
 
         switch (selected)
@@ -212,16 +217,43 @@ public abstract class Character : ITarget
                 Console.WriteLine(this + "\n");
                 break;
             case 2:
+                if (Team.Characters.Any(character => character != this))
+                {
+                    Console.WriteLine($"Info de l'équipe : {Team.Name}");
+                    Team.Characters
+                        .Where(character => character != this).ToList()
+                        .ForEach(
+                            character =>
+                                Console.WriteLine(
+                                    $"   - {character.Name} ({character.GetType().Name}) - {(CurrentHealth != 0 ? $"{CurrentHealth}/{MaxHealth} PV" : "mort au combat")}")
+                        );
+                    Console.WriteLine();
+                    break;
+                }
+
+                Console.WriteLine($"{Name} est le seul personnage de votre équipe.\n");
+                break;
+            case 3:
+                Console.WriteLine($"{new string('-', 10)} Status de la partie {new string('-', 10)}");
+                JRPG_Game.Team.Team.List.ForEach(team =>
+                    Console.WriteLine(
+                        $"  - {team.Name} {(team == Team ? "(votre équipe) " : string.Empty)}~ {(team.Characters.Any(character => character.IsAlive(false))
+                            ? $"{team.Characters.Count(character => character.IsAlive(false))} en vie"
+                            : "éliminé")}"));
+                Console.WriteLine(new string('-', 10 * 2 + " Status de la partie ".Length));
+                Console.WriteLine();
+                break;
+            case 4:
                 var skill = SelectSkill();
                 if (skill == null) return (true, null);
-
                 var status = skill.Use(SelectTarget(skill.TargetType));
-
                 return (status.Next, status.Execute ? skill : null);
-            case 3:
+            case 5:
                 return (true, null);
-            case 4:
+            case 6:
                 Program.Next();
+                Console.WriteLine($"Au tour de {Name} - {Team.Name}");
+                Console.WriteLine($"{this}\n");
                 break;
             default:
                 Console.WriteLine("Action inconnue, veillez réessayer.");

@@ -34,7 +34,7 @@ public static class Program
         while (Team.Team.IsCombatOn())
         {
             Skill.UpdateReloadCooldowns();
-            Console.WriteLine($"{new string('=', 10)} Turn {turn++} {new string('=', 10)}");
+            Console.WriteLine($"{new string('=', 10)} Tour {turn++} {new string('=', 10)}");
 
             List<Skill> turnActions = [];
             Team.Team.List.ForEach(team =>
@@ -44,10 +44,15 @@ public static class Program
                     .Where(character => character.IsAlive(true)).ToList()
                     .ForEach(character =>
                     {
-                        bool next;
+                        bool next, first = true;
                         do
                         {
-                            Console.WriteLine($"Au tour de {character.Name} - {character.Team.Name}\n");
+                            Console.WriteLine($"Au tour de {character.Name} - {character.Team.Name}");
+                            if (first)
+                            {
+                                Console.WriteLine($"{character}\n");
+                                first = false;
+                            }
 
                             var status = character.SelectAction();
 

@@ -85,7 +85,12 @@ public static class Prompt
                 input = input[..^1];
                 Console.Write("\b \b");
             }
-            else if (!new List<ConsoleKey> { ConsoleKey.Backspace, ConsoleKey.Tab }.Contains(key.Key) &&
+            else if (!new List<ConsoleKey>
+                         {
+                             ConsoleKey.Backspace, ConsoleKey.Tab, ConsoleKey.UpArrow, ConsoleKey.DownArrow,
+                             ConsoleKey.LeftArrow, ConsoleKey.RightArrow
+                         }
+                         .Contains(key.Key) &&
                      !excludedCondition(key.Key))
             {
                 input += key.KeyChar;

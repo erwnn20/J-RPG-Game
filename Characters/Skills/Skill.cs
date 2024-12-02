@@ -5,14 +5,14 @@ namespace JRPG_Game.Characters.Skills;
 
 public abstract class Skill
 {
-    public string Name { get; set; }
-    public Character Owner { get; set; }
-    public TargetType TargetType { get; set; }
+    public string Name { get; }
+    public Character Owner { get; }
+    public TargetType TargetType { get; }
     public ITarget? Target { get; protected set; }
-    public Func<string> Description { get; set; }
-    private int ReloadTime { get; set; }
+    public Func<string> Description { get; }
+    private int ReloadTime { get; }
     public int ReloadCooldown { get; private set; }
-    private int ManaCost { get; set; }
+    private int ManaCost { get; }
 
     private static readonly List<Skill> List = [];
 
@@ -34,16 +34,6 @@ public abstract class Skill
         ManaCost = manaCost;
 
         List.Add(this);
-    }
-
-    protected Skill(
-        string name,
-        Character owner,
-        TargetType targetType,
-        Func<string> description,
-        int reloadTime,
-        int manaCost) : this(name, owner, null, targetType, description, reloadTime, manaCost)
-    {
     }
 
     public (bool Next, bool Execute) Use(ITarget? target = null)

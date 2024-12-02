@@ -6,7 +6,7 @@ namespace JRPG_Game.Interfaces;
 
 public interface IMana
 {
-    int MaxMana { get; set; }
+    int MaxMana { get; }
     int CurrentMana { get; set; }
 
     public SpecialAbility<ITarget> Drink(Character character) => new(
@@ -28,5 +28,10 @@ public interface IMana
             return output;
         });
 
-    public int LoseMana(int manaLost) => CurrentMana -= Math.Min(MaxMana - CurrentMana, manaLost);
+    public int LoseMana(int manaLost)
+    {
+        var manaUsed = Math.Min(CurrentMana, manaLost);
+        CurrentMana -= manaUsed;
+        return manaUsed;
+    }
 }

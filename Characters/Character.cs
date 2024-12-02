@@ -36,18 +36,18 @@ public abstract class Character : ITarget
         List.Add(this);
     }
 
-    public string Name { get; private set; }
-    public Team.Team Team { get; private set; }
-    public int MaxHealth { get; private set; }
+    public string Name { get; }
+    public Team.Team Team { get; }
+    public int MaxHealth { get; }
     public int CurrentHealth { get; private set; }
     public int Speed { get; set; }
     public int PhysicalAttack { get; set; }
-    protected int MagicalAttack { get; set; }
-    private ArmorType Armor { get; set; }
+    protected int MagicalAttack { get; }
+    private ArmorType Armor { get; }
     protected decimal DodgeChance { get; set; }
-    private decimal ParadeChance { get; set; }
+    private decimal ParadeChance { get; }
     protected decimal SpellResistanceChance { get; set; }
-    protected List<Skill> Skills { get; set; }
+    protected List<Skill> Skills { get; }
 
     private static readonly List<Character> List = [];
 
@@ -60,7 +60,8 @@ public abstract class Character : ITarget
         return CurrentHealth > 0;
     }
 
-    protected int TakeDamage(int damage) {
+    protected int TakeDamage(int damage)
+    {
         var damageTaken = Math.Min(CurrentHealth, damage);
         CurrentHealth -= damageTaken;
         return damageTaken;
@@ -78,26 +79,19 @@ public abstract class Character : ITarget
     }
 
     public bool Dodge<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
-    {
-        return attack.AttackType == DamageType.Physical
-               && (decimal)new Random().NextDouble() <= DodgeChance;
-    }
+        => attack.AttackType == DamageType.Physical
+           && (decimal)new Random().NextDouble() <= DodgeChance;
 
     public bool Parade<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
-    {
-        return attack.AttackType == DamageType.Physical
-               && (decimal)new Random().NextDouble() <= ParadeChance;
-    }
+        => attack.AttackType == DamageType.Physical
+           && (decimal)new Random().NextDouble() <= ParadeChance;
 
     public bool SpellResistance<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
-    {
-        return attack.AttackType == DamageType.Magical
-               && (decimal)new Random().NextDouble() <= SpellResistanceChance;
-    }
+        => attack.AttackType == DamageType.Magical
+           && (decimal)new Random().NextDouble() <= SpellResistanceChance;
 
     public decimal ArmorReduction(DamageType damageType)
-    {
-        return damageType switch
+        => damageType switch
         {
             DamageType.Physical => Armor switch
             {
@@ -117,7 +111,6 @@ public abstract class Character : ITarget
             },
             _ => 0
         };
-    }
 
     public abstract int Defend<TTarget>(Attack<TTarget> from, Character damageParameter) where TTarget : class, ITarget;
 
@@ -170,7 +163,7 @@ public abstract class Character : ITarget
         } while (true);
     }
 
-    private ITarget SelectTarget(TargetType targetType)
+    private ITarget? SelectTarget(TargetType targetType)
     {
         List<ITarget> targets;
         switch (targetType)
@@ -178,7 +171,7 @@ public abstract class Character : ITarget
             case TargetType.Self:
                 return this;
             case TargetType.Teammate:
-                targets = [..Team.Characters.Where(character => character.IsAlive(false))];
+                targets = [..Team.Characters.Where(character => character != this && character.IsAlive(false))];
                 break;
             case TargetType.Enemy:
                 targets = [..List.Where(character => character.Team != Team && character.IsAlive(false))];
@@ -189,7 +182,7 @@ public abstract class Character : ITarget
                 targets =
                 [
                     ..JRPG_Game.Team.Team.List.Where(team =>
-                        team != Team && team.Characters.Any(character => character.IsAlive(false))).ToList()
+                        team != Team && team.Characters.Any(character => character.IsAlive(false)))
                 ];
                 break;
             default:
@@ -197,8 +190,14 @@ public abstract class Character : ITarget
                     $"Erreur sur le paramètre targetType : {targetType}");
         }
 
-        return targets.ElementAt(Prompt.Select("Sur qui voulez vous utiliser cette capacité ?", target => target.Name,
-            targets) - 1);
+        if (targets.Count != 0)
+            return targets.ElementAt(Prompt.Select(
+                "Sur qui voulez vous utiliser cette capacité ?",
+                target => target.Name,
+                targets) - 1);
+
+        Console.WriteLine("Pas de cible disponible pour cette capacité");
+        return null;
     }
 
     public (bool Next, Skill? Skill) SelectAction()
@@ -214,8 +213,8 @@ public abstract class Character : ITarget
                 break;
             case 2:
                 var skill = SelectSkill();
-
                 if (skill == null) return (true, null);
+
                 var status = skill.Use(SelectTarget(skill.TargetType));
 
                 return (status.Next, status.Execute ? skill : null);
@@ -234,63 +233,16 @@ public abstract class Character : ITarget
 
     //
 
-    protected abstract void SpecialAbility();
-    protected abstract void Attack(Character character);
-
-    private bool ActionOn(Character player)
-    {
-        if (player == this)
-        {
-            Console.WriteLine("Vous ne pouvez pas pour attaquer vous même !\n");
-            Program.Next(2000);
-            return false;
-        }
-
-        while (true)
-        {
-            var selected = Prompt.Select(
-                $"Cible => {player.Name} ({player.CurrentHealth}/{player.MaxHealth} PV) - {player.GetType().Name}",
-                displayFunc: s => s,
-                "Afficher informations", "Confirmé", "Changer de joueur");
-            Console.WriteLine();
-
-            switch (selected)
-            {
-                case 1:
-                    Console.WriteLine(player + "\n");
-                    break;
-                case 2:
-                    return true;
-                case 3:
-                    Program.Next();
-                    return false;
-                default:
-                    Console.WriteLine("Action inconnue, veillez réessayer.");
-                    break;
-            }
-        }
-    }
-
-    public static bool CombatIsOn() => List.Count(character => character.IsAlive(false)) >= 2;
-
-    private static Character Select(string message = "Quel joueur voulez vous choisir ?")
-    {
-        var alivePlayer = List.FindAll(player => player.IsAlive(false));
-        return alivePlayer.ElementAt(
-            Prompt.Select(message, player => $"{player.Name} - ({player.GetType().Name})", alivePlayer) - 1
-        );
-    }
-
     public static Character Create(Team.Team team)
     {
         while (true)
         {
-            List<Type> classList = [typeof(Mage), typeof(Paladin), typeof(Thief), typeof(Warrior)];
+            List<Type> classList = [typeof(Mage), typeof(Paladin), typeof(Priest), typeof(Thief), typeof(Warrior)];
             var characterType =
                 classList.ElementAt(Prompt.Select("Choisissez votre classe :", c => c.Name, classList) - 1);
 
-            if (Activator.CreateInstance(characterType, Prompt.Get<string>("Entrez le nom du personnage :"), team) is Character
-                character)
+            if (Activator.CreateInstance(characterType, Prompt.Get<string>("Entrez le nom du personnage :"), team)
+                is Character character)
                 return character;
 
             Console.WriteLine("Une erreur s'est produite : " + characterType);

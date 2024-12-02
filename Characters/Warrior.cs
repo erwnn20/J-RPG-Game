@@ -60,66 +60,29 @@ public class Warrior : Character
         from.StatusInfo.Set(from, (false, false, false));
         from.StatusInfo.SetDamage(from, damageParameter);
 
-        var counterAttack = new Attack<Character>(
-            name: "Contre-attaque",
-            owner: this,
-            description: () =>
-                "Lorsque le guerrier reçoit une attaque physique\n" +
-                " - Il a 25% de chances de contre attaque en infligeant 50% des dégâts qu’il a subi à l’attaquant\n" +
-                " - Si il a paré l’attaque, les chances sont de 100%, et les dégâts de 150%\n",
-            target: from.Owner,
-            targetType: TargetType.Enemy,
-            reloadTime: 0,
-            manaCost: 0,
-            damage: 0, // defined later
-            attackType: DamageType.Physical
-        );
 
-        if (from.StatusInfo.Blocked)
+        if (from.StatusInfo.Blocked || new Random().NextDouble() < 0.25)
         {
-            counterAttack.Damage = _ => (int)(PhysicalAttack * 1.50m);
-            if (from.Additional != null)
-                from.Additional.Add(_ => counterAttack.Execute());
-            else from.Additional = [_ => counterAttack.Execute()];
-        }
-        else if (new Random().NextDouble() < 0.25)
-        {
-            counterAttack.Damage = _ => (int)(PhysicalAttack * 0.50m);
-            if (from.Additional != null)
-                from.Additional.Add(_ => counterAttack.Execute());
-            else from.Additional = [_ => counterAttack.Execute()];
+            var counterAttack = new Attack<Character>(
+                name: "Contre-attaque",
+                owner: this,
+                description: () =>
+                    "Lorsque le guerrier reçoit une attaque physique\n" +
+                    " - Il a 25% de chances de contre attaque en infligeant 50% des dégâts qu’il a subi à l’attaquant\n" +
+                    " - Si il a paré l’attaque, les chances sont de 100%, et les dégâts de 150%\n",
+                target: from.Owner,
+                targetType: TargetType.Enemy,
+                reloadTime: 0,
+                manaCost: 0,
+                damage: from.StatusInfo.Blocked
+                    ? _ => (int)(PhysicalAttack * 1.50m)
+                    : _ => (int)(PhysicalAttack * 0.50m),
+                attackType: DamageType.Physical
+            );
+
+            (from.Additional ??= []).Add(_ => counterAttack.Execute());
         }
 
         return TakeDamage((int)from.StatusInfo.Damage);
-    }
-
-    /*
-    protected override void SpecialAbility()
-    {
-        PhysicalAttack *= 2;
-        Console.WriteLine($"{Name} utilise sa capacité spéciale : \"Cri de bataille\"\n" +
-                          $" -> Les dégâts de ses attaques physiques sont multiplier par 2");
-    }
-
-    protected override void Attack(Character character)
-    {
-        var attack = new Attack(
-            name: "Frappe héroïque",
-            attacker: this,
-            target: character,
-            damage: PhysicalAttack,
-            attackType: DamageType.Physical
-        );
-        attack.Execute();
-    }
-*/
-    protected override void SpecialAbility()
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override void Attack(Character character)
-    {
-        throw new NotImplementedException();
     }
 }

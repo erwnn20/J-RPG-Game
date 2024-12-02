@@ -68,27 +68,6 @@ public static class Prompt
 
     //
 
-    public static bool GetBool(string message, string trueValue, string falseValue)
-    {
-        do
-        {
-            var input = trueValue.Length == 1 && falseValue.Length == 1
-                ? Input(message,
-                    key => key != (ConsoleKey)char.ToUpper(trueValue[0])
-                           && key != (ConsoleKey)char.ToUpper(falseValue[0]))
-                : Get<string>(message,
-                    s => !s.Equals(trueValue, StringComparison.CurrentCultureIgnoreCase)
-                         && !s.Equals(falseValue, StringComparison.CurrentCultureIgnoreCase));
-
-            if (input.Equals(trueValue, StringComparison.CurrentCultureIgnoreCase)) return true;
-            if (input.Equals(falseValue, StringComparison.CurrentCultureIgnoreCase)) return false;
-
-            Console.WriteLine($" - '{input}' n'est pas une valide.");
-        } while (true);
-    }
-
-    //
-
     public static string Input(string? message = null, Func<ConsoleKey, bool>? excludedCondition = null)
     {
         excludedCondition ??= _ => false;

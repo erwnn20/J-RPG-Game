@@ -6,7 +6,7 @@ namespace JRPG_Game.Characters;
 
 public class Mage : Character, IMana
 {
-    public int MaxMana { get; set; } = 100;
+    public int MaxMana => 100;
     public int CurrentMana { get; set; }
 
     public Mage(string name, Team.Team team)
@@ -92,7 +92,8 @@ public class Mage : Character, IMana
                 manaCost: 20,
                 effect: target =>
                 {
-                    if (target is not IMana t) return "";
+                    if (target is not IMana t) 
+                        return $"{target.Name} n'utilise pas de mana.";
 
                     var manaTaken = Math.Max(40, t.CurrentMana / 2);
                     return $"{target.Name} perd {t.LoseMana(manaTaken)} de mana.";
@@ -113,8 +114,8 @@ public class Mage : Character, IMana
         ]);
     }
 
-    private decimal ReduceDamagePhysical { get; set; } = 0.60m;
-    private decimal ReduceDamageMagical { get; set; } = 0.50m;
+    private static decimal ReduceDamagePhysical => 0.60m;
+    private static decimal ReduceDamageMagical => 0.50m;
     private int ReducedAttack { get; set; }
     private bool SpellReturn { get; set; }
 
@@ -125,27 +126,24 @@ public class Mage : Character, IMana
 
         if (SpellReturn)
         {
-            Action<Attack<Character>> spellReturn = _ =>
+            var spellReturned = new Attack<Character>(
+                name: from.Name,
+                description: from.Description,
+                owner: this,
+                target: from.Owner,
+                targetType: TargetType.Enemy,
+                reloadTime: 0,
+                manaCost: 0,
+                damage: from.Damage,
+                attackType: from.AttackType,
+                additional: from.Additional
+            );
+
+            (from.Additional ??= []).Add(_ =>
             {
-                var spellReturned = new Attack<Character>(
-                    name: from.Name,
-                    description: from.Description,
-                    owner: this,
-                    target: from.Owner,
-                    targetType: TargetType.Enemy,
-                    reloadTime: 0,
-                    manaCost: 0,
-                    damage: from.Damage,
-                    attackType: from.AttackType,
-                    additional: from.Additional
-                );
                 Console.WriteLine($"{Name} revoie {from.Name}.");
                 spellReturned.Execute();
-            };
-
-            if (from.Additional != null)
-                from.Additional.Add(spellReturn);
-            else from.Additional = [spellReturn];
+            });
 
             SpellReturn = false;
         }
@@ -174,36 +172,5 @@ public class Mage : Character, IMana
                    ? $"\n Dégâts réduits pendant {(ReducedAttack > 1 ? $"les {ReducedAttack} prochaines attaques subies." : "la prochaine attaque subie.")}"
                    : string.Empty) +
                (SpellReturn ? "\n La prochaine attaque magique subie sera renvoyée." : string.Empty);
-    }
-
-
-    /*protected override void SpecialAbility()
-    {
-        ReducedAttack = 2;
-        Console.WriteLine($"{Name} utilise sa capacité spéciale : \"Barrière de givre\"\n" +
-                          $" -> Les deux prochaines attaques subies sont réduites");
-    }
-
-    protected override void Attack(Character character)
-    {
-        var attack = new Attack(
-            name: "Eclair de givre",
-            attacker: this,
-            target: character,
-            damage: MagicalAttack,
-            attackType: DamageType.Magical
-        );
-        attack.Execute();
-    }
-
-    */
-    protected override void SpecialAbility()
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override void Attack(Character character)
-    {
-        throw new NotImplementedException();
     }
 }

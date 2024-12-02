@@ -1,5 +1,4 @@
-﻿using JRPG_Game.Characters;
-using JRPG_Game.Characters.Skills;
+﻿using JRPG_Game.Characters.Skills;
 using JRPG_Game.Utils;
 
 namespace JRPG_Game;
@@ -61,7 +60,9 @@ public static class Program
                         Next(0);
                     });
                 Console.WriteLine($"L'équipe {team.Name} à fini de choisi ses action pour tout ses personnages.");
-                Next(2500);
+                Prompt.Input("Appuyez sur 'Entrée' pour finir le tour de l'équipe",
+                    key => key != ConsoleKey.Enter);
+                Next(0);
             });
 
             Console.WriteLine($"Execution du tour {turn}...");
@@ -96,22 +97,6 @@ public static class Program
             default:
                 Console.WriteLine("Une erreur est survenue : aucun gagnant.");
                 break;
-        }
-    }
-
-    private static Character CreateCharacter()
-    {
-        while (true)
-        {
-            List<Type> classList = [typeof(Mage), typeof(Paladin), typeof(Thief), typeof(Warrior)];
-            var characterType =
-                classList.ElementAt(Prompt.Select("Choisissez votre classe :", c => c.Name, classList) - 1);
-
-            if (Activator.CreateInstance(characterType, Prompt.Get<string>("Entrez votre nom :"))
-                is Character character)
-                return character;
-
-            Console.WriteLine("Une erreur s'est produite : " + characterType);
         }
     }
 

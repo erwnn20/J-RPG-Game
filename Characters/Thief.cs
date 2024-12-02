@@ -70,56 +70,23 @@ public class Thief : Character
         from.StatusInfo.Set(from, (false, false, false));
         from.StatusInfo.SetDamage(from, damageParameter);
 
-        if (from.StatusInfo.Dodged)
-        {
-            var counterAttack = new Attack<Character>(
-                name: "Poignard dans le dos",
-                owner: this,
-                description: () =>
-                    "Lorsque le voleur esquive une attaque ennemie, il déclenche une attaque qui inflige 15 points de dégâts physiques à l’attaquant.",
-                target: from.Owner,
-                targetType: TargetType.Enemy,
-                reloadTime: 0,
-                manaCost: 0,
-                damage: 15,
-                attackType: DamageType.Physical
-            );
+        if (!from.StatusInfo.Dodged) return TakeDamage((int)from.StatusInfo.Damage);
 
-            if (from.Additional != null)
-                from.Additional.Add(_ => counterAttack.Execute());
-            else from.Additional = [_ => counterAttack.Execute()];
-        }
-
-        return TakeDamage((int)from.StatusInfo.Damage);
-    }
-
-    /*protected override void SpecialAbility()
-    {
-        DodgeChance = Math.Min(0.5m, DodgeChance + 0.2m);
-        SpellResistanceChance = Math.Min(0.5m, SpellResistanceChance + 0.2m);
-        Console.WriteLine($"{Name} utilise sa capacité spéciale : \"Evasion\"\n" +
-                          $" -> Augmente les chances d'esquive ({DodgeChance:P}{(DodgeChance == 0.5m ? " MAX" : string.Empty)})\n" +
-                          $" -> Augmente sa resistance aux sorts ({SpellResistanceChance:P}{(SpellResistanceChance == 0.5m ? " MAX" : string.Empty)})");
-    }
-
-    protected override void Attack(Character character)
-    {
-        var attack = new Attack(
-            name: "Coup bas",
-            attacker: this,
-            target: character,
-            damage: (int)(PhysicalAttack * (character.CurrentHealth < character.MaxHealth / 2 ? 1.5 : 1)),
+        var counterAttack = new Attack<Character>(
+            name: "Poignard dans le dos",
+            owner: this,
+            description: () =>
+                "Lorsque le voleur esquive une attaque ennemie, il déclenche une attaque qui inflige 15 points de dégâts physiques à l’attaquant.",
+            target: from.Owner,
+            targetType: TargetType.Enemy,
+            reloadTime: 0,
+            manaCost: 0,
+            damage: 15,
             attackType: DamageType.Physical
         );
-        attack.Execute();
-    }*/
-    protected override void SpecialAbility()
-    {
-        throw new NotImplementedException();
-    }
 
-    protected override void Attack(Character character)
-    {
-        throw new NotImplementedException();
+        (from.Additional ??= []).Add(_ => counterAttack.Execute());
+
+        return TakeDamage((int)from.StatusInfo.Damage);
     }
 }

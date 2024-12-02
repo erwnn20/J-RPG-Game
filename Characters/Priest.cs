@@ -6,7 +6,7 @@ namespace JRPG_Game.Characters;
 
 public class Priest : Character, IMana
 {
-    public int MaxMana { get; set; } = 100;
+    public int MaxMana => 100;
     public int CurrentMana { get; set; }
 
     public Priest(string name, Team.Team team)
@@ -64,17 +64,5 @@ public class Priest : Character, IMana
     {
         return base.ToString() + "\n" +
                $" - Mana: {CurrentMana}/{MaxMana}";
-    }
-
-    /**/
-
-    protected override void SpecialAbility()
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override void Attack(Character character)
-    {
-        throw new NotImplementedException();
     }
 }

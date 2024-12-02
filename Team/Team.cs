@@ -1,5 +1,4 @@
 ﻿using JRPG_Game.Characters;
-using JRPG_Game.Characters.Skills;
 using JRPG_Game.Interfaces;
 using JRPG_Game.Utils;
 
@@ -13,20 +12,15 @@ public class Team : ITarget
         List.Add(this);
     }
 
-    public List<Character> Characters { get; set; } = [];
-    public string Name { get; set; }
+    public List<Character> Characters { get; } = [];
+    public string Name { get; }
 
-    public static List<Team> List { get; set; } = [];
+    public static readonly List<Team> List = [];
 
     //
 
     private void Add(Character character) => Characters.Add(character);
 
-    public int Defend<TTarget>(Attack<TTarget> from, Character damageParameter) where TTarget : class, ITarget
-    {
-        throw new NotImplementedException();
-    }
-    
     //
 
     public static Team Create(int size)

@@ -22,7 +22,7 @@ public class SpecialAbility<TTarget>(
         manaCost: manaCost
     ) where TTarget : class, ITarget
 {
-    private Func<Character, string> Effect { get; set; } = effect;
+    private Func<Character, string> Effect { get; } = effect;
 
     public SpecialAbility(
         string name,
@@ -78,10 +78,10 @@ public class SpecialAbility<TTarget>(
 
     private void Execute(Character _, Func<Character, string>? message = null)
     {
-        if (Target is not Character target || this is not SpecialAbility<Character>)
+        if (Target is not Character target)
         {
             Console.WriteLine(Target != null
-                ? $"Erreur de cible sur {Name}. Attendu: {nameof(Character)}, Actuel: {Target.GetType().Name}.)"
+                ? $"Erreur de cible sur {Name}. Attendu: {nameof(Character)}, Actuel: {Target.GetType().Name}."
                 : $"Erreur de cible sur {Name}. La cible est null.");
             return;
         }

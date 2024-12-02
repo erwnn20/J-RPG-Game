@@ -23,8 +23,8 @@ public class Attack<TTarget>(
         manaCost: manaCost)
     where TTarget : class, ITarget
 {
-    public Func<Character, int> Damage { get; set; } = damage;
-    public DamageType AttackType { get; private set; } = attackType;
+    public Func<Character, int> Damage { get; } = damage;
+    public DamageType AttackType { get; } = attackType;
     public List<Action<Attack<Character>>>? Additional { get; set; } = additional;
     public Status StatusInfo { get; private set; } = new();
 
@@ -141,26 +141,26 @@ public class Attack<TTarget>(
         if (Target is not Character target || this is not Attack<Character> attack)
         {
             Console.WriteLine(Target != null
-                ? $"Erreur de cible sur {Name}. Attendu: {nameof(Character)}, Actuel: {Target.GetType().Name}.)"
-                : $"Erreur de cible sur {Name}. La cible est null.");
+                ? $"Erreur de cible sur {Name} par {Owner.Name}. Attendu: {nameof(Character)}, Actuel: {Target.GetType().Name}.)"
+                : $"Erreur de cible sur {Name} par {Owner.Name}. La cible est null.");
             return;
         }
 
         if (!target.IsAlive(false))
         {
-            Console.WriteLine($"La cible de {Name} est deja morte.");
+            Console.WriteLine($"La cible de {Name} par {Owner.Name} est deja morte.");
             return;
         }
 
         message ??= t => $"{Owner.Name} fait {Name} sur {t.Name}";
         Console.WriteLine(message(target));
 
-        StatusInfo.Damage = Target.Defend(attack, target);
+        StatusInfo.Damage = target.Defend(attack, target);
 
-        if (StatusInfo.Dodged) Console.WriteLine($"{Target.Name} a réussi à esquiver {Name}.");
-        if (StatusInfo.Resisted) Console.WriteLine($"{Target.Name} a réussi à resister à {Name}.");
-        if (StatusInfo.Blocked) Console.WriteLine($"{Target.Name} a parer un partie des dégâts de {Name}.");
-        if (StatusInfo.Damage > 0) Console.WriteLine($"{Name} a fait {StatusInfo.Damage} de dégâts à {Target.Name}.");
+        if (StatusInfo.Dodged) Console.WriteLine($"{target.Name} a réussi à esquiver {Name}.");
+        if (StatusInfo.Resisted) Console.WriteLine($"{target.Name} a réussi à resister à {Name}.");
+        if (StatusInfo.Blocked) Console.WriteLine($"{target.Name} a parer un partie des dégâts de {Name}.");
+        if (StatusInfo.Damage > 0) Console.WriteLine($"{Name} a fait {StatusInfo.Damage} de dégâts à {target.Name}.");
         target.IsAlive(true);
 
         Additional?.ForEach(add => add(attack));
@@ -176,7 +176,7 @@ public class Attack<TTarget>(
             return;
         }
 
-        Console.WriteLine($"{Owner.Name} fait {Name} sur l'équipe {Target.Name}");
+        Console.WriteLine($"{Owner.Name} fait {Name} sur l'équipe {team.Name}");
         team.Characters
             .Where(c => c.IsAlive(false)).ToList()
             .ForEach(target =>
@@ -212,26 +212,21 @@ public class Attack<TTarget>(
         public void Set(Attack<TTarget> attack,
             (bool Dodged, bool Resisted, bool Blocked) attackStatus = default)
         {
-            if (attack.Target is Character target)
-            {
-                if (attackStatus.Dodged || target.Dodge(attack)) Dodged = true;
-                else if (attackStatus.Resisted || target.SpellResistance(attack)) Resisted = true;
-                else if (attackStatus.Blocked || target.Parade(attack)) Blocked = true;
-            }
+            if (attack.Target is not Character target) return;
+
+            if (attackStatus.Dodged || target.Dodge(attack)) Dodged = true;
+            else if (attackStatus.Resisted || target.SpellResistance(attack)) Resisted = true;
+            else if (attackStatus.Blocked || target.Parade(attack)) Blocked = true;
         }
 
-        public decimal SetDamage(Attack<TTarget> attack, Character damageParameter)
+        public void SetDamage(Attack<TTarget> attack, Character damageParameter)
         {
-            if (attack.Target is Character target)
-            {
-                if (Dodged || Resisted) return 0;
+            if (attack.Target is not Character target) return;
+            if (Dodged || Resisted) return;
 
-                Damage = attack.Damage(damageParameter);
-                if (Blocked) Damage *= 0.5m;
-                Damage *= 1 - target.ArmorReduction(attack.AttackType);
-            }
-
-            return Damage;
+            Damage = attack.Damage(damageParameter)
+                     * (Blocked ? 0.5m : 1)
+                     * (1 - target.ArmorReduction(attack.AttackType));
         }
     }
 }

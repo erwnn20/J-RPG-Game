@@ -98,7 +98,7 @@ public abstract class Character : ITarget
                 ArmorType.Textile => 0.0m,
                 ArmorType.Leather => 0.15m,
                 ArmorType.Mesh => 0.30m,
-                ArmorType.Plates => 0.44m,
+                ArmorType.Plates => 0.45m,
                 _ => 0
             },
             DamageType.Magical => Armor switch

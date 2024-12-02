@@ -24,9 +24,18 @@ public static class Program
             Next(2000);
         }
 
-        Console.WriteLine($"{Team.Team.List.Count} équipes créées.");
+        Console.WriteLine($"{Team.Team.List.Count} équipes créées.\n");
+        Team.Team.List.ForEach(team =>
+        {
+            Console.WriteLine($"{new string('-', 10)} {team.Name} {new string('-', 10)}");
+            team.Characters.ForEach(character => Console.WriteLine($"     {character.Name} - {character.GetType().Name}"));            
+            Console.WriteLine(new string('-', 10 * 2 + $" {team.Name} ".Length) + "\n");
+        });
+        Prompt.Input("Appuyez sur 'Entrée' pour commencer la partie",
+            key => key != ConsoleKey.Enter);
+        Next(0);
+        
         Console.WriteLine("Bon jeu !");
-
         Next(2000);
 
         // game content

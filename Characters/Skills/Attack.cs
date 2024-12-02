@@ -222,7 +222,11 @@ public class Attack<TTarget>(
         public void SetDamage(Attack<TTarget> attack, Character damageParameter)
         {
             if (attack.Target is not Character target) return;
-            if (Dodged || Resisted) return;
+            if (Dodged || Resisted)
+            {
+                Damage = 0;
+                return;
+            }
 
             Damage = attack.Damage(damageParameter)
                      * (Blocked ? 0.5m : 1)

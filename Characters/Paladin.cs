@@ -33,7 +33,11 @@ public class Paladin : Character, IMana
                 reloadTime: 1,
                 manaCost: 5,
                 damage: PhysicalAttack,
-                attackType: DamageType.Physical),
+                attackType: DamageType.Physical,
+                additional:
+                [
+                    Special
+                ]),
             new Attack<Character>(
                 name: "Jugement",
                 description: () => $"Inflige 100% de la puissance d’attaque magique ({MagicalAttack}) à la cible.",
@@ -42,7 +46,11 @@ public class Paladin : Character, IMana
                 reloadTime: 1,
                 manaCost: 10,
                 damage: MagicalAttack,
-                attackType: DamageType.Magical),
+                attackType: DamageType.Magical,
+                additional:
+                [
+                    Special
+                ]),
             new SpecialAbility<Character>(
                 name: "Eclair lumineux",
                 description: () =>
@@ -63,6 +71,13 @@ public class Paladin : Character, IMana
 
         return TakeDamage((int)from.StatusInfo.Damage);
     }
+
+    private Action<Attack<Character>> Special => attack =>
+    {
+        if (Heal((int)attack.StatusInfo.Damage / 2, false) is var healed and > 0)
+            Console.WriteLine(
+                $"{Name} se soigne de {healed} PV garce à sa capacité spéciale.");
+    };
 
     //
 

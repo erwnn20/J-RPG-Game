@@ -14,9 +14,9 @@ public static class Prompt
 
         Console.WriteLine(message);
         for (var i = 0; i < choices.Count; i++)
-            Console.WriteLine($"\t{i + 1} : {displayFunc(choices[i])}");
+            Console.WriteLine($"    {i + 1} : {displayFunc(choices[i])}");
 
-        return Get<int>("-> ", choice => choice < 1, choice => choice > choices.Count);
+        return Get<int>("->", choice => choice < 1, choice => choice > choices.Count);
     }
 
     public static int Select<T>(string message, Func<T, string> displayFunc, params T[] choices) =>

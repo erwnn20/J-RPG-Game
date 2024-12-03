@@ -53,8 +53,7 @@ public class SpecialAbility<TTarget>(
         {
             Console.WriteLine(Target != null
                 ? $"La cible sélectionnée ({Target.Name} - {Target.GetType().Name}) ne correspond pas au type de cible de la compétence ({TargetType})."
-                : $"Pas de cible sélectionné pour {Name}.");
-
+                : $"Pas de cible sélectionné pour {Name} fait par {Owner.Name}.");
             return;
         }
 
@@ -68,8 +67,8 @@ public class SpecialAbility<TTarget>(
                 break;
             default:
                 Console.WriteLine(Target != null
-                    ? $"Erreur de type de cible sur {Name}. Attendu: {nameof(Character)} ou {nameof(Team.Team)}, Actuel: {Target.GetType().Name}."
-                    : $"Erreur de cible sur {Name}. La cible est null.");
+                    ? $"Erreur : le type de la cible de {Name} fait par {Owner.Name}. Attendu: {nameof(Character)} ou {nameof(Team.Team)}, Actuel: {Target.GetType().Name}."
+                    : $"Erreur : la cible de {Name} fait par {Owner.Name} est null.");
                 break;
         }
 
@@ -81,19 +80,20 @@ public class SpecialAbility<TTarget>(
         if (Target is not Character target)
         {
             Console.WriteLine(Target != null
-                ? $"Erreur de cible sur {Name}. Attendu: {nameof(Character)}, Actuel: {Target.GetType().Name}."
-                : $"Erreur de cible sur {Name}. La cible est null.");
+                ? $"Erreur : le type de la cible de {Name} fait par {Owner.Name}. Attendu: {nameof(Character)}, Actuel: {Target.GetType().Name}."
+                : $"Erreur : la cible de {Name} fait par {Owner.Name} est null.");
             return;
         }
 
         if (!target.IsAlive(false))
         {
-            Console.WriteLine($"La cible de {Name} est morte, la capacité ne peux donc pas être utilisée");
+            Console.WriteLine($"La cible de {Name} ({Target.Name}) par {Owner.Name} est deja morte.");
             return;
         }
 
-        message ??= t => $"{Owner.Name} utilise {Name}" +
-                         (TargetType != TargetType.Self ? $" sur {t.Name}" : string.Empty);
+        message ??= t =>
+            $"{Owner.Name} fait {Name}{(TargetType != TargetType.Self ? $" sur {t.Name}" : string.Empty)}.";
+
         Console.WriteLine(message(target));
         Console.WriteLine(Effect(target));
     }
@@ -103,12 +103,12 @@ public class SpecialAbility<TTarget>(
         if (Target is not Team.Team team)
         {
             Console.WriteLine(Target != null
-                ? $"Erreur de cible sur {Name}. Attendu: {nameof(Team.Team)}, Actuel: {Target.GetType().Name}.)"
-                : $"Erreur de cible sur {Name}. La cible est null.");
+                ? $"Erreur : le type de la cible de {Name} fait par {Owner.Name}. Attendu: {nameof(Team.Team)}, Actuel: {Target.GetType().Name}."
+                : $"Erreur : la cible de {Name} fait par {Owner.Name} est null.");
             return;
         }
 
-        Console.WriteLine($"{Owner.Name} fait {Name} sur l'équipe {Target.Name}");
+        Console.WriteLine($"{Owner.Name} fait {Name} sur l'équipe {Target.Name}.");
         team.Characters
             .Where(c => c.IsAlive(false)).ToList()
             .ForEach(target =>
@@ -122,7 +122,7 @@ public class SpecialAbility<TTarget>(
                     reloadTime: 0,
                     manaCost: 0,
                     effect: Effect
-                ).Execute(target, t => $"{Name} atteint {t.Name}");
+                ).Execute(target, t => $"{Name} atteint {t.Name}.");
             });
     }
 }

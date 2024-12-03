@@ -11,7 +11,8 @@ public interface IMana
 
     public SpecialAbility<ITarget> Drink(Character character) => new(
         name: "Boire une potion",
-        description: () => $"Régénère le mana de 50% (actuellement : {CurrentMana}/{MaxMana})",
+        description: () =>
+            $"Régénère le mana de 50% ({CurrentMana} -> {Math.Min(MaxMana, CurrentMana + MaxMana / 2)}/{MaxMana})",
         owner: character,
         targetType: TargetType.Self,
         reloadTime: 1,

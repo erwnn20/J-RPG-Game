@@ -39,11 +39,11 @@ public class Mage : Character, IMana
                 [
                     attack =>
                     {
-                        if (attack.StatusInfo.Resisted) return; // if target resist (SpellResistance)
+                        if (attack.StatusInfo.Resisted) return;
                         if (attack.Target is not Character target) return;
 
                         target.Speed = (int)(target.Speed * 0.75m);
-                        Console.WriteLine($"La vitesse de {target.Name} à diminué de 25%");
+                        Console.WriteLine($"La vitesse de {target.Name} à diminué de 25%.");
                     }
                 ]),
             new SpecialAbility<Character>(
@@ -76,11 +76,11 @@ public class Mage : Character, IMana
                 [
                     attack =>
                     {
-                        if (attack.StatusInfo.Resisted) return; // if target resist (SpellResistance)
+                        if (attack.StatusInfo.Resisted) return;
                         if (attack.Target is not Character target) return;
 
                         target.Speed = (int)(target.Speed * 0.85m);
-                        Console.WriteLine($"La vitesse de {target.Name} à diminué de 15%");
+                        Console.WriteLine($"La vitesse de {target.Name} à diminué de 15%.");
                     }
                 ]),
             new SpecialAbility<Character>(
@@ -92,7 +92,7 @@ public class Mage : Character, IMana
                 manaCost: 20,
                 effect: target =>
                 {
-                    if (target is not IMana t) 
+                    if (target is not IMana t)
                         return $"{target.Name} n'utilise pas de mana.";
 
                     var manaTaken = Math.Max(40, t.CurrentMana / 2);
@@ -100,7 +100,7 @@ public class Mage : Character, IMana
                 }),
             new SpecialAbility<Character>(
                 name: "Renvoi de sort",
-                description: () => "Renvoie la prochaine attaque magique subie à l’assaillant",
+                description: () => "Renvoie la prochaine attaque magique subie à l’assaillant.",
                 owner: this,
                 targetType: TargetType.Self,
                 reloadTime: 1,
@@ -108,7 +108,7 @@ public class Mage : Character, IMana
                 effect: _ =>
                 {
                     SpellReturn = true;
-                    return $"la prochaine attaque subie par {Name} sera renvoyée.";
+                    return $"La prochaine attaque magique subie par {Name} sera renvoyée.";
                 }),
             ((IMana)this).Drink(this)
         ]);
@@ -124,27 +124,9 @@ public class Mage : Character, IMana
         from.StatusInfo.Set(from, (false, SpellReturn, false));
         from.StatusInfo.SetDamage(from, damageParameter);
 
-        if (SpellReturn)
+        if (from.AttackType == DamageType.Magical && SpellReturn)
         {
-            var spellReturned = new Attack<Character>(
-                name: from.Name,
-                description: from.Description,
-                owner: this,
-                target: from.Owner,
-                targetType: TargetType.Enemy,
-                reloadTime: 0,
-                manaCost: 0,
-                damage: from.Damage,
-                attackType: from.AttackType,
-                additional: from.Additional
-            );
-
-            (from.Additional ??= []).Add(_ =>
-            {
-                Console.WriteLine($"{Name} revoie {from.Name}.");
-                spellReturned.Execute();
-            });
-
+            (from.Additional ??= []).Add(Special);
             SpellReturn = false;
         }
 
@@ -162,12 +144,30 @@ public class Mage : Character, IMana
         return TakeDamage((int)from.StatusInfo.Damage);
     }
 
+    private Action<Attack<Character>> Special => attackFrom =>
+    {
+        Console.WriteLine($"{Name} revoie {attackFrom.Name}.");
+        var conterAttack = new Attack<Character>(
+            name: attackFrom.Name,
+            description: attackFrom.Description,
+            owner: this,
+            target: attackFrom.Owner,
+            targetType: TargetType.Enemy,
+            reloadTime: 0,
+            manaCost: 0,
+            damage: attackFrom.Damage,
+            attackType: attackFrom.AttackType
+        );
+        conterAttack.Execute();
+        conterAttack.Damage = _ => 0;
+    };
+
     //
 
     public override string ToString()
     {
         return base.ToString() + "\n" +
-               $" - Mana: {CurrentMana}/{MaxMana}" +
+               $" ~ Mana: {CurrentMana}/{MaxMana}" +
                (ReducedAttack > 0
                    ? $"\n Dégâts réduits pendant {(ReducedAttack > 1 ? $"les {ReducedAttack} prochaines attaques subies." : "la prochaine attaque subie.")}"
                    : string.Empty) +

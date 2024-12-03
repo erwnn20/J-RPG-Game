@@ -23,7 +23,7 @@ public class Attack<TTarget>(
         manaCost: manaCost)
     where TTarget : class, ITarget
 {
-    public Func<Character, int> Damage { get; } = damage;
+    public Func<Character, int> Damage { get; set; } = damage;
     public DamageType AttackType { get; } = attackType;
     public List<Action<Attack<Character>>>? Additional { get; set; } = additional;
     public Status StatusInfo { get; private set; } = new();
@@ -112,8 +112,7 @@ public class Attack<TTarget>(
         {
             Console.WriteLine(Target != null
                 ? $"La cible sélectionnée ({Target.Name} - {Target.GetType().Name}) ne correspond pas au type de cible de la compétence ({TargetType})."
-                : $"Pas de cible sélectionné pour {Name}.");
-
+                : $"Pas de cible sélectionné pour {Name} fait par {Owner.Name}.");
             return;
         }
 
@@ -127,8 +126,8 @@ public class Attack<TTarget>(
                 break;
             default:
                 Console.WriteLine(Target != null
-                    ? $"Erreur de type de cible sur {Name}. Attendu: {nameof(Character)} ou {nameof(Team.Team)}, Actuel: {Target.GetType().Name}."
-                    : $"Erreur de cible sur {Name}. La cible est null.");
+                    ? $"Erreur : le type de la cible de {Name} fait par {Owner.Name}. Attendu: {nameof(Character)} ou {nameof(Team.Team)}, Actuel: {Target.GetType().Name}."
+                    : $"Erreur : la cible de {Name} fait par {Owner.Name} est null.");
                 break;
         }
 
@@ -141,25 +140,26 @@ public class Attack<TTarget>(
         if (Target is not Character target || this is not Attack<Character> attack)
         {
             Console.WriteLine(Target != null
-                ? $"Erreur de cible sur {Name} par {Owner.Name}. Attendu: {nameof(Character)}, Actuel: {Target.GetType().Name}.)"
-                : $"Erreur de cible sur {Name} par {Owner.Name}. La cible est null.");
+                ? $"Erreur : le type de la cible de {Name} fait par {Owner.Name}. Attendu: {nameof(Character)}, Actuel: {Target.GetType().Name}."
+                : $"Erreur : la cible de {Name} fait par {Owner.Name} est null.");
             return;
         }
 
         if (!target.IsAlive(false))
         {
-            Console.WriteLine($"La cible de {Name} par {Owner.Name} est deja morte.");
+            Console.WriteLine($"La cible de {Name} ({Target.Name}) par {Owner.Name} est deja morte.");
             return;
         }
 
-        message ??= t => $"{Owner.Name} fait {Name} sur {t.Name}";
+        message ??= t =>
+            $"{Owner.Name} fait {Name}{(TargetType != TargetType.Self ? $" sur {t.Name}" : string.Empty)}.";
         Console.WriteLine(message(target));
 
         StatusInfo.Damage = target.Defend(attack, target);
 
         if (StatusInfo.Dodged) Console.WriteLine($"{target.Name} a réussi à esquiver {Name}.");
         if (StatusInfo.Resisted) Console.WriteLine($"{target.Name} a réussi à resister à {Name}.");
-        if (StatusInfo.Blocked) Console.WriteLine($"{target.Name} a parer un partie des dégâts de {Name}.");
+        if (StatusInfo.Blocked) Console.WriteLine($"{target.Name} a paré un partie des dégâts de {Name}.");
         if (StatusInfo.Damage > 0) Console.WriteLine($"{Name} a fait {StatusInfo.Damage} de dégâts à {target.Name}.");
         target.IsAlive(true);
 
@@ -171,12 +171,12 @@ public class Attack<TTarget>(
         if (Target is not Team.Team team)
         {
             Console.WriteLine(Target != null
-                ? $"Erreur de cible sur {Name}. Attendu: {nameof(Team.Team)}, Actuel: {Target.GetType().Name}.)"
-                : $"Erreur de cible sur {Name}. La cible est null.");
+                ? $"Erreur : le type de la cible de {Name} fait par {Owner.Name}. Attendu: {nameof(Team.Team)}, Actuel: {Target.GetType().Name}."
+                : $"Erreur : la cible de {Name} fait par {Owner.Name} est null.");
             return;
         }
 
-        Console.WriteLine($"{Owner.Name} fait {Name} sur l'équipe {team.Name}");
+        Console.WriteLine($"{Owner.Name} fait {Name} sur l'équipe {team.Name}.");
         team.Characters
             .Where(c => c.IsAlive(false)).ToList()
             .ForEach(target =>
@@ -192,7 +192,7 @@ public class Attack<TTarget>(
                     damage: Damage,
                     attackType: AttackType,
                     additional: Additional
-                ).Execute(target, t => $"{Name} atteint {t.Name}");
+                ).Execute(target, t => $"{Name} atteint {t.Name}.");
             });
     }
 

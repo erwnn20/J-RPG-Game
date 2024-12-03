@@ -59,7 +59,7 @@ public class Paladin : Character, IMana
                 targetType: TargetType.Teammate,
                 reloadTime: 1,
                 manaCost: 25,
-                effect: target => $"{target.Name} est soigné de {target.Heal((int)(MagicalAttack * 1.25m))} PV"),
+                effect: target => $"{target.Name} est soigné de {target.Heal((int)(MagicalAttack * 1.25m))} PV."),
             ((IMana)this).Drink(this)
         ]);
     }
@@ -84,6 +84,6 @@ public class Paladin : Character, IMana
     public override string ToString()
     {
         return base.ToString() + "\n" +
-               $" - Mana: {CurrentMana}/{MaxMana}";
+               $" ~ Mana: {CurrentMana}/{MaxMana}";
     }
 }

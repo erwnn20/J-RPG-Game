@@ -70,23 +70,26 @@ public class Thief : Character
         from.StatusInfo.Set(from, (false, false, false));
         from.StatusInfo.SetDamage(from, damageParameter);
 
-        if (!from.StatusInfo.Dodged) return TakeDamage((int)from.StatusInfo.Damage);
+        if (from.StatusInfo.Dodged) (from.Additional ??= []).Add(Special);
 
-        var counterAttack = new Attack<Character>(
+        return TakeDamage((int)from.StatusInfo.Damage);
+    }
+
+    private Action<Attack<Character>> Special => attackFrom =>
+    {
+        var conterAttack = new Attack<Character>(
             name: "Poignard dans le dos",
             owner: this,
             description: () =>
                 "Lorsque le voleur esquive une attaque ennemie, il déclenche une attaque qui inflige 15 points de dégâts physiques à l’attaquant.",
-            target: from.Owner,
+            target: attackFrom.Owner,
             targetType: TargetType.Enemy,
             reloadTime: 0,
             manaCost: 0,
             damage: 15,
             attackType: DamageType.Physical
         );
-
-        (from.Additional ??= []).Add(_ => counterAttack.Execute());
-
-        return TakeDamage((int)from.StatusInfo.Damage);
-    }
+        conterAttack.Execute();
+        conterAttack.Damage = _ => 0;
+    };
 }

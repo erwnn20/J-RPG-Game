@@ -40,7 +40,8 @@ public abstract class Skill
     {
         if (!IsUsable())
         {
-            Console.WriteLine($"{Name} est en recharge pour {ReloadCooldown} tour(s).");
+            Console.WriteLine(
+                $"{Name} est en recharge pour {ReloadCooldown} tour{(ReloadCooldown > 1 ? "s" : string.Empty)}.");
             return (false, false);
         }
 
@@ -49,8 +50,7 @@ public abstract class Skill
         {
             Console.WriteLine(Target != null
                 ? $"La cible sélectionnée ({Target.Name} - {Target.GetType().Name}) ne correspond pas au type de cible de la compétence ({TargetType})."
-                : $"Pas de cible sélectionné pour {Name}.");
-
+                : $"Pas de cible sélectionné pour {Name} fait par {Owner.Name}.");
             return (false, false);
         }
 
@@ -61,7 +61,7 @@ public abstract class Skill
                 if (owner.CurrentMana < ManaCost)
                 {
                     Console.WriteLine(
-                        $"{Owner.Name} n'a pas assez de mana pour utiliser {Name}. Besoin : {ManaCost}, Actuel : {owner.CurrentMana}");
+                        $"{Owner.Name} n'a pas assez de mana pour utiliser {Name}. Besoin : {ManaCost}, Actuel : {owner.CurrentMana}/{owner.MaxMana}.");
                     return (true, false);
                 }
 
@@ -70,7 +70,7 @@ public abstract class Skill
             else
             {
                 Console.WriteLine(
-                    $"{Owner.Name} ne peux pas utiliser {Name} qui a besoin de mana");
+                    $"{Owner.Name} ne peux pas utiliser {Name} car {Name} qui a besoin de mana pour être utilisé.");
                 return (true, false);
             }
         }
@@ -103,8 +103,14 @@ public abstract class Skill
             TargetType.Enemy => checkedTarget is Character t && t.Team != Owner.Team,
             TargetType.TeamAllied => checkedTarget is Team.Team t && t == Owner.Team,
             TargetType.TeamEnemy => checkedTarget is Team.Team t && t != Owner.Team,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => HandleUnknownTargetType(TargetType)
         };
+    }
+
+    private static bool HandleUnknownTargetType(TargetType targetType)
+    {
+        Console.WriteLine($"{targetType} n'est pas un type de cible reconnu.");
+        return false;
     }
 
     //
@@ -122,10 +128,10 @@ public abstract class Skill
             TargetType.Enemy => "un ennemi",
             TargetType.TeamAllied => "son équipe",
             TargetType.TeamEnemy => "une équipe ennemi",
-            _ => throw new ArgumentOutOfRangeException()
+            _ => $"une cible ({TargetType} non reconnu)"
         })}\n" +
                $"  -> {Description().Replace("\n", "\n     ")}\n" +
-               $"Disponible {(IsUsable() ? "maintenant" : ReloadCooldown > 1 ? "au prochain tour" : $"dans {ReloadCooldown} tours")} - Temps de recharge : {ReloadTime} tour(s)." +
+               $"Disponible {(IsUsable() ? "maintenant" : ReloadCooldown > 1 ? $"dans {ReloadCooldown} tours" : "au prochain tour")} - Temps de recharge : {ReloadTime} tour(s)." +
                (ManaCost > 0 ? $"\nCoût en mana : {ManaCost}" : string.Empty);
     }
 }

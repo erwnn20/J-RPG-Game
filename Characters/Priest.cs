@@ -27,16 +27,17 @@ public class Priest : Character, IMana
         Skills.AddRange([
             new Attack<Character>(
                 name: "Châtiment",
-                description: () => $"Inflige 75% de la puissance d’attaque magique ({MagicalAttack}) à la cible.\n" +
-                                   $"Inflige 150% à la cible si celle ci n'est ni un {nameof(Priest)} ni un {nameof(Paladin)}.",
+                description: () =>
+                    $"Inflige 75% de la puissance d’attaque magique ({(int)(MagicalAttack * 0.75m)}) à la cible.\n" +
+                    $"Inflige 150% ({(int)(MagicalAttack * 1.50m)}) à la cible si celle ci n'est ni un {nameof(Priest)} ni un {nameof(Paladin)}.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 15,
                 damage: target =>
                     (int)(MagicalAttack * (target.GetType() == typeof(Priest) || target.GetType() == typeof(Paladin)
-                        ? 1.50m
-                        : 0.75m)),
+                        ? 0.75m
+                        : 1.50m)),
                 attackType: DamageType.Magical),
             new SpecialAbility<Team.Team>(
                 name: "Cercle de soins",
@@ -45,7 +46,11 @@ public class Priest : Character, IMana
                 targetType: TargetType.TeamAllied,
                 reloadTime: 2,
                 manaCost: 30,
-                effect: target => $"{target.Name} a été soigné de {target.Heal((int)(MagicalAttack * 0.75m))}"),
+                effect: target =>
+                {
+                    target.Heal((int)(MagicalAttack * 0.75m));
+                    return "";
+                }),
             ((IMana)this).Drink(this)
         ]);
     }
@@ -63,6 +68,6 @@ public class Priest : Character, IMana
     public override string ToString()
     {
         return base.ToString() + "\n" +
-               $" - Mana: {CurrentMana}/{MaxMana}";
+               $" ~ Mana: {CurrentMana}/{MaxMana}";
     }
 }

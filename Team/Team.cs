@@ -30,7 +30,7 @@ public class Team : ITarget
         for (var i = 0; i < size; i++)
         {
             Console.WriteLine();
-            Console.WriteLine($"Creation du {i + 1}{(i + 1 == 1 ? "er" : "ème")} personnage:");
+            Console.WriteLine($"Creation du {i + 1}{(i + 1 == 1 ? "er" : "ème")} personnage...");
             newTeam.Add(Character.Create(newTeam));
         }
 

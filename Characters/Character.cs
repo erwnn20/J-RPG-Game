@@ -73,8 +73,8 @@ public abstract class Character : ITarget
         CurrentHealth += healed;
 
         if (healed <= 0 || !message) return healed;
-        Console.WriteLine($"{Name} à été soigné de {healed}");
 
+        Console.WriteLine($"{Name} à été soigné de {healed}.");
         return healed;
     }
 
@@ -128,16 +128,15 @@ public abstract class Character : ITarget
         {
             var selectedSkill = Skills.ElementAt(Prompt.Select("Quel compétence voulez vous utiliser ?",
                 skill =>
-                    $"{skill.Name} ({skill.GetType().Name}){(!skill.IsUsable() ? $" - Disponible dans : {skill.ReloadCooldown} tour(s)" : string.Empty)}",
+                    $"{skill.Name} ({skill.GetType().Name}){(!skill.IsUsable() ? $" - Disponible dans : {skill.ReloadCooldown} tour{(skill.ReloadCooldown > 1 ? "s" : string.Empty)}" : string.Empty)}",
                 Skills) - 1);
             Console.WriteLine();
 
             List<string> choices = ["Afficher details", "Sélectionné une autre capacité"];
-            if (selectedSkill.IsUsable())
-                choices.Add("Confirmer");
+            if (selectedSkill.IsUsable()) choices.Add("Confirmer");
             else
                 Console.WriteLine(
-                    $"Vous ne pouvez pas utiliser {selectedSkill.Name} actuellement. Disponible dans : {selectedSkill.ReloadCooldown} tour(s)");
+                    $"Vous ne pouvez pas utiliser {selectedSkill.Name} actuellement. Disponible dans : {selectedSkill.ReloadCooldown} tour{(selectedSkill.ReloadCooldown > 1 ? "s" : string.Empty)}.");
 
             var exit = false;
             do
@@ -187,16 +186,22 @@ public abstract class Character : ITarget
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(targetType), targetType,
-                    $"Erreur sur le paramètre targetType : {targetType}");
+                    $"{targetType} n'est pas un type de cible reconnu.");
         }
 
         if (targets.Count != 0)
             return targets.ElementAt(Prompt.Select(
                 "Sur qui voulez vous utiliser cette capacité ?",
-                target => target.Name,
+                target => target switch
+                {
+                    Character tCharacter => $"{tCharacter.Name} - {tCharacter.CurrentHealth}/{tCharacter.MaxHealth} PV",
+                    Team.Team tTeam =>
+                        $"{tTeam.Name} - {tTeam.Characters.Count(character => character.IsAlive(false))} personnage(s) en vie",
+                    _ => target.Name
+                },
                 targets) - 1);
 
-        Console.WriteLine("Pas de cible disponible pour cette capacité");
+        Console.WriteLine("Pas de cible disponible pour cette capacité.");
         return null;
     }
 
@@ -225,7 +230,7 @@ public abstract class Character : ITarget
                         .ForEach(
                             character =>
                                 Console.WriteLine(
-                                    $"   - {character.Name} ({character.GetType().Name}) - {(CurrentHealth != 0 ? $"{CurrentHealth}/{MaxHealth} PV" : "mort au combat")}")
+                                    $"   - {character.Name} ({character.GetType().Name}) - {(character.CurrentHealth != 0 ? $"{character.CurrentHealth}/{character.MaxHealth} PV" : "mort")}")
                         );
                     Console.WriteLine();
                     break;
@@ -277,7 +282,7 @@ public abstract class Character : ITarget
                 is Character character)
                 return character;
 
-            Console.WriteLine("Une erreur s'est produite : " + characterType);
+            Console.WriteLine("Une erreur s'est produite, veillez réessayer.");
         }
     }
 
@@ -287,13 +292,13 @@ public abstract class Character : ITarget
     {
         return $"{GetType().Name}: {Name} ({CurrentHealth}/{MaxHealth} PV) - Armure: {Armor}\n" +
                $"Stats :\n" +
-               $" - Vitesse: {Speed}\n" +
-               $" - Attaque Physique: {PhysicalAttack}\n" +
-               $" - Attaque Magique: {MagicalAttack}\n" +
-               $" - Chances d'Esquiver: {DodgeChance:P}\n" +
-               $" - Chances de Parade: {ParadeChance:P}\n" +
-               $" - Chances de Resister aux Sorts: {SpellResistanceChance:P}\n" +
-               $" - Compétences :\n" +
+               $" ~ Vitesse: {Speed}\n" +
+               $" ~ Attaque Physique: {PhysicalAttack}\n" +
+               $" ~ Attaque Magique: {MagicalAttack}\n" +
+               $" ~ Chances d'Esquiver: {DodgeChance:P}\n" +
+               $" ~ Chances de Parade: {ParadeChance:P}\n" +
+               $" ~ Chances de Resister aux Sorts: {SpellResistanceChance:P}\n" +
+               $" ~ Compétences :\n" +
                string.Join("\n", Skills.Select(skill => $"\t- {skill.Name} ({skill.GetType().Name})"));
     }
 }

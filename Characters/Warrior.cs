@@ -40,7 +40,7 @@ public class Warrior : Character
                 effect: target =>
                 {
                     target.PhysicalAttack += 25;
-                    return $"La puissance d'attaque de {target.Name} a été augmentée de 25";
+                    return $"La puissance d'attaque de {target.Name} a été augmentée de 25.";
                 }),
             new Attack<Team.Team>(
                 name: "Tourbillon",
@@ -60,29 +60,30 @@ public class Warrior : Character
         from.StatusInfo.Set(from, (false, false, false));
         from.StatusInfo.SetDamage(from, damageParameter);
 
-
-        if (from.StatusInfo.Blocked || new Random().NextDouble() < 0.25)
-        {
-            var counterAttack = new Attack<Character>(
-                name: "Contre-attaque",
-                owner: this,
-                description: () =>
-                    "Lorsque le guerrier reçoit une attaque physique\n" +
-                    " - Il a 25% de chances de contre attaque en infligeant 50% des dégâts qu’il a subi à l’attaquant\n" +
-                    " - Si il a paré l’attaque, les chances sont de 100%, et les dégâts de 150%\n",
-                target: from.Owner,
-                targetType: TargetType.Enemy,
-                reloadTime: 0,
-                manaCost: 0,
-                damage: from.StatusInfo.Blocked
-                    ? _ => (int)(PhysicalAttack * 1.50m)
-                    : _ => (int)(PhysicalAttack * 0.50m),
-                attackType: DamageType.Physical
-            );
-
-            (from.Additional ??= []).Add(_ => counterAttack.Execute());
-        }
+        if (from.StatusInfo.Blocked || new Random().NextDouble() < 0.25) (from.Additional ??= []).Add(Special);
 
         return TakeDamage((int)from.StatusInfo.Damage);
     }
+
+    private Action<Attack<Character>> Special => attackFrom =>
+    {
+        var conterAttack = new Attack<Character>(
+            name: "Contre-attaque",
+            owner: this,
+            description: () =>
+                "Lorsque le guerrier reçoit une attaque physique\n" +
+                " - Il a 25% de chances de contre attaque en infligeant 50% des dégâts qu’il a subi à l’attaquant,\n" +
+                " - Si il a paré l’attaque, les chances sont de 100%, et les dégâts de 150%.",
+            target: attackFrom.Owner,
+            targetType: TargetType.Enemy,
+            reloadTime: 0,
+            manaCost: 0,
+            damage: attackFrom.StatusInfo.Blocked
+                ? _ => (int)(PhysicalAttack * 1.50m)
+                : _ => (int)(PhysicalAttack * 0.50m),
+            attackType: DamageType.Physical
+        );
+        conterAttack.Execute();
+        conterAttack.Damage = _ => 0;
+    };
 }

@@ -19,8 +19,8 @@ public static class Program
 
         for (var i = 0; i < nbrTeam; i++)
         {
-            Console.WriteLine($"Creation de l'équipe {i + 1}");
-            Console.WriteLine($"L'équipe {Team.Team.Create(nbrCharacters).Name} a été créée");
+            Console.WriteLine($"Creation de l'équipe {i + 1}...");
+            Console.WriteLine($"L'équipe {Team.Team.Create(nbrCharacters).Name} a été créée.");
             Next(2000);
         }
 
@@ -28,13 +28,14 @@ public static class Program
         Team.Team.List.ForEach(team =>
         {
             Console.WriteLine($"{new string('-', 10)} {team.Name} {new string('-', 10)}");
-            team.Characters.ForEach(character => Console.WriteLine($"     {character.Name} - {character.GetType().Name}"));            
+            team.Characters.ForEach(character =>
+                Console.WriteLine($"  {character.Name} - {character.GetType().Name}"));
             Console.WriteLine(new string('-', 10 * 2 + $" {team.Name} ".Length) + "\n");
         });
         Prompt.Input("Appuyez sur 'Entrée' pour commencer la partie",
             key => key != ConsoleKey.Enter);
         Next(0);
-        
+
         Console.WriteLine("Bon jeu !");
         Next(2000);
 

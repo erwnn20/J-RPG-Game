@@ -2,7 +2,7 @@
 using JRPG_Game.Enums;
 using JRPG_Game.Interfaces;
 
-namespace JRPG_Game.Characters;
+namespace JRPG_Game.Characters.Classes;
 
 /// <summary>
 /// Represents a priest character specialized in magical attacks and team healing abilities.
@@ -24,7 +24,7 @@ public class Priest : Character, IMana
     /// <remarks>
     /// Sets the priest's stats and initializes its skill set with magical damage and healing abilities.
     /// </remarks>
-    public Priest(string name, Team.Team team)
+    public Priest(string name, Team team)
         : base(
             name: name,
             team: team,
@@ -54,7 +54,7 @@ public class Priest : Character, IMana
                         ? 0.75m
                         : 1.50m)),
                 attackType: DamageType.Magical),
-            new SpecialAbility<Team.Team>(
+            new SpecialAbility<Team>(
                 name: "Cercle de soins",
                 description: () => $"Soigne toute l'équipe sélectionné de {(int)(MagicalAttack * 0.75m)} PV.",
                 owner: this,

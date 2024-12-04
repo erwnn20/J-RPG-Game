@@ -1,7 +1,7 @@
 ﻿using JRPG_Game.Characters.Skills;
 using JRPG_Game.Enums;
 
-namespace JRPG_Game.Characters;
+namespace JRPG_Game.Characters.Classes;
 
 /// <summary>
 /// Represents a thief character with high speed and evasion capabilities.
@@ -21,7 +21,7 @@ public class Thief : Character
     /// Sets the thief's stats and initializes its unique skill set, emphasizing speed, physical attack,
     /// and enhanced defensive maneuvers like dodging and counterattacking.
     /// </remarks>
-    public Thief(string name, Team.Team team)
+    public Thief(string name, Team team)
         : base(
             name: name,
             team: team,

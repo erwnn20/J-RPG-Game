@@ -136,8 +136,8 @@ public abstract class Skill
             TargetType.Self => checkedTarget == Owner,
             TargetType.Teammate => checkedTarget is Character t && t != Owner && t.Team == Owner.Team,
             TargetType.Enemy => checkedTarget is Character t && t.Team != Owner.Team,
-            TargetType.TeamAllied => checkedTarget is Team.Team t && t == Owner.Team,
-            TargetType.TeamEnemy => checkedTarget is Team.Team t && t != Owner.Team,
+            TargetType.TeamAllied => checkedTarget is Team t && t == Owner.Team,
+            TargetType.TeamEnemy => checkedTarget is Team t && t != Owner.Team,
             _ => HandleUnknownTargetType(TargetType)
         };
     }

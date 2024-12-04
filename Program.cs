@@ -1,4 +1,5 @@
-﻿using JRPG_Game.Characters.Skills;
+﻿using JRPG_Game.Characters;
+using JRPG_Game.Characters.Skills;
 using JRPG_Game.Utils;
 
 namespace JRPG_Game;
@@ -26,12 +27,12 @@ public static class Program
         for (var i = 0; i < nbrTeam; i++)
         {
             Console.WriteLine($"Creation de l'équipe {i + 1}...");
-            Console.WriteLine($"L'équipe {Team.Team.Create(nbrCharacters).Name} a été créée.");
+            Console.WriteLine($"L'équipe {Team.Create(nbrCharacters).Name} a été créée.");
             Next(2000);
         }
 
-        Console.WriteLine($"{Team.Team.List.Count} équipes créées.\n");
-        Team.Team.List.ForEach(team =>
+        Console.WriteLine($"{Team.List.Count} équipes créées.\n");
+        Team.List.ForEach(team =>
         {
             Console.WriteLine($"{new string('-', 10)} {team.Name} {new string('-', 10)}");
             team.Characters.ForEach(character =>
@@ -47,13 +48,13 @@ public static class Program
 
         // game content
         var turn = 1;
-        while (Team.Team.IsCombatOn())
+        while (Team.IsCombatOn())
         {
             Skill.UpdateReloadCooldowns();
             Console.WriteLine($"{new string('=', 10)} Tour {turn++} {new string('=', 10)}");
 
             List<Skill> turnActions = [];
-            Team.Team.List.ForEach(team =>
+            Team.List.ForEach(team =>
             {
                 Console.WriteLine($"Au tour de l'équipe {team.Name}");
                 team.Characters
@@ -100,7 +101,7 @@ public static class Program
         }
 
         // game end
-        var winners = Team.Team.List.Where(team => team.Characters.Any(character => character.IsAlive(false))).ToList();
+        var winners = Team.List.Where(team => team.Characters.Any(character => character.IsAlive(false))).ToList();
 
         switch (winners.Count)
         {

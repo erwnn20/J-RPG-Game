@@ -2,7 +2,7 @@
 using JRPG_Game.Enums;
 using JRPG_Game.Interfaces;
 
-namespace JRPG_Game.Characters;
+namespace JRPG_Game.Characters.Classes;
 
 /// <summary>
 /// Represents a mage character with magical abilities and a mana pool.
@@ -24,7 +24,7 @@ public class Mage : Character, IMana
     /// <remarks>
     /// Sets the mage's stats and initializes its skill set with unique magical abilities.
     /// </remarks>
-    public Mage(string name, Team.Team team)
+    public Mage(string name, Team team)
         : base(
             name: name,
             team: team,
@@ -76,7 +76,7 @@ public class Mage : Character, IMana
                     ReducedAttack += attackReduced;
                     return $"Les {attackReduced} prochaines attaques subies par {Name} sont réduites.";
                 }),
-            new Attack<Team.Team>(
+            new Attack<Team>(
                 name: "Blizzard",
                 description: () =>
                     $"Inflige 50% de la puissance d’attaque magique ({(int)(MagicalAttack * 0.50m)}) à toute l’équipe ciblé.\n" +

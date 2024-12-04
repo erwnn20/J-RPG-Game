@@ -2,7 +2,7 @@
 using JRPG_Game.Enums;
 using JRPG_Game.Interfaces;
 
-namespace JRPG_Game.Characters;
+namespace JRPG_Game.Characters.Classes;
 
 /// <summary>
 /// Represents a paladin character with a balance of physical and magical abilities, as well as healing powers.
@@ -24,7 +24,7 @@ public class Paladin : Character, IMana
     /// <remarks>
     /// Sets the paladin's stats and initializes its skill set with abilities for physical and magical attacks, as well as healing.
     /// </remarks>
-    public Paladin(string name, Team.Team team)
+    public Paladin(string name, Team team)
         : base(
             name: name,
             team: team,

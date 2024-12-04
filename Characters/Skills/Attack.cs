@@ -109,7 +109,7 @@ public class Attack<TTarget>(
     }
 
     /// <summary>
-    /// Executes the attack and applies its effects to the target based on the target type (<see cref="Character"/> or <see cref="Team.Team"/>).
+    /// Executes the attack and applies its effects to the target based on the target type (<see cref="Character"/> or <see cref="Team"/>).
     /// </summary>
     public override void Execute()
     {
@@ -128,12 +128,12 @@ public class Attack<TTarget>(
             case Character character:
                 Execute(character);
                 break;
-            case Team.Team team:
+            case Team team:
                 Execute(team);
                 break;
             default:
                 Console.WriteLine(Target != null
-                    ? $"Erreur : le type de la cible de {Name} fait par {Owner.Name}. Attendu: {nameof(Character)} ou {nameof(Team.Team)}, Actuel: {Target.GetType().Name}."
+                    ? $"Erreur : le type de la cible de {Name} fait par {Owner.Name}. Attendu: {nameof(Character)} ou {nameof(Team)}, Actuel: {Target.GetType().Name}."
                     : $"Erreur : la cible de {Name} fait par {Owner.Name} est null.");
                 break;
         }
@@ -186,14 +186,14 @@ public class Attack<TTarget>(
     /// </summary>
     /// <param name="team">
     /// Placeholder for the team target.
-    /// Will not be used in the method, uses the <see cref="Skill.Target"/> attribute after checking that it is of type <see cref="Team.Team"/>
+    /// Will not be used in the method, uses the <see cref="Skill.Target"/> attribute after checking that it is of type <see cref="Team"/>
     /// </param>
-    private void Execute(Team.Team team)
+    private void Execute(Team team)
     {
-        if (Target is not Team.Team target)
+        if (Target is not Team target)
         {
             Console.WriteLine(Target != null
-                ? $"Erreur : le type de la cible de {Name} fait par {Owner.Name}. Attendu: {nameof(Team.Team)}, Actuel: {Target.GetType().Name}."
+                ? $"Erreur : le type de la cible de {Name} fait par {Owner.Name}. Attendu: {nameof(Team)}, Actuel: {Target.GetType().Name}."
                 : $"Erreur : la cible de {Name} fait par {Owner.Name} est null.");
             return;
         }

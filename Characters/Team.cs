@@ -1,8 +1,7 @@
-﻿using JRPG_Game.Characters;
-using JRPG_Game.Interfaces;
+﻿using JRPG_Game.Interfaces;
 using JRPG_Game.Utils;
 
-namespace JRPG_Game.Team;
+namespace JRPG_Game.Characters;
 
 /// <summary>
 /// Represents a team of characters in the game.

@@ -1,4 +1,5 @@
-﻿using JRPG_Game.Characters.Skills;
+﻿using JRPG_Game.Characters.Classes;
+using JRPG_Game.Characters.Skills;
 using JRPG_Game.Enums;
 using JRPG_Game.Interfaces;
 using JRPG_Game.Utils;
@@ -12,7 +13,7 @@ public abstract class Character : ITarget
 {
     protected Character(
         string name,
-        Team.Team team,
+        Team team,
         int maxHealth,
         int speed,
         int physicalAttack,
@@ -40,7 +41,7 @@ public abstract class Character : ITarget
     }
 
     public string Name { get; }
-    public Team.Team Team { get; }
+    public Team Team { get; }
     public int MaxHealth { get; }
     public int CurrentHealth { get; private set; }
     public int Speed { get; set; }
@@ -261,7 +262,7 @@ public abstract class Character : ITarget
             case TargetType.TeamEnemy:
                 targets =
                 [
-                    ..JRPG_Game.Team.Team.List.Where(team =>
+                    ..Team.List.Where(team =>
                         team != Team && team.Characters.Any(character => character.IsAlive(false)))
                 ];
                 break;
@@ -276,7 +277,7 @@ public abstract class Character : ITarget
                 target => target switch
                 {
                     Character tCharacter => $"{tCharacter.Name} - {tCharacter.CurrentHealth}/{tCharacter.MaxHealth} PV",
-                    Team.Team tTeam =>
+                    Team tTeam =>
                         $"{tTeam.Name} - {tTeam.Characters.Count(character => character.IsAlive(false))} personnage(s) en vie",
                     _ => target.Name
                 },
@@ -342,7 +343,7 @@ public abstract class Character : ITarget
                 break;
             case 3:
                 Console.WriteLine($"{new string('-', 10)} Status de la partie {new string('-', 10)}");
-                JRPG_Game.Team.Team.List.ForEach(team =>
+                Team.List.ForEach(team =>
                     Console.WriteLine(
                         $"  - {team.Name} {(team == Team ? "(votre équipe) " : string.Empty)}~ {(team.Characters.Any(character => character.IsAlive(false))
                             ? $"{team.Characters.Count(character => character.IsAlive(false))} en vie"
@@ -377,7 +378,7 @@ public abstract class Character : ITarget
     /// </summary>
     /// <param name="team">The team to assign the new character to.</param>
     /// <returns>The created character.</returns>
-    public static Character Create(Team.Team team)
+    public static Character Create(Team team)
     {
         while (true)
         {

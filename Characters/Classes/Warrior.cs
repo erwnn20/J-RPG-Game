@@ -1,7 +1,7 @@
 ﻿using JRPG_Game.Characters.Skills;
 using JRPG_Game.Enums;
 
-namespace JRPG_Game.Characters;
+namespace JRPG_Game.Characters.Classes;
 
 /// <summary>
 /// Represents a warrior character with high health and physical attack capabilities.
@@ -21,7 +21,7 @@ public class Warrior : Character
     /// Configures the warrior's high health, physical attack, and defensive abilities,
     /// while adding its unique skill set.
     /// </remarks>
-    public Warrior(string name, Team.Team team)
+    public Warrior(string name, Team team)
         : base(
             name: name,
             team: team,
@@ -45,7 +45,7 @@ public class Warrior : Character
                 manaCost: 0,
                 damage: PhysicalAttack,
                 attackType: DamageType.Physical),
-            new SpecialAbility<Team.Team>(
+            new SpecialAbility<Team>(
                 name: "Cri de bataille",
                 description: () =>
                     "Augmente de 25 la puissance d’attaque physique de tous les personnages de l’équipe.",
@@ -58,7 +58,7 @@ public class Warrior : Character
                     target.PhysicalAttack += 25;
                     return $"La puissance d'attaque de {target.Name} a été augmentée de 25.";
                 }),
-            new Attack<Team.Team>(
+            new Attack<Team>(
                 name: "Tourbillon",
                 description: () =>
                     $"Inflige 33% de la puissance d’attaque physique ({(int)(PhysicalAttack * (1 / 3.0m))}) toute l’équipe ciblé.",

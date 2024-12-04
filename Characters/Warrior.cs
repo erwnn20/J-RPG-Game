@@ -3,8 +3,24 @@ using JRPG_Game.Enums;
 
 namespace JRPG_Game.Characters;
 
+/// <summary>
+/// Represents a warrior character with high health and physical attack capabilities.
+/// </summary>
+/// <remarks>
+/// Inherits from <see cref="Character"/> and specializes in dealing and resisting physical damage.
+/// The Warrior is a durable and powerful melee fighter with abilities to boost allies and counterattack enemies.
+/// </remarks>
 public class Warrior : Character
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Warrior"/> class.
+    /// </summary>
+    /// <param name="name">The name of the warrior.</param>
+    /// <param name="team">The team to which the warrior belongs.</param>
+    /// <remarks>
+    /// Configures the warrior's high health, physical attack, and defensive abilities,
+    /// while adding its unique skill set.
+    /// </remarks>
     public Warrior(string name, Team.Team team)
         : base(
             name: name,
@@ -55,6 +71,24 @@ public class Warrior : Character
         ]);
     }
 
+    /// <summary>
+    /// Handles the warrior's defense against incoming attacks.
+    /// </summary>
+    /// <typeparam name="TTarget">The type of the target being attacked.</typeparam>
+    /// <param name="from">The incoming attack.</param>
+    /// <param name="damageParameter">The character responsible for the damage.</param>
+    /// <returns>The amount of damage taken after applying the warrior's defensive effects.</returns>
+    /// <remarks>
+    /// This method includes the following behaviors:
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>If the attack is blocked, the warrior guarantees a counterattack.</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>Even if the attack is not blocked, there is a 25% chance to counterattack, dealing a percentage of the damage received.</description>
+    ///     </item>
+    /// </list>
+    /// </remarks>
     public override int Defend<TTarget>(Attack<TTarget> from, Character damageParameter)
     {
         from.StatusInfo.Set(from, (false, false, false));
@@ -65,6 +99,13 @@ public class Warrior : Character
         return TakeDamage((int)from.StatusInfo.Damage);
     }
 
+    /// <summary>
+    /// Represents the Warrior's counterattack mechanics.
+    /// </summary>
+    /// <remarks>
+    /// Creates a counterattack called "Contre-attaque" when the Warrior blocks or has a chance to retaliate.
+    /// The counterattack deals damage proportional to whether the incoming attack was blocked or not.
+    /// </remarks>
     private Action<Attack<Character>> Special => attackFrom =>
     {
         var conterAttack = new Attack<Character>(

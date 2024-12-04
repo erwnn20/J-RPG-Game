@@ -4,11 +4,26 @@ using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters;
 
+/// <summary>
+/// Represents a mage character with magical abilities and a mana pool.
+/// </summary>
+/// <remarks>
+/// Inherits from <see cref="Character"/> and implements the <see cref="IMana"/> interface.
+/// The mage has unique skills and special mechanics such as mana management and spell reflection.
+/// </remarks>
 public class Mage : Character, IMana
 {
     public int MaxMana => 100;
     public int CurrentMana { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Mage"/> class.
+    /// </summary>
+    /// <param name="name">The name of the mage.</param>
+    /// <param name="team">The team to which the mage belongs.</param>
+    /// <remarks>
+    /// Sets the mage's stats and initializes its skill set with unique magical abilities.
+    /// </remarks>
     public Mage(string name, Team.Team team)
         : base(
             name: name,
@@ -119,6 +134,24 @@ public class Mage : Character, IMana
     private int ReducedAttack { get; set; }
     private bool SpellReturn { get; set; }
 
+    /// <summary>
+    /// Handles the mage's defense against incoming attacks.
+    /// </summary>
+    /// <typeparam name="TTarget">The type of the target being attacked.</typeparam>
+    /// <param name="from">The incoming attack.</param>
+    /// <param name="damageParameter">The character responsible for the damage.</param>
+    /// <returns>The amount of damage taken after applying defensive effects.</returns>
+    /// <remarks>
+    /// This method applies the following effects:
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>Reflects magical attacks if the spell reflection ability is active.</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>Reduces damage based on <c>Barrière de givre</c> if it is active.</description>
+    ///     </item>
+    /// </list>
+    /// </remarks>
     public override int Defend<TTarget>(Attack<TTarget> from, Character damageParameter)
     {
         from.StatusInfo.Set(from, (false, SpellReturn, false));
@@ -144,6 +177,13 @@ public class Mage : Character, IMana
         return TakeDamage((int)from.StatusInfo.Damage);
     }
 
+    /// <summary>
+    /// Handles the special counterattack logic for the mage's spell reflection ability.
+    /// </summary>
+    /// <remarks>
+    /// Creates a counterattack that deals the same damage as the original magical attack
+    /// and sends it back to the attacker.
+    /// </remarks>
     private Action<Attack<Character>> Special => attackFrom =>
     {
         Console.WriteLine($"{Name} revoie {attackFrom.Name}.");
@@ -164,6 +204,10 @@ public class Mage : Character, IMana
 
     //
 
+    /// <summary>
+    /// Returns a string that represents the <see cref="Mage"/>.
+    /// </summary>
+    /// <returns>A string that represents the <c>Mage</c></returns>
     public override string ToString()
     {
         return base.ToString() + "\n" +

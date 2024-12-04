@@ -5,6 +5,9 @@ using JRPG_Game.Utils;
 
 namespace JRPG_Game.Characters;
 
+/// <summary>
+/// Represents a character with various attributes, skills, and actions.
+/// </summary>
 public abstract class Character : ITarget
 {
     protected Character(
@@ -49,10 +52,18 @@ public abstract class Character : ITarget
     protected decimal SpellResistanceChance { get; set; }
     protected List<Skill> Skills { get; }
 
+    /// <summary>
+    /// List containing all instantiated characters.
+    /// </summary>
     private static readonly List<Character> List = [];
 
     //
 
+    /// <summary>
+    /// Checks if the character is alive.
+    /// </summary>
+    /// <param name="message">If <c>true</c>, outputs a message if the character is dead.</param>
+    /// <returns><c>true</c> if the character's health is above zero, otherwise <c>false</c>.</returns>
     public bool IsAlive(bool message)
     {
         if (CurrentHealth <= 0 && message)
@@ -60,6 +71,11 @@ public abstract class Character : ITarget
         return CurrentHealth > 0;
     }
 
+    /// <summary>
+    /// Applies damage to the character and reduces their health.
+    /// </summary>
+    /// <param name="damage">The amount of damage to apply.</param>
+    /// <returns>The actual damage taken, capped at the character's remaining health.</returns>
     protected int TakeDamage(int damage)
     {
         var damageTaken = Math.Min(CurrentHealth, damage);
@@ -67,6 +83,12 @@ public abstract class Character : ITarget
         return damageTaken;
     }
 
+    /// <summary>
+    /// Heals the character by a specified amount of health points.
+    /// </summary>
+    /// <param name="healthPoint">The amount of health to heal.</param>
+    /// <param name="message">If <c>true</c>, outputs a message indicating the amount healed.</param>
+    /// <returns>The actual amount of health restored.</returns>
     public int Heal(int healthPoint, bool message = true)
     {
         var healed = Math.Min(MaxHealth - CurrentHealth, healthPoint);
@@ -78,18 +100,42 @@ public abstract class Character : ITarget
         return healed;
     }
 
+    /// <summary>
+    /// Attempts to dodge a physical attack using <see cref="DodgeChance"/> attribute.
+    /// </summary>
+    /// <typeparam name="TTarget">The target type, implementing <see cref="ITarget"/>.</typeparam>
+    /// <param name="attack">The attack to dodge.</param>
+    /// <returns><c>true</c> if the dodge is successful; otherwise, <c>false</c>.</returns>
     public bool Dodge<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
         => attack.AttackType == DamageType.Physical
            && (decimal)new Random().NextDouble() <= DodgeChance;
 
+    /// <summary>
+    /// Attempts to parry a physical attack using <see cref="ParadeChance"/> attribute.
+    /// </summary>
+    /// <typeparam name="TTarget">The target type, implementing <see cref="ITarget"/>.</typeparam>
+    /// <param name="attack">The attack to parry.</param>
+    /// <returns><c>true</c> if the parry is successful; otherwise, <c>false</c>.</returns>
     public bool Parade<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
         => attack.AttackType == DamageType.Physical
            && (decimal)new Random().NextDouble() <= ParadeChance;
 
+    /// <summary>
+    /// Attempts to resist a magical attack using <see cref="SpellResistanceChance"/> attribute.
+    /// </summary>
+    /// <typeparam name="TTarget">The target type, implementing <see cref="ITarget"/>.</typeparam>
+    /// <param name="attack">The attack to resist.</param>
+    /// <returns><c>true</c> if the resistance is successful; otherwise, <c>false</c>.</returns>
     public bool SpellResistance<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
         => attack.AttackType == DamageType.Magical
            && (decimal)new Random().NextDouble() <= SpellResistanceChance;
 
+    /// <summary>
+    /// Calculates damage reduction based on the character's armor type (<see cref="ArmorType"/>)
+    /// and damage type (<see cref="DamageType"/>).
+    /// </summary>
+    /// <param name="damageType">The type of damage being dealt.</param>
+    /// <returns>The percentage of damage reduced.</returns>
     public decimal ArmorReduction(DamageType damageType)
         => damageType switch
         {
@@ -112,10 +158,28 @@ public abstract class Character : ITarget
             _ => 0
         };
 
+    /// <summary>
+    /// Abstract method to defend against an attack.
+    /// </summary>
+    /// <typeparam name="TTarget">The target type, implementing <see cref="ITarget"/>.</typeparam>
+    /// <param name="from">The attack to defend against.</param>
+    /// <param name="damageParameter">The character responsible for the attack.</param>
+    /// <returns>The amount of damage mitigated or deflected.</returns>
     public abstract int Defend<TTarget>(Attack<TTarget> from, Character damageParameter) where TTarget : class, ITarget;
 
     //
 
+    /// <summary>
+    /// Allows the player to select a skill to use.
+    /// </summary>
+    /// <returns>
+    /// The selected <see cref="Skill"/> if a usable skill is chosen; otherwise, <c>null</c>.
+    /// </returns>
+    /// <remarks>
+    /// Prompts the player to choose a skill from the character's list of <see cref="Skills"/>. 
+    /// Displays details about the selected skill and checks if it is usable before confirming the selection.
+    /// If no usable skills are available, the method returns <c>null</c>.
+    /// </remarks>
     private Skill? SelectSkill()
     {
         if (!Skills.Any(skill => skill.IsUsable()))
@@ -162,6 +226,23 @@ public abstract class Character : ITarget
         } while (true);
     }
 
+    /// <summary>
+    /// Allows the player to select a target based on the specified target type.
+    /// </summary>
+    /// <param name="targetType">
+    /// The type of target to select, defined by <see cref="TargetType"/>.
+    /// </param>
+    /// <returns>
+    /// The selected <see cref="ITarget"/> if a valid target is chosen; otherwise, <c>null</c>.
+    /// </returns>
+    /// <remarks>
+    /// Depending on the target type, the method filters available targets. 
+    /// Prompts the player to select one of the eligible targets.
+    /// If no valid targets are available, the method returns <c>null</c>.
+    /// </remarks>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown if the <paramref name="targetType"/> is not recognized.
+    /// </exception>
     private ITarget? SelectTarget(TargetType targetType)
     {
         List<ITarget> targets;
@@ -205,6 +286,27 @@ public abstract class Character : ITarget
         return null;
     }
 
+    /// <summary>
+    /// Handles the player's turn by allowing them to select an action.
+    /// </summary>
+    /// <returns>
+    /// A tuple containing:
+    /// <list type="bullet">
+    ///     <item>
+    ///         <term>Next</term>
+    ///         <description>indicating whether to proceed to the next turn.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>Skill</term>
+    ///         <description>the selected <see cref="Skill"/> if applicable.</description>
+    ///     </item>
+    /// </list>
+    /// </returns>
+    /// <remarks>
+    /// Displays a menu of actions for the player, such as viewing information, using a skill, or skipping their turn. 
+    /// Executes the chosen action and returns the result. If a skill is selected, the method prompts for a target
+    /// and uses the skill accordingly.
+    /// </remarks>
     public (bool Next, Skill? Skill) SelectAction()
     {
         var selected = Prompt.Select("Que voulez-vous faire ?", s => s,
@@ -270,6 +372,11 @@ public abstract class Character : ITarget
 
     //
 
+    /// <summary>
+    /// Creates a new character and assigns it to the specified team.
+    /// </summary>
+    /// <param name="team">The team to assign the new character to.</param>
+    /// <returns>The created character.</returns>
     public static Character Create(Team.Team team)
     {
         while (true)
@@ -288,6 +395,10 @@ public abstract class Character : ITarget
 
     //
 
+    /// <summary>
+    /// Returns a string that represents the <see cref="Character"/>.
+    /// </summary>
+    /// <returns>A string that represents the <c>Character</c></returns>
     public override string ToString()
     {
         return $"{GetType().Name}: {Name} ({CurrentHealth}/{MaxHealth} PV) - Armure: {Armor}\n" +

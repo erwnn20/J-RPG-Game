@@ -3,6 +3,10 @@ using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters.Skills;
 
+/// <summary>
+/// Represents a skill in the form of an attack, capable of targeting a character or a team.
+/// </summary>
+/// <typeparam name="TTarget">The type of the target, must implement the <see cref="ITarget"/> interface.</typeparam>
 public class Attack<TTarget>(
     string name,
     Func<string> description,
@@ -104,6 +108,9 @@ public class Attack<TTarget>(
     {
     }
 
+    /// <summary>
+    /// Executes the attack and applies its effects to the target based on the target type (<see cref="Character"/> or <see cref="Team.Team"/>).
+    /// </summary>
     public override void Execute()
     {
         if (!Owner.IsAlive(false)) return;
@@ -135,7 +142,15 @@ public class Attack<TTarget>(
         StatusInfo = new Status();
     }
 
-    private void Execute(Character _, Func<Character, string>? message = null)
+    /// <summary>
+    /// Executes the attack on a specific character target.
+    /// </summary>
+    /// <param name="character">
+    /// Placeholder for the character target.
+    /// Will not be used in the method, uses the <see cref="Skill.Target"/> attribute after checking that it is of type <see cref="Character"/>.
+    /// </param>
+    /// <param name="message">Optional custom message to display during the attack.</param>
+    private void Execute(Character character, Func<Character, string>? message = null)
     {
         if (Target is not Character target || this is not Attack<Character> attack)
         {
@@ -166,9 +181,16 @@ public class Attack<TTarget>(
         Additional?.ForEach(add => add(attack));
     }
 
-    private void Execute(Team.Team _)
+    /// <summary>
+    /// Executes the attack on a team, applying the effects to all characters in the team.
+    /// </summary>
+    /// <param name="team">
+    /// Placeholder for the team target.
+    /// Will not be used in the method, uses the <see cref="Skill.Target"/> attribute after checking that it is of type <see cref="Team.Team"/>
+    /// </param>
+    private void Execute(Team.Team team)
     {
-        if (Target is not Team.Team team)
+        if (Target is not Team.Team target)
         {
             Console.WriteLine(Target != null
                 ? $"Erreur : le type de la cible de {Name} fait par {Owner.Name}. Attendu: {nameof(Team.Team)}, Actuel: {Target.GetType().Name}."
@@ -176,32 +198,39 @@ public class Attack<TTarget>(
             return;
         }
 
-        Console.WriteLine($"{Owner.Name} fait {Name} sur l'équipe {team.Name}.");
-        team.Characters
+        Console.WriteLine($"{Owner.Name} fait {Name} sur l'équipe {target.Name}.");
+        target.Characters
             .Where(c => c.IsAlive(false)).ToList()
-            .ForEach(target =>
+            .ForEach(trgt =>
             {
                 new Attack<Character>(
                     name: Name,
                     description: Description,
                     owner: Owner,
-                    target: target,
+                    target: trgt,
                     targetType: TargetType.Enemy,
                     reloadTime: 0,
                     manaCost: 0,
                     damage: Damage,
                     attackType: AttackType,
                     additional: Additional
-                ).Execute(target, t => $"{Name} atteint {t.Name}.");
+                ).Execute(trgt, t => $"{Name} atteint {t.Name}.");
             });
     }
 
+    /// <summary>
+    /// Returns a string that represents the <see cref="Attack{TTarget}"/>.
+    /// </summary>
+    /// <returns>A string that represents the <c>Attack</c></returns>
     public override string ToString()
     {
         return base.ToString() + "\n" +
                $"Attaque de Type {AttackType}";
     }
 
+    /// <summary>
+    /// Represents the status of an attack, including outcomes such as damage dealt, dodged, resisted, or blocked.
+    /// </summary>
     public class Status
     {
         public decimal Damage { get; set; }
@@ -209,6 +238,14 @@ public class Attack<TTarget>(
         public bool Resisted { get; private set; }
         public bool Blocked { get; private set; }
 
+        /// <summary>
+        /// Sets the status of the attack based on whether it was dodged, resisted, or blocked.
+        /// Using 
+        /// <see cref="Character.Dodge{TTarget}"/>, <see cref="Character.SpellResistance{TTarget}"/>, <see cref="Character.Parade{TTarget}"/>
+        /// methods of <see cref="Character"/>.
+        /// </summary>
+        /// <param name="attack">The attack being evaluated.</param>
+        /// <param name="attackStatus">Optional precomputed status values.</param>
         public void Set(Attack<TTarget> attack,
             (bool Dodged, bool Resisted, bool Blocked) attackStatus = default)
         {
@@ -219,6 +256,11 @@ public class Attack<TTarget>(
             else if (attackStatus.Blocked || target.Parade(attack)) Blocked = true;
         }
 
+        /// <summary>
+        /// Calculates and sets the damage dealt by the attack, taking into account modifiers such as blocks and armor reduction.
+        /// </summary>
+        /// <param name="attack">The attack being evaluated.</param>
+        /// <param name="damageParameter">The character being targeted.</param>
         public void SetDamage(Attack<TTarget> attack, Character damageParameter)
         {
             if (attack.Target is not Character target) return;

@@ -3,6 +3,9 @@ using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters.Skills;
 
+/// <summary>
+/// Class representing the skills used by the characters
+/// </summary>
 public abstract class Skill
 {
     public string Name { get; }
@@ -14,6 +17,9 @@ public abstract class Skill
     public int ReloadCooldown { get; private set; }
     private int ManaCost { get; }
 
+    /// <summary>
+    /// List containing all instantiated skills.
+    /// </summary>
     private static readonly List<Skill> List = [];
 
     protected Skill(
@@ -36,6 +42,23 @@ public abstract class Skill
         List.Add(this);
     }
 
+    /// <summary>
+    /// Method used to apply a skill
+    /// </summary>
+    /// <param name="target">The target of the skill. If null, uses the skill's current target.</param>
+    ///  <returns>
+    /// A tuple containing:
+    /// <list type="bullet">
+    ///     <item>
+    ///         <term>Next</term>
+    ///         <description><c>true</c> if the action is considered finished and can move on to the next action.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>Execute</term>
+    ///         <description><c>true</c> if the skill can be executed later. (see <see cref="Execute"/>)</description>
+    ///     </item>
+    /// </list>
+    /// </returns>
     public (bool Next, bool Execute) Use(ITarget? target = null)
     {
         if (!IsUsable())
@@ -79,8 +102,15 @@ public abstract class Skill
         return (true, true);
     }
 
+    /// <summary>
+    /// Executes the skill. Implemented in derived classes.
+    /// </summary>
     public abstract void Execute();
 
+    /// <summary>
+    /// Checks if the skill is not in cooldown.
+    /// </summary>
+    /// <returns><c>true</c> if the skill is in a cooldown, otherwise <c>false</c>.</returns>
     public bool IsUsable() => ReloadCooldown <= 0;
 
     /// <summary>
@@ -91,6 +121,11 @@ public abstract class Skill
         if (ReloadCooldown > 0) ReloadCooldown--;
     }
 
+    /// <summary>
+    /// Checks whether the target corresponds to the type required by the skill.
+    /// </summary>
+    /// <param name="target">Target to check. If null, uses the skill's current target.</param>
+    /// <returns><c>true</c> if the target is correct, otherwise <c>false</c>.</returns>
     protected bool IsTargetCorrect(ITarget? target = null)
     {
         var checkedTarget = target ?? Target;
@@ -107,6 +142,11 @@ public abstract class Skill
         };
     }
 
+    /// <summary>
+    /// Handles unknown target types. (see <see cref="IsTargetCorrect"/>)
+    /// </summary>
+    /// <param name="targetType">The unknown type of target.</param>
+    /// <returns><c>false</c>, indicating the error.</returns>
     private static bool HandleUnknownTargetType(TargetType targetType)
     {
         Console.WriteLine($"{targetType} n'est pas un type de cible reconnu.");
@@ -115,10 +155,17 @@ public abstract class Skill
 
     //
 
+    /// <summary>
+    /// Updates the recharge time for all instantiated skills.
+    /// </summary>
     public static void UpdateReloadCooldowns() => List.ForEach(skill => skill.ReduceReload());
 
     //
 
+    /// <summary>
+    /// Returns a string that represents the <see cref="Skill"/>.
+    /// </summary>
+    /// <returns>A string that represents the <c>Skill</c></returns>
     public override string ToString()
     {
         return $"{Name} ({GetType().Name}) : par {Owner.Name} à {(Target != null ? Target.Name : TargetType switch

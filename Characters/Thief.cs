@@ -3,8 +3,24 @@ using JRPG_Game.Enums;
 
 namespace JRPG_Game.Characters;
 
+/// <summary>
+/// Represents a thief character with high speed and evasion capabilities.
+/// </summary>
+/// <remarks>
+/// Inherits from <see cref="Character"/> and specializes in physical attacks and defensive maneuvers.
+/// The Thief is agile and has abilities that exploit low-health targets and improve survival.
+/// </remarks>
 public class Thief : Character
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Thief"/> class.
+    /// </summary>
+    /// <param name="name">The name of the thief.</param>
+    /// <param name="team">The team to which the thief belongs.</param>
+    /// <remarks>
+    /// Sets the thief's stats and initializes its unique skill set, emphasizing speed, physical attack,
+    /// and enhanced defensive maneuvers like dodging and counterattacking.
+    /// </remarks>
     public Thief(string name, Team.Team team)
         : base(
             name: name,
@@ -65,6 +81,16 @@ public class Thief : Character
         ]);
     }
 
+    /// <summary>
+    /// Handles the thief's defense against incoming attacks.
+    /// </summary>
+    /// <typeparam name="TTarget">The type of the target being attacked.</typeparam>
+    /// <param name="from">The incoming attack.</param>
+    /// <param name="damageParameter">The character responsible for the damage.</param>
+    /// <returns>The amount of damage taken after applying defensive effects.</returns>
+    /// <remarks>
+    /// If the Thief successfully dodges an attack, a <see cref="Special"/> counterattack is triggered.
+    /// </remarks>
     public override int Defend<TTarget>(Attack<TTarget> from, Character damageParameter)
     {
         from.StatusInfo.Set(from, (false, false, false));
@@ -75,6 +101,12 @@ public class Thief : Character
         return TakeDamage((int)from.StatusInfo.Damage);
     }
 
+    /// <summary>
+    /// Represents a special counterattack that activates when the thief dodges an incoming attack.
+    /// </summary>
+    /// <remarks>
+    /// This delegate creates a new attack named "Poignard dans le dos" and executes it against the attacker.
+    /// </remarks>
     private Action<Attack<Character>> Special => attackFrom =>
     {
         var conterAttack = new Attack<Character>(

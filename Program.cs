@@ -3,8 +3,14 @@ using JRPG_Game.Utils;
 
 namespace JRPG_Game;
 
+/// <summary>
+/// The main entry point for the game, responsible for initializing teams and characters, executing turns, and determining the winner.
+/// </summary>
 public static class Program
 {
+    /// <summary>
+    /// The main method to run the game, where teams and characters are created, and the game loop executes.
+    /// </summary>
     public static void Main()
     {
         Console.Clear();
@@ -115,6 +121,10 @@ public static class Program
         }
     }
 
+    /// <summary>
+    /// Clears the console screen and waits for a specified amount of time.
+    /// </summary>
+    /// <param name="millisecondsTimeout">The number of milliseconds to wait before clearing the screen.</param>
     public static void Next(int millisecondsTimeout = 500)
     {
         Thread.Sleep(millisecondsTimeout);

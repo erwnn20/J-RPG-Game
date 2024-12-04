@@ -4,11 +4,26 @@ using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters;
 
+/// <summary>
+/// Represents a priest character specialized in magical attacks and team healing abilities.
+/// </summary>
+/// <remarks>
+/// Inherits from <see cref="Character"/> and implements the <see cref="IMana"/> interface.
+/// The priest is a support-focused character capable of dealing magical damage and healing allies.
+/// </remarks>
 public class Priest : Character, IMana
 {
     public int MaxMana => 100;
     public int CurrentMana { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Priest"/> class.
+    /// </summary>
+    /// <param name="name">The name of the priest.</param>
+    /// <param name="team">The team to which the priest belongs.</param>
+    /// <remarks>
+    /// Sets the priest's stats and initializes its skill set with magical damage and healing abilities.
+    /// </remarks>
     public Priest(string name, Team.Team team)
         : base(
             name: name,
@@ -55,6 +70,13 @@ public class Priest : Character, IMana
         ]);
     }
 
+    /// <summary>
+    /// Handles the priest's defense against incoming attacks.
+    /// </summary>
+    /// <typeparam name="TTarget">The type of the target being attacked.</typeparam>
+    /// <param name="from">The incoming attack.</param>
+    /// <param name="damageParameter">The character responsible for the damage.</param>
+    /// <returns>The amount of damage taken after applying defensive effects.</returns>
     public override int Defend<TTarget>(Attack<TTarget> from, Character damageParameter)
     {
         from.StatusInfo.Set(from, (false, false, false));
@@ -65,6 +87,10 @@ public class Priest : Character, IMana
 
     //
 
+    /// <summary>
+    /// Returns a string that represents the <see cref="Priest"/>.
+    /// </summary>
+    /// <returns>A string that represents the <c>Priest</c></returns>
     public override string ToString()
     {
         return base.ToString() + "\n" +

@@ -4,11 +4,26 @@ using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters;
 
+/// <summary>
+/// Represents a paladin character with a balance of physical and magical abilities, as well as healing powers.
+/// </summary>
+/// <remarks>
+/// Inherits from <see cref="Character"/> and implements the <see cref="IMana"/> interface.
+/// The paladin excels in versatile combat roles, capable of dealing physical and magical damage and healing allies.
+/// </remarks>
 public class Paladin : Character, IMana
 {
     public int MaxMana => 60;
     public int CurrentMana { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Paladin"/> class.
+    /// </summary>
+    /// <param name="name">The name of the paladin.</param>
+    /// <param name="team">The team to which the paladin belongs.</param>
+    /// <remarks>
+    /// Sets the paladin's stats and initializes its skill set with abilities for physical and magical attacks, as well as healing.
+    /// </remarks>
     public Paladin(string name, Team.Team team)
         : base(
             name: name,
@@ -64,6 +79,13 @@ public class Paladin : Character, IMana
         ]);
     }
 
+    /// <summary>
+    /// Handles the paladin's defense against incoming attacks.
+    /// </summary>
+    /// <typeparam name="TTarget">The type of the target being attacked.</typeparam>
+    /// <param name="from">The incoming attack.</param>
+    /// <param name="damageParameter">The character responsible for the damage.</param>
+    /// <returns>The amount of damage taken after applying defensive effects.</returns>
     public override int Defend<TTarget>(Attack<TTarget> from, Character damageParameter)
     {
         from.StatusInfo.Set(from, (false, false, false));
@@ -72,6 +94,12 @@ public class Paladin : Character, IMana
         return TakeDamage((int)from.StatusInfo.Damage);
     }
 
+    /// <summary>
+    /// A special ability triggered during certain attacks to heal the paladin based on the damage dealt.
+    /// </summary>
+    /// <remarks>
+    /// Heals the paladin for 50% of the damage received if the special ability is active.
+    /// </remarks>
     private Action<Attack<Character>> Special => attack =>
     {
         if (Heal((int)attack.StatusInfo.Damage / 2, false) is var healed and > 0)
@@ -81,6 +109,10 @@ public class Paladin : Character, IMana
 
     //
 
+    /// <summary>
+    /// Returns a string that represents the <see cref="Paladin"/>.
+    /// </summary>
+    /// <returns>A string that represents the <c>Paladin</c></returns>
     public override string ToString()
     {
         return base.ToString() + "\n" +

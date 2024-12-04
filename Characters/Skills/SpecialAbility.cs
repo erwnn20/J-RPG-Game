@@ -3,6 +3,10 @@ using JRPG_Game.Interfaces;
 
 namespace JRPG_Game.Characters.Skills;
 
+/// <summary>
+/// Represents a skill in the form of a special ability, capable of targeting a character or a team.
+/// </summary>
+/// <typeparam name="TTarget">The type of the target, must implement the <see cref="ITarget"/> interface.</typeparam>
 public class SpecialAbility<TTarget>(
     string name,
     Character owner,
@@ -45,6 +49,9 @@ public class SpecialAbility<TTarget>(
     {
     }
 
+    /// <summary>
+    /// Executes the special ability and applies its effects to the target based on the target type (<see cref="Character"/> or <see cref="Team.Team"/>).
+    /// </summary>
     public override void Execute()
     {
         if (!Owner.IsAlive(false)) return;
@@ -75,7 +82,15 @@ public class SpecialAbility<TTarget>(
         Target = null;
     }
 
-    private void Execute(Character _, Func<Character, string>? message = null)
+    /// <summary>
+    /// Executes the special ability on a specific character target.
+    /// </summary>
+    /// <param name="character">
+    /// Placeholder for the character target.
+    /// Will not be used in the method, uses the <see cref="Skill.Target"/> attribute after checking that it is of type <see cref="Character"/>.
+    /// </param>
+    /// <param name="message">Optional custom message to display during the attack.</param>
+    private void Execute(Character character, Func<Character, string>? message = null)
     {
         if (Target is not Character target)
         {
@@ -98,9 +113,16 @@ public class SpecialAbility<TTarget>(
         Console.WriteLine(Effect(target));
     }
 
-    private void Execute(Team.Team _)
+    /// <summary>
+    /// Executes the special ability on a team, applying the effects to all characters in the team.
+    /// </summary>
+    /// <param name="team">
+    /// Placeholder for the team target.
+    /// Will not be used in the method, uses the <see cref="Skill.Target"/> attribute after checking that it is of type <see cref="Team.Team"/>
+    /// </param>
+    private void Execute(Team.Team team)
     {
-        if (Target is not Team.Team team)
+        if (Target is not Team.Team target)
         {
             Console.WriteLine(Target != null
                 ? $"Erreur : le type de la cible de {Name} fait par {Owner.Name}. Attendu: {nameof(Team.Team)}, Actuel: {Target.GetType().Name}."
@@ -109,20 +131,20 @@ public class SpecialAbility<TTarget>(
         }
 
         Console.WriteLine($"{Owner.Name} fait {Name} sur l'équipe {Target.Name}.");
-        team.Characters
+        target.Characters
             .Where(c => c.IsAlive(false)).ToList()
-            .ForEach(target =>
+            .ForEach(trgt =>
             {
                 new SpecialAbility<Character>(
                     name: Name,
                     description: Description,
                     owner: Owner,
-                    target: target,
+                    target: trgt,
                     targetType: TargetType.Enemy,
                     reloadTime: 0,
                     manaCost: 0,
                     effect: Effect
-                ).Execute(target, t => $"{Name} atteint {t.Name}.");
+                ).Execute(trgt, t => $"{Name} atteint {t.Name}.");
             });
     }
 }

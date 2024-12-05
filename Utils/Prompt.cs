@@ -1,4 +1,6 @@
-﻿namespace JRPG_Game.Utils;
+﻿using System.Reflection;
+
+namespace JRPG_Game.Utils;
 
 /// <summary>
 /// A utility class for interactive console input and selection.
@@ -296,4 +298,33 @@ public static class Prompt
     private static string Input(string message, Func<ConsoleKey, bool> excludedCondition,
         params ConsoleKey[] excluded) =>
         Input(message, excludedCondition, excluded.Contains);
+
+    /// <summary>
+    /// Retrieves all concrete subclasses of a specified base type within the current assembly.
+    /// </summary>
+    /// <param name="baseType">The base type for which to find subclasses.</param>
+    /// <returns>
+    /// A list of <see cref="System.Type"/> objects representing all non-abstract subclasses 
+    /// of the specified base type found in the current assembly.
+    /// </returns>
+    /// <exception cref="System.ArgumentNullException">
+    /// Thrown if the <paramref name="baseType"/> parameter is null.
+    /// </exception>
+    /// <example>
+    /// Example usage:
+    /// <code>
+    /// List&lt;Type&gt; subclasses = GetAllSubclassesOf(typeof(Character));
+    /// foreach (var type in subclasses)
+    /// {
+    ///     Console.WriteLine(type.Name);
+    /// }
+    /// </code>
+    /// </example>
+    public static List<Type> GetAllSubclassesOf(Type baseType)
+    {
+        return Assembly.GetExecutingAssembly().GetTypes()
+            .Where(type =>
+                type is { IsClass: true, IsAbstract: false } && type.IsSubclassOf(baseType))
+            .ToList();
+    }
 }

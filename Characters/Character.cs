@@ -1,5 +1,4 @@
-﻿using JRPG_Game.Characters.Classes;
-using JRPG_Game.Characters.Skills;
+﻿using JRPG_Game.Characters.Skills;
 using JRPG_Game.Enums;
 using JRPG_Game.Interfaces;
 using JRPG_Game.Utils;
@@ -384,7 +383,7 @@ public abstract class Character : ITarget
     {
         while (true)
         {
-            List<Type> classList = [typeof(Mage), typeof(Paladin), typeof(Priest), typeof(Thief), typeof(Warrior)];
+            var classList = Prompt.GetAllSubclassesOf(typeof(Character));
             var characterType =
                 classList.ElementAt(Prompt.Select("Choisissez votre classe :", c => c.Name, classList) - 1);
 

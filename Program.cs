@@ -96,6 +96,9 @@ public static class Program
                 Console.WriteLine();
             });
 
+            Console.WriteLine();
+            Character.EndTurn();
+
             Prompt.Input("Appuyez sur 'Entrée' pour finir le tour", key => key != ConsoleKey.Enter);
             Next(0);
         }

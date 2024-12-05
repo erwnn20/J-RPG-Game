@@ -202,6 +202,11 @@ public class Mage : Character, IMana
         conterAttack.Damage = _ => 0;
     };
 
+    protected override void ApplyEndTurn()
+    {
+        throw new NotImplementedException();
+    }
+
     //
 
     /// <summary>

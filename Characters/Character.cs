@@ -371,6 +371,8 @@ public abstract class Character : ITarget
         return (false, null);
     }
 
+    protected abstract void ApplyEndTurn();
+
     //
 
     /// <summary>
@@ -393,6 +395,10 @@ public abstract class Character : ITarget
             Console.WriteLine("Une erreur s'est produite, veillez réessayer.");
         }
     }
+
+    public static void EndTurn() => List
+        .Where(character => character.IsAlive(false)).ToList()
+        .ForEach(character => character.ApplyEndTurn());
 
     //
 

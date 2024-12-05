@@ -85,6 +85,11 @@ public class Priest : Character, IMana
         return TakeDamage((int)from.StatusInfo.Damage);
     }
 
+    protected override void ApplyEndTurn()
+    {
+        throw new NotImplementedException();
+    }
+
     //
 
     /// <summary>

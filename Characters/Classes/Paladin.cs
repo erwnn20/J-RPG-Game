@@ -102,7 +102,7 @@ public class Paladin : Character, IMana
     /// </remarks>
     private Action<Attack<Character>> Special => attack =>
     {
-        if (Heal((int)attack.StatusInfo.Damage / 2, false) is var healed and > 0)
+        if (Heal((int)attack.StatusInfo.Damage / 2) is var healed and > 0)
             Console.WriteLine(
                 $"{Name} se soigne de {healed} PV garce à sa capacité spéciale.");
     };

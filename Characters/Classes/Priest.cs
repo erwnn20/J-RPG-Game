@@ -61,11 +61,7 @@ public class Priest : Character, IMana
                 targetType: TargetType.TeamAllied,
                 reloadTime: 2,
                 manaCost: 30,
-                effect: target =>
-                {
-                    target.Heal((int)(MagicalAttack * 0.75m));
-                    return "";
-                }),
+                effect: target => $"{target.Name} à été soigné de {target.Heal((int)(MagicalAttack * 0.75m))} PV."),
             ((IMana)this).Drink(this)
         ]);
     }

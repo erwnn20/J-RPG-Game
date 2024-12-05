@@ -89,7 +89,7 @@ public abstract class Character : ITarget
     /// <param name="healthPoint">The amount of health to heal.</param>
     /// <param name="message">If <c>true</c>, outputs a message indicating the amount healed.</param>
     /// <returns>The actual amount of health restored.</returns>
-    public int Heal(int healthPoint, bool message = true)
+    public int Heal(int healthPoint, bool message = false)
     {
         var healed = Math.Min(MaxHealth - CurrentHealth, healthPoint);
         CurrentHealth += healed;

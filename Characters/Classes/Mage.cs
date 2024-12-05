@@ -65,7 +65,8 @@ public class Mage : Character, IMana
                 name: "Barrière de givre",
                 description: () => $"Réduit les dégâts des deux prochaines attaques subies.\n" +
                                    $"\t- {ReduceDamagePhysical:P} sur les attaques physiques.\n" +
-                                   $"\t- {ReduceDamageMagical:P} sur les attaques magiques.",
+                                   $"\t- {ReduceDamageMagical:P} sur les attaques magiques.\n" +
+                                   $"\t- {ReduceDamageDistance:P} sur les attaques à distance.",
                 owner: this,
                 targetType: TargetType.Self,
                 reloadTime: 2,
@@ -131,6 +132,7 @@ public class Mage : Character, IMana
 
     private static decimal ReduceDamagePhysical => 0.60m;
     private static decimal ReduceDamageMagical => 0.50m;
+    private static decimal ReduceDamageDistance => 0.70m;
     private int ReducedAttack { get; set; }
     private bool SpellReturn { get; set; }
 
@@ -169,6 +171,7 @@ public class Mage : Character, IMana
             {
                 DamageType.Physical => ReduceDamagePhysical,
                 DamageType.Magical => ReduceDamageMagical,
+                DamageType.Distance => ReduceDamageDistance,
                 _ => 0
             };
             ReducedAttack--;

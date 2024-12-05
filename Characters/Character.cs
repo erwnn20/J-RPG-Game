@@ -107,18 +107,22 @@ public abstract class Character : ITarget
     /// <param name="attack">The attack to dodge.</param>
     /// <returns><c>true</c> if the dodge is successful; otherwise, <c>false</c>.</returns>
     public bool Dodge<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
-        => attack.AttackType == DamageType.Physical
+        => attack.AttackType is DamageType.Physical or DamageType.Distance
            && (decimal)new Random().NextDouble() <= DodgeChance;
 
     /// <summary>
-    /// Attempts to parry a physical attack using <see cref="ParadeChance"/> attribute.
+    /// Attempts to parry a physical or distance attack using <see cref="ParadeChance"/> attribute.
     /// </summary>
     /// <typeparam name="TTarget">The target type, implementing <see cref="ITarget"/>.</typeparam>
     /// <param name="attack">The attack to parry.</param>
     /// <returns><c>true</c> if the parry is successful; otherwise, <c>false</c>.</returns>
     public bool Parade<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
-        => attack.AttackType == DamageType.Physical
-           && (decimal)new Random().NextDouble() <= ParadeChance;
+        => (decimal)new Random().NextDouble() < ParadeChance * attack.AttackType switch
+        {
+            DamageType.Physical => 1,
+            DamageType.Distance => 0.70m,
+            _ => 0
+        };
 
     /// <summary>
     /// Attempts to resist a magical attack using <see cref="SpellResistanceChance"/> attribute.
@@ -153,6 +157,14 @@ public abstract class Character : ITarget
                 ArmorType.Leather => 0.20m,
                 ArmorType.Mesh => 0.10m,
                 ArmorType.Plates => 0.0m,
+                _ => 0
+            },
+            DamageType.Distance => Armor switch
+            {
+                ArmorType.Textile => 0.05m,
+                ArmorType.Leather => 0.10m,
+                ArmorType.Mesh => 0.25m,
+                ArmorType.Plates => new Random().NextDouble() < 0.5 ? 0.50m : 0.00m,
                 _ => 0
             },
             _ => 0

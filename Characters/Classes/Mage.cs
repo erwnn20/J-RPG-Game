@@ -28,14 +28,14 @@ public class Mage : Character, IMana
         : base(
             name: name,
             team: team,
-            maxHealth: 60,
-            speed: 75,
+            maxHealth: 65,
+            speed: 70,
             armor: ArmorType.Textile,
             physicalAttack: 0,
-            magicalAttack: 75,
-            dodgeChance: 0.05m,
+            magicalAttack: 80,
+            dodgeChance: 0.10m,
             paradeChance: 0.05m,
-            spellResistanceChance: 0.25m,
+            spellResistanceChance: 0.30m,
             skills: [])
     {
         CurrentMana = MaxMana;

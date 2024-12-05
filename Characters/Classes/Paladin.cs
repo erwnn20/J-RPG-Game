@@ -28,7 +28,7 @@ public class Paladin : Character, IMana
         : base(
             name: name,
             team: team,
-            maxHealth: 95,
+            maxHealth: 80,
             speed: 65,
             armor: ArmorType.Mesh,
             physicalAttack: 40,

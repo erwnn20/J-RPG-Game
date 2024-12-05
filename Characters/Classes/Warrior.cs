@@ -28,10 +28,10 @@ public class Warrior : Character
             maxHealth: 100,
             speed: 50,
             armor: ArmorType.Plates,
-            physicalAttack: 50,
+            physicalAttack: 75,
             magicalAttack: 0,
             dodgeChance: 0.05m,
-            paradeChance: 0.25m,
+            paradeChance: 0.20m,
             spellResistanceChance: 0.10m,
             skills: [])
     {
@@ -119,9 +119,9 @@ public class Warrior : Character
             targetType: TargetType.Enemy,
             reloadTime: 0,
             manaCost: 0,
-            damage: attackFrom.StatusInfo.Blocked
-                ? _ => (int)(PhysicalAttack * 1.50m)
-                : _ => (int)(PhysicalAttack * 0.50m),
+            damage: _ => attackFrom.StatusInfo.Blocked
+                ? (int)(PhysicalAttack * 1.50m)
+                : (int)(PhysicalAttack * 0.50m),
             attackType: DamageType.Physical
         );
         conterAttack.Execute();

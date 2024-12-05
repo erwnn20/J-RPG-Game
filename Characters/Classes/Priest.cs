@@ -33,9 +33,9 @@ public class Priest : Character, IMana
             armor: ArmorType.Textile,
             physicalAttack: 0,
             magicalAttack: 65,
-            dodgeChance: 0.10m,
-            paradeChance: 0.00m,
-            spellResistanceChance: 0.20m,
+            dodgeChance: 0.15m,
+            paradeChance: 0.10m,
+            spellResistanceChance: 0.30m,
             skills: [])
     {
         CurrentMana = MaxMana;

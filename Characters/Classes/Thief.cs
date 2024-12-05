@@ -25,14 +25,14 @@ public class Thief : Character
         : base(
             name: name,
             team: team,
-            maxHealth: 80,
+            maxHealth: 70,
             speed: 100,
             armor: ArmorType.Leather,
-            physicalAttack: 55,
+            physicalAttack: 45,
             magicalAttack: 0,
-            dodgeChance: 0.15m,
-            paradeChance: 0.25m,
-            spellResistanceChance: 0.25m,
+            dodgeChance: 0.25m,
+            paradeChance: 0.10m,
+            spellResistanceChance: 0.10m,
             skills: [])
     {
         Skills.AddRange([

@@ -81,10 +81,10 @@ public abstract class Skill
         {
             if (Owner is IMana owner)
             {
-                if (owner.CurrentMana < ManaCost)
+                if (owner.Mana.Current < ManaCost)
                 {
                     Console.WriteLine(
-                        $"{Owner.Name} n'a pas assez de mana pour utiliser {Name}. Besoin : {ManaCost}, Actuel : {owner.CurrentMana}/{owner.MaxMana}.");
+                        $"{Owner.Name} n'a pas assez de mana pour utiliser {Name}. Besoin : {ManaCost}, Actuel : {owner.Mana.Current}/{owner.Mana.Current}.");
                     return (true, false);
                 }
 

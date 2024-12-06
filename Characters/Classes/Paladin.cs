@@ -1,6 +1,7 @@
 ﻿using JRPG_Game.Characters.Skills;
 using JRPG_Game.Enums;
 using JRPG_Game.Interfaces;
+using JRPG_Game.Utils;
 
 namespace JRPG_Game.Characters.Classes;
 
@@ -13,8 +14,7 @@ namespace JRPG_Game.Characters.Classes;
 /// </remarks>
 public class Paladin : Character, IMana
 {
-    public int MaxMana => 60;
-    public int CurrentMana { get; set; }
+    public NumericContainer Mana { get; } = new(0, 60, 60);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Paladin"/> class.
@@ -38,7 +38,6 @@ public class Paladin : Character, IMana
             spellResistanceChance: 0.20m,
             skills: [])
     {
-        CurrentMana = MaxMana;
         Skills.AddRange([
             new Attack<Character>(
                 name: "Frappe du croisé",
@@ -120,6 +119,6 @@ public class Paladin : Character, IMana
     public override string ToString()
     {
         return base.ToString() + "\n" +
-               $" ~ Mana: {CurrentMana}/{MaxMana}";
+               $" ~ Mana: {Mana.Current}/{Mana.Max}";
     }
 }

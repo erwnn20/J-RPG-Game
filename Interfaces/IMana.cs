@@ -1,6 +1,7 @@
 ﻿using JRPG_Game.Characters;
 using JRPG_Game.Characters.Skills;
 using JRPG_Game.Enums;
+using JRPG_Game.Utils;
 
 namespace JRPG_Game.Interfaces;
 
@@ -9,8 +10,7 @@ namespace JRPG_Game.Interfaces;
 /// </summary>
 public interface IMana
 {
-    int MaxMana { get; }
-    int CurrentMana { get; set; }
+    NumericContainer Mana { get; }
 
     /// <summary>
     /// Creates a special ability to drink a potion and regenerate mana by 50%.
@@ -20,21 +20,17 @@ public interface IMana
     public SpecialAbility<ITarget> Drink(Character character) => new(
         name: "Boire une potion",
         description: () =>
-            $"Régénère le mana de 50% ({CurrentMana} -> {Math.Min(MaxMana, CurrentMana + MaxMana / 2)}/{MaxMana})",
+            $"Régénère le mana de 50% ({Mana.Current} -> {Math.Min(Mana.Max, Mana.Current + (int)(Mana.Max * 0.50m))}/{Mana.Max})",
         owner: character,
         targetType: TargetType.Self,
         reloadTime: 1,
         manaCost: 0,
         effect: target =>
         {
-            var output = "";
-            var oldMana = CurrentMana;
-            CurrentMana += Math.Min(MaxMana - CurrentMana, MaxMana / 2);
-            output += oldMana != CurrentMana
-                ? $"{target.Name} régénère son mana de {CurrentMana - oldMana} ({CurrentMana}/{MaxMana})"
-                : $"{target.Name} a déja son mana au maximum : {CurrentMana}/{MaxMana}";
-
-            return output;
+            var added = Mana.Add((int)(Mana.Max * 0.50m));
+            return added > 0
+                ? $"{target.Name} régénère son mana de {added} ({Mana.Current}/{Mana.Max})"
+                : $"{target.Name} a déja son mana au maximum : {Mana.Current}/{Mana.Max}";
         });
 
     /// <summary>
@@ -42,10 +38,5 @@ public interface IMana
     /// </summary>
     /// <param name="manaLost">The amount of mana to lose.</param>
     /// <returns>The amount of mana actually lost.</returns>
-    public int LoseMana(int manaLost)
-    {
-        var manaUsed = Math.Min(CurrentMana, manaLost);
-        CurrentMana -= manaUsed;
-        return manaUsed;
-    }
+    public int LoseMana(int manaLost) => Mana.Subtract(manaLost);
 }

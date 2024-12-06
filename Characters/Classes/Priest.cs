@@ -1,6 +1,7 @@
 ﻿using JRPG_Game.Characters.Skills;
 using JRPG_Game.Enums;
 using JRPG_Game.Interfaces;
+using JRPG_Game.Utils;
 
 namespace JRPG_Game.Characters.Classes;
 
@@ -13,8 +14,7 @@ namespace JRPG_Game.Characters.Classes;
 /// </remarks>
 public class Priest : Character, IMana
 {
-    public int MaxMana => 100;
-    public int CurrentMana { get; set; }
+    public NumericContainer Mana { get; } = new(0, 100, 100);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Priest"/> class.
@@ -38,7 +38,6 @@ public class Priest : Character, IMana
             spellResistanceChance: 0.30m,
             skills: [])
     {
-        CurrentMana = MaxMana;
         Skills.AddRange([
             new Attack<Character>(
                 name: "Châtiment",
@@ -94,6 +93,6 @@ public class Priest : Character, IMana
     public override string ToString()
     {
         return base.ToString() + "\n" +
-               $" ~ Mana: {CurrentMana}/{MaxMana}";
+               $" ~ Mana: {Mana.Current}/{Mana.Max}";
     }
 }

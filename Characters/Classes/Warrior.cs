@@ -130,6 +130,5 @@ public class Warrior : Character
 
     protected override void ApplyEndTurn()
     {
-        throw new NotImplementedException();
     }
 }

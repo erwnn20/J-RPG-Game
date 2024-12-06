@@ -109,7 +109,6 @@ public class Paladin : Character, IMana
 
     protected override void ApplyEndTurn()
     {
-        throw new NotImplementedException();
     }
 
     //

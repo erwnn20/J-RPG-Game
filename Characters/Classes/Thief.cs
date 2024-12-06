@@ -46,7 +46,7 @@ public class Thief : Character
                 manaCost: 0,
                 damage: target =>
                     (int)(PhysicalAttack *
-                          (target.CurrentHealth < target.MaxHealth / 2 ? 1.50m : 1.00m)),
+                          (target.Health.Current < target.Health.Max / 2 ? 1.50m : 1.00m)),
                 attackType: DamageType.Physical),
             new SpecialAbility<Character>(
                 name: "Evasion",
@@ -127,6 +127,5 @@ public class Thief : Character
 
     protected override void ApplyEndTurn()
     {
-        throw new NotImplementedException();
     }
 }

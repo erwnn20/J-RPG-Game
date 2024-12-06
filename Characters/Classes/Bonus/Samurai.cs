@@ -53,8 +53,7 @@ public class Samurai : Character
                 name: "Coup fatal",
                 description: () =>
                     $"Inflige 120% de la puissance d’attaque physique ({(int)(PhysicalAttack * 1.20m)}) à la cible.\n" +
-                    $"A une chance d'infliger 160% de la puissance d’attaque physique ({(int)(PhysicalAttack * 1.60m)}).\n" +
-                    $"A un long temps de recharge.",
+                    $"A une chance d'infliger 160% de la puissance d’attaque physique ({(int)(PhysicalAttack * 1.60m)}).",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 4,
@@ -93,7 +92,7 @@ public class Samurai : Character
                     var oldDodgeChance = DodgeChance;
                     DodgeChance += InnerStrengthDodge;
                     output +=
-                        $"{Name} augmente ses chances d'esquive de {DodgeChance - oldDodgeChance:P} ({oldDodgeChance:P} -> {DodgeChance:P})";
+                        $"\n{Name} augmente ses chances d'esquive de {DodgeChance - oldDodgeChance:P} ({oldDodgeChance:P} -> {DodgeChance:P})";
 
                     return output;
                 })
@@ -117,7 +116,7 @@ public class Samurai : Character
 
         var damages = TakeDamage((int)from.StatusInfo.Damage);
 
-        if (CurrentHealth <= 5) (from.Additional ??= []).Add(Special);
+        if (Health.Current <= 5) (from.Additional ??= []).Add(Special);
 
         return damages;
     }
@@ -148,7 +147,7 @@ public class Samurai : Character
                 _ =>
                 {
                     if (!(new Random().NextDouble() < 0.5)) return;
-                    CurrentHealth = 0;
+                    Health.Subtract(Health.Current);
                     Console.WriteLine($"{Name} est mort après avoir fait Dernier souffle.");
                 }
             ]

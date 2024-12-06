@@ -46,7 +46,7 @@ public class Doctor : Character
                 reloadTime: 2,
                 manaCost: 0,
                 effect: target =>
-                    $"{target.Name} est soigné de {target.Heal((int)(target.MaxHealth * 0.20m))} PV."),
+                    $"{target.Name} est soigné de {target.Heal((int)(target.Health.Max * 0.20m))} PV."),
             new SpecialAbility<Team>(
                 name: "Soin de groupe",
                 description: () => "Soigne tous les alliés de 45% de leurs santé maximale.",
@@ -55,7 +55,7 @@ public class Doctor : Character
                 reloadTime: 4,
                 manaCost: 0,
                 effect: target =>
-                    $"{target.Name} est soigné de {target.Heal((int)(target.MaxHealth * 0.45m))} PV."),
+                    $"{target.Name} est soigné de {target.Heal((int)(target.Health.Max * 0.45m))} PV."),
             new Attack<Character>(
                 name: "Saignée",
                 description: () => $"Inflige 100% de la puissance d'attaque physique ({PhysicalAttack}) à la cible.\n" +
@@ -104,7 +104,6 @@ public class Doctor : Character
 
     protected override void ApplyEndTurn()
     {
-        throw new NotImplementedException();
     }
 
     //

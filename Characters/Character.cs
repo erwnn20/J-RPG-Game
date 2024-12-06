@@ -25,8 +25,7 @@ public abstract class Character : ITarget
     {
         Name = name;
         Team = team;
-        MaxHealth = maxHealth;
-        CurrentHealth = maxHealth;
+        Health = new NumericContainer(0, maxHealth, maxHealth);
         Speed = speed;
         PhysicalAttack = physicalAttack;
         MagicalAttack = magicalAttack;
@@ -41,8 +40,7 @@ public abstract class Character : ITarget
 
     public string Name { get; }
     public Team Team { get; }
-    public int MaxHealth { get; }
-    public int CurrentHealth { get; protected set; }
+    public NumericContainer Health { get; }
     public int Speed { get; set; }
     public int PhysicalAttack { get; set; }
     protected int MagicalAttack { get; }
@@ -66,9 +64,9 @@ public abstract class Character : ITarget
     /// <returns><c>true</c> if the character's health is above zero, otherwise <c>false</c>.</returns>
     public bool IsAlive(bool message)
     {
-        if (CurrentHealth <= 0 && message)
+        if (Health.Current <= 0 && message)
             Console.WriteLine($"{Name} est mort.");
-        return CurrentHealth > 0;
+        return Health.Current > 0;
     }
 
     /// <summary>
@@ -76,29 +74,14 @@ public abstract class Character : ITarget
     /// </summary>
     /// <param name="damage">The amount of damage to apply.</param>
     /// <returns>The actual damage taken, capped at the character's remaining health.</returns>
-    protected int TakeDamage(int damage)
-    {
-        var damageTaken = Math.Min(CurrentHealth, damage);
-        CurrentHealth -= damageTaken;
-        return damageTaken;
-    }
+    protected int TakeDamage(int damage) => Health.Subtract(damage);
 
     /// <summary>
     /// Heals the character by a specified amount of health points.
     /// </summary>
     /// <param name="healthPoint">The amount of health to heal.</param>
-    /// <param name="message">If <c>true</c>, outputs a message indicating the amount healed.</param>
     /// <returns>The actual amount of health restored.</returns>
-    public int Heal(int healthPoint, bool message = false)
-    {
-        var healed = Math.Min(MaxHealth - CurrentHealth, healthPoint);
-        CurrentHealth += healed;
-
-        if (healed <= 0 || !message) return healed;
-
-        Console.WriteLine($"{Name} à été soigné de {healed}.");
-        return healed;
-    }
+    public int Heal(int healthPoint) => Health.Add(healthPoint);
 
     /// <summary>
     /// Attempts to dodge a physical attack using <see cref="DodgeChance"/> attribute.
@@ -287,7 +270,7 @@ public abstract class Character : ITarget
                 "Sur qui voulez vous utiliser cette capacité ?",
                 target => target switch
                 {
-                    Character tCharacter => $"{tCharacter.Name} - {tCharacter.CurrentHealth}/{tCharacter.MaxHealth} PV",
+                    Character tCharacter => $"{tCharacter.Name} - {tCharacter.Health.Current}/{tCharacter.Health.Max} PV",
                     Team tTeam =>
                         $"{tTeam.Name} - {tTeam.Characters.Count(character => character.IsAlive(false))} personnage(s) en vie",
                     _ => target.Name
@@ -344,7 +327,7 @@ public abstract class Character : ITarget
                         .ForEach(
                             character =>
                                 Console.WriteLine(
-                                    $"   - {character.Name} ({character.GetType().Name}) - {(character.CurrentHealth != 0 ? $"{character.CurrentHealth}/{character.MaxHealth} PV" : "mort")}")
+                                    $"   - {character.Name} ({character.GetType().Name}) - {(character.Health.Current != 0 ? $"{character.Health.Current}/{character.Health.Max} PV" : "mort")}")
                         );
                     Console.WriteLine();
                     break;
@@ -419,7 +402,7 @@ public abstract class Character : ITarget
     /// <returns>A string that represents the <c>Character</c></returns>
     public override string ToString()
     {
-        return $"{GetType().Name}: {Name} ({CurrentHealth}/{MaxHealth} PV) - Armure: {Armor}\n" +
+        return $"{GetType().Name}: {Name} ({Health.Current}/{Health.Max} PV) - Armure: {Armor}\n" +
                $"Stats :\n" +
                $" ~ Vitesse: {Speed}\n" +
                $" ~ Attaque Physique: {PhysicalAttack}\n" +

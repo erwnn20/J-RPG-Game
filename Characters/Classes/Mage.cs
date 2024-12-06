@@ -207,7 +207,6 @@ public class Mage : Character, IMana
 
     protected override void ApplyEndTurn()
     {
-        throw new NotImplementedException();
     }
 
     //

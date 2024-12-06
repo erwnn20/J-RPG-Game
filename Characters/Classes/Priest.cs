@@ -83,7 +83,6 @@ public class Priest : Character, IMana
 
     protected override void ApplyEndTurn()
     {
-        throw new NotImplementedException();
     }
 
     //

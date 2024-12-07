@@ -30,13 +30,14 @@ public class Samurai : Character
             name: name,
             team: team,
             maxHealth: 85,
-            speed: 70,
+            speed: 80,
             armor: ArmorType.Plates,
-            physicalAttack: 60,
+            physicalAttack: 75,
             magicalAttack: 0,
+            distanceAttack: 0,
+            paradeChance: 0.35m,
             dodgeChance: 0.15m,
-            paradeChance: 0.25m,
-            spellResistanceChance: 0.05m,
+            spellResistanceChance: 0.10m,
             skills: [])
     {
         Skills.AddRange([

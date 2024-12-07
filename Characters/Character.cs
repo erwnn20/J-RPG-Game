@@ -17,9 +17,10 @@ public abstract class Character : ITarget
         int speed,
         int physicalAttack,
         int magicalAttack,
+        int distanceAttack,
         ArmorType armor,
-        decimal dodgeChance,
         decimal paradeChance,
+        decimal dodgeChance,
         decimal spellResistanceChance,
         List<Skill> skills)
     {
@@ -29,9 +30,10 @@ public abstract class Character : ITarget
         Speed = speed;
         PhysicalAttack = physicalAttack;
         MagicalAttack = magicalAttack;
+        DistanceAttack = distanceAttack;
         Armor = armor;
-        DodgeChance = dodgeChance;
         ParadeChance = paradeChance;
+        DodgeChance = dodgeChance;
         SpellResistanceChance = spellResistanceChance;
         Skills = skills;
 
@@ -44,6 +46,7 @@ public abstract class Character : ITarget
     public int Speed { get; set; }
     public int PhysicalAttack { get; set; }
     protected int MagicalAttack { get; }
+    protected int DistanceAttack { get; }
     private ArmorType Armor { get; }
     protected decimal DodgeChance { get; set; }
     private decimal ParadeChance { get; }

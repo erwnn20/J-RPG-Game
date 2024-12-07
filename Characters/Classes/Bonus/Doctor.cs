@@ -27,14 +27,15 @@ public class Doctor : Character
         : base(
             name: name,
             team: team,
-            maxHealth: 90,
-            speed: 75,
+            maxHealth: 105,
+            speed: 85,
             armor: ArmorType.Textile,
-            physicalAttack: 25,
+            physicalAttack: 30,
             magicalAttack: 0,
-            dodgeChance: 0.30m,
+            distanceAttack: 0,
             paradeChance: 0.10m,
-            spellResistanceChance: 0.30m,
+            dodgeChance: 0.35m,
+            spellResistanceChance: 0.35m,
             skills: [])
     {
         Skills.AddRange([

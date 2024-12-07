@@ -28,13 +28,14 @@ public class Mage : Character, IMana
         : base(
             name: name,
             team: team,
-            maxHealth: 65,
-            speed: 70,
+            maxHealth: 80,
+            speed: 60,
             armor: ArmorType.Textile,
             physicalAttack: 0,
             magicalAttack: 80,
-            dodgeChance: 0.10m,
+            distanceAttack: 35,
             paradeChance: 0.05m,
+            dodgeChance: 0.10m,
             spellResistanceChance: 0.30m,
             skills: [])
     {

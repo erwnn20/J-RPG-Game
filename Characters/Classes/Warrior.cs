@@ -25,13 +25,14 @@ public class Warrior : Character
         : base(
             name: name,
             team: team,
-            maxHealth: 100,
-            speed: 50,
+            maxHealth: 130,
+            speed: 45,
             armor: ArmorType.Plates,
-            physicalAttack: 75,
+            physicalAttack: 80,
             magicalAttack: 0,
+            distanceAttack: 0,
+            paradeChance: 0.30m,
             dodgeChance: 0.05m,
-            paradeChance: 0.20m,
             spellResistanceChance: 0.10m,
             skills: [])
     {

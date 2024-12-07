@@ -31,10 +31,11 @@ public class Paladin : Character, IMana
             maxHealth: 80,
             speed: 65,
             armor: ArmorType.Mesh,
-            physicalAttack: 40,
-            magicalAttack: 40,
-            dodgeChance: 0.05m,
-            paradeChance: 0.10m,
+            physicalAttack: 60,
+            magicalAttack: 45,
+            distanceAttack: 0,
+            paradeChance: 0.20m,
+            dodgeChance: 0.10m,
             spellResistanceChance: 0.20m,
             skills: [])
     {

@@ -28,14 +28,15 @@ public class Priest : Character, IMana
         : base(
             name: name,
             team: team,
-            maxHealth: 70,
+            maxHealth: 85,
             speed: 70,
             armor: ArmorType.Textile,
             physicalAttack: 0,
-            magicalAttack: 65,
-            dodgeChance: 0.15m,
+            magicalAttack: 75,
+            distanceAttack: 0,
             paradeChance: 0.10m,
-            spellResistanceChance: 0.30m,
+            dodgeChance: 0.25m,
+            spellResistanceChance: 0.40m,
             skills: [])
     {
         Skills.AddRange([

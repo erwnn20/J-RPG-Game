@@ -25,13 +25,14 @@ public class Thief : Character
         : base(
             name: name,
             team: team,
-            maxHealth: 70,
-            speed: 100,
+            maxHealth: 75,
+            speed: 120,
             armor: ArmorType.Leather,
             physicalAttack: 45,
             magicalAttack: 0,
-            dodgeChance: 0.25m,
+            distanceAttack: 0,
             paradeChance: 0.10m,
+            dodgeChance: 0.40m,
             spellResistanceChance: 0.10m,
             skills: [])
     {
@@ -51,9 +52,9 @@ public class Thief : Character
             new SpecialAbility<Character>(
                 name: "Evasion",
                 description: () =>
-                    $"Augmente les chances d'esquive de 20% (max 50%) ({DodgeChance:P} {(DodgeChance == 0.5m
+                    $"Augmente les chances d'esquive de 20% (max 80%) ({DodgeChance:P} {(DodgeChance == 0.80m
                         ? "MAX"
-                        : $"-> {Math.Min(DodgeChance + 0.20m, 0.5m):P}{(Math.Min(DodgeChance + 0.20m, 0.5m) == 0.5m ? " MAX" : string.Empty)}")})\n" +
+                        : $"-> {Math.Min(DodgeChance + 0.20m, 0.80m):P}{(Math.Min(DodgeChance + 0.20m, 0.80m) == 0.5m ? " MAX" : string.Empty)}")})\n" +
                     $"Augmente les chances de resister aux sorts de 20% (max 50%) ({SpellResistanceChance:P} {(SpellResistanceChance == 0.5m
                         ? "MAX"
                         : $"-> {Math.Min(SpellResistanceChance + 0.20m, 0.5m):P}{(Math.Min(SpellResistanceChance + 0.20m, 0.5m) == 0.5m ? " MAX" : string.Empty)}")})",
@@ -65,10 +66,10 @@ public class Thief : Character
                 {
                     var output = "";
                     var oldDodgeChance = DodgeChance;
-                    DodgeChance = Math.Min(0.5m, DodgeChance + 0.2m);
+                    DodgeChance = Math.Min(0.80m, DodgeChance + 0.20m);
                     output += oldDodgeChance != DodgeChance
-                        ? $"{Name} augmente ses chances d'esquive de {DodgeChance - oldDodgeChance:P} ({oldDodgeChance:P} -> {DodgeChance:P}{(DodgeChance == 0.5m ? " MAX" : string.Empty)})"
-                        : $"{Name} a ses chances d'esquive au max : {DodgeChance:P}{(DodgeChance == 0.5m ? " MAX" : string.Empty)}";
+                        ? $"{Name} augmente ses chances d'esquive de {DodgeChance - oldDodgeChance:P} ({oldDodgeChance:P} -> {DodgeChance:P}{(DodgeChance == 0.80m ? " MAX" : string.Empty)})"
+                        : $"{Name} a ses chances d'esquive au max : {DodgeChance:P}{(DodgeChance == 0.80m ? " MAX" : string.Empty)}";
 
                     var oldSpellResistanceChance = SpellResistanceChance;
                     SpellResistanceChance = Math.Min(0.5m, SpellResistanceChance + 0.2m);

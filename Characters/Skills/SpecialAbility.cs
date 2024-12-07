@@ -55,6 +55,11 @@ public class SpecialAbility<TTarget>(
     public override void Execute()
     {
         if (!Owner.IsAlive(false)) return;
+        if (Owner.Effects.ContainsKey(StatusEffect.Stun) && new Random().NextDouble() < 0.15)
+        {
+            Console.WriteLine($"{Owner.Name} est étourdi est rate sa capacité {Name}.");
+            return;
+        }
 
         if (!IsTargetCorrect())
         {

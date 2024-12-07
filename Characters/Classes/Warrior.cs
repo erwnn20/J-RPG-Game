@@ -39,12 +39,13 @@ public class Warrior : Character
         Skills.AddRange([
             new Attack<Character>(
                 name: "Frappe héroïque",
-                description: () => $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.",
+                description: () =>
+                    $"Inflige 100% de la puissance d’attaque physique ({GetAttack(DamageType.Physical)}) à la cible.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 0,
-                damage: PhysicalAttack,
+                damage: GetAttack(DamageType.Physical),
                 attackType: DamageType.Physical),
             new SpecialAbility<Team>(
                 name: "Cri de bataille",
@@ -62,12 +63,12 @@ public class Warrior : Character
             new Attack<Team>(
                 name: "Tourbillon",
                 description: () =>
-                    $"Inflige 33% de la puissance d’attaque physique ({(int)(PhysicalAttack * (1 / 3.0m))}) toute l’équipe ciblé.",
+                    $"Inflige 33% de la puissance d’attaque physique ({(int)(GetAttack(DamageType.Physical) * 0.33m)}) toute l’équipe ciblé.",
                 owner: this,
                 targetType: TargetType.TeamEnemy,
                 reloadTime: 2,
                 manaCost: 0,
-                damage: (int)(PhysicalAttack * (1 / 3.0m)),
+                damage: (int)(GetAttack(DamageType.Physical) * 0.33m),
                 attackType: DamageType.Physical)
         ]);
     }
@@ -120,9 +121,7 @@ public class Warrior : Character
             targetType: TargetType.Enemy,
             reloadTime: 0,
             manaCost: 0,
-            damage: _ => attackFrom.StatusInfo.Blocked
-                ? (int)(PhysicalAttack * 1.50m)
-                : (int)(PhysicalAttack * 0.50m),
+            damage: _ => (int)(GetAttack(DamageType.Physical) * (attackFrom.StatusInfo.Blocked ? 1.50m : 0.50m)),
             attackType: DamageType.Physical
         );
         conterAttack.Execute();

@@ -39,14 +39,14 @@ public class Thief : Character
         Skills.AddRange([
             new Attack<Character>(
                 name: "Coup bas",
-                description: () => $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.\n" +
+                description: () => $"Inflige 100% de la puissance d’attaque physique ({GetAttack(DamageType.Physical)}) à la cible.\n" +
                                    $"Inflige 150% si la cible a moins de la moitié de ses points de vie.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 0,
                 damage: target =>
-                    (int)(PhysicalAttack *
+                    (int)(GetAttack(DamageType.Physical) *
                           (target.Health.Current < target.Health.Max / 2 ? 1.50m : 1.00m)),
                 attackType: DamageType.Physical),
             new SpecialAbility<Character>(

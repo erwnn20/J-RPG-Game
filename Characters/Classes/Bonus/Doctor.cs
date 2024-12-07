@@ -59,13 +59,13 @@ public class Doctor : Character
                     $"{target.Name} est soigné de {target.Heal((int)(target.Health.Max * 0.45m))} PV."),
             new Attack<Character>(
                 name: "Saignée",
-                description: () => $"Inflige 100% de la puissance d'attaque physique ({PhysicalAttack}) à la cible.\n" +
+                description: () => $"Inflige 100% de la puissance d'attaque physique ({GetAttack(DamageType.Physical)}) à la cible.\n" +
                                    $"Draine les dégâts infligés pour les utiliser avec 'Transfusion'.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 0,
-                damage: PhysicalAttack,
+                damage: GetAttack(DamageType.Physical),
                 attackType: DamageType.Physical,
                 additional:
                 [

@@ -36,6 +36,7 @@ public abstract class Character : ITarget
         DodgeChance = dodgeChance;
         SpellResistanceChance = spellResistanceChance;
         Skills = skills;
+        Effects = [];
 
         List.Add(this);
     }
@@ -45,13 +46,14 @@ public abstract class Character : ITarget
     public NumericContainer Health { get; }
     public int Speed { get; set; }
     public int PhysicalAttack { get; set; }
-    protected int MagicalAttack { get; }
-    protected int DistanceAttack { get; }
+    private int MagicalAttack { get; }
+    private int DistanceAttack { get; }
     private ArmorType Armor { get; }
     protected decimal DodgeChance { get; set; }
     private decimal ParadeChance { get; }
     protected decimal SpellResistanceChance { get; set; }
     protected List<Skill> Skills { get; }
+    public Dictionary<StatusEffect, int> Effects { get; }
 
     /// <summary>
     /// List containing all instantiated characters.
@@ -59,6 +61,33 @@ public abstract class Character : ITarget
     private static readonly List<Character> List = [];
 
     //
+
+    public int GetSpeed()
+    {
+        if (Effects.ContainsKey(StatusEffect.Paralysis)) return 0;
+
+        return Speed + Effects.Keys.Select(effect => effect switch
+        {
+            StatusEffect.Speed => 10,
+            StatusEffect.Slowness => -10,
+            _ => 0
+        }).Aggregate((x, y) => x + y);
+    }
+
+    protected int GetAttack(DamageType damageType)
+    {
+        return damageType switch
+        {
+            DamageType.Physical => PhysicalAttack,
+            DamageType.Magical => MagicalAttack,
+            DamageType.Distance => DistanceAttack,
+            _ => 0,
+        } + Effects.Keys.Select(effect => effect switch
+        {
+            StatusEffect.Focus => 10,
+            _ => 0
+        }).Aggregate((x, y) => x + y);
+    }
 
     /// <summary>
     /// Checks if the character is alive.
@@ -77,7 +106,16 @@ public abstract class Character : ITarget
     /// </summary>
     /// <param name="damage">The amount of damage to apply.</param>
     /// <returns>The actual damage taken, capped at the character's remaining health.</returns>
-    protected int TakeDamage(int damage) => Health.Subtract(damage);
+    protected int TakeDamage(int damage)
+    {
+        if (Effects.ContainsKey(StatusEffect.Invincibility))
+        {
+            Console.WriteLine($"{Name} est actuellement invincible et ne prends aucun dégâts.");
+            return 0;
+        }
+
+        return Health.Subtract(damage);
+    }
 
     /// <summary>
     /// Heals the character by a specified amount of health points.
@@ -94,7 +132,15 @@ public abstract class Character : ITarget
     /// <returns><c>true</c> if the dodge is successful; otherwise, <c>false</c>.</returns>
     public bool Dodge<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
         => attack.AttackType is DamageType.Physical or DamageType.Distance
-           && (decimal)new Random().NextDouble() <= DodgeChance;
+           && (decimal)new Random().NextDouble() < DodgeChance
+           * Effects.Keys.Select(effect => effect switch
+           {
+               StatusEffect.Speed => 1.25m,
+               StatusEffect.Focus => 1.10m,
+               StatusEffect.Slowness => 0.75m,
+               StatusEffect.Stun => 0.95m,
+               _ => 1m
+           }).Aggregate((x, y) => x * y);
 
     /// <summary>
     /// Attempts to parry a physical or distance attack using <see cref="ParadeChance"/> attribute.
@@ -103,12 +149,17 @@ public abstract class Character : ITarget
     /// <param name="attack">The attack to parry.</param>
     /// <returns><c>true</c> if the parry is successful; otherwise, <c>false</c>.</returns>
     public bool Parade<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
-        => (decimal)new Random().NextDouble() < ParadeChance * attack.AttackType switch
-        {
-            DamageType.Physical => 1,
-            DamageType.Distance => 0.70m,
-            _ => 0
-        };
+        => (decimal)new Random().NextDouble() < ParadeChance
+            * attack.AttackType switch
+            {
+                DamageType.Physical => 1,
+                DamageType.Distance => 0.70m,
+                _ => 0
+            } * Effects.Keys.Select(effect => effect switch
+            {
+                StatusEffect.Stun => 0.50m,
+                _ => 1m
+            }).Aggregate((x, y) => x * y);
 
     /// <summary>
     /// Attempts to resist a magical attack using <see cref="SpellResistanceChance"/> attribute.
@@ -118,7 +169,7 @@ public abstract class Character : ITarget
     /// <returns><c>true</c> if the resistance is successful; otherwise, <c>false</c>.</returns>
     public bool SpellResistance<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
         => attack.AttackType == DamageType.Magical
-           && (decimal)new Random().NextDouble() <= SpellResistanceChance;
+           && (decimal)new Random().NextDouble() < SpellResistanceChance;
 
     /// <summary>
     /// Calculates damage reduction based on the character's armor type (<see cref="ArmorType"/>)
@@ -180,9 +231,15 @@ public abstract class Character : ITarget
     /// </remarks>
     private Skill? SelectSkill()
     {
+        if (Effects.ContainsKey(StatusEffect.Paralysis))
+        {
+            Console.WriteLine($"{Name} est paralysé, il ne peut pas utiliser de compétence.");
+            return null;
+        }
+
         if (!Skills.Any(skill => skill.IsUsable()))
         {
-            Console.WriteLine("Aucune compétence utilisable actuellement.");
+            Console.WriteLine($"Aucune compétence utilisable par {Name} actuellement.");
             return null;
         }
 
@@ -312,7 +369,7 @@ public abstract class Character : ITarget
             "Afficher informations",
             "Afficher équipe",
             "Afficher le status de la partie",
-            "Utiliser une capacité",
+            $"Utiliser une capacité{(Effects.ContainsKey(StatusEffect.Paralysis) ? $" - {Name} est paralysé, il ne pourra pas utiliser de compétence." : string.Empty)}",
             "Passer son tour",
             "Effacer le terminal");
         Console.WriteLine();
@@ -369,8 +426,58 @@ public abstract class Character : ITarget
         return (false, null);
     }
 
+    public void AddEffect(StatusEffect effect, int duration)
+    {
+        if (!Effects.TryAdd(effect, duration)) Effects[effect] += duration;
+    }
+
+    private void ApplyEffect(StatusEffect effect)
+    {
+        switch (effect)
+        {
+            case StatusEffect.Regeneration when !Effects.ContainsKey(StatusEffect.Bleeding):
+                var healed = Heal((int)(Health.Max * 0.05m));
+                if (healed > 0) Console.WriteLine($"{Name} a régénéré sa vie de {healed} PV.");
+                break;
+            case StatusEffect.Invincibility:
+                break;
+            case StatusEffect.Speed:
+                break;
+            case StatusEffect.Focus:
+                break;
+            case StatusEffect.Poison:
+                Console.WriteLine($"{Name} à pris {TakeDamage(5)} dégâts de poison.");
+                break;
+            case StatusEffect.Slowness:
+                break;
+            case StatusEffect.Stun:
+                break;
+            case StatusEffect.Bleeding:
+                Console.WriteLine($"{Name} à pris {TakeDamage((int)(Health.Max * 0.05m))} dégâts de saignement.");
+                break;
+            case StatusEffect.Paralysis:
+                if (new Random().NextDouble() < 0.15) Effects[StatusEffect.Paralysis] = 0;
+                break;
+            case StatusEffect.Burn:
+                var random = new Random();
+                Console.WriteLine($"{Name} à pris {TakeDamage(random.Next(1, 15))} dégâts de brulure.");
+                if (random.NextDouble() < 0.25) Effects[StatusEffect.Burn] = 0;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(effect), effect, null);
+        }
+
+        Effects[effect]--;
+        if (Effects[effect] <= 0) Effects.Remove(effect);
+    }
+
     protected virtual void ApplyEndTurn()
     {
+        foreach (var effect in Effects.Keys)
+        {
+            ApplyEffect(effect);
+            if (!IsAlive(true)) break;
+        }
     }
 
     //
@@ -413,10 +520,14 @@ public abstract class Character : ITarget
                $" ~ Vitesse: {Speed}\n" +
                $" ~ Attaque Physique: {PhysicalAttack}\n" +
                $" ~ Attaque Magique: {MagicalAttack}\n" +
+               $" ~ Attaque à Distance: {DistanceAttack}\n" +
                $" ~ Chances d'Esquiver: {DodgeChance:P}\n" +
                $" ~ Chances de Parade: {ParadeChance:P}\n" +
                $" ~ Chances de Resister aux Sorts: {SpellResistanceChance:P}\n" +
                $" ~ Compétences :\n" +
-               string.Join("\n", Skills.Select(skill => $"\t- {skill.Name} ({skill.GetType().Name})"));
+               string.Join("\n", Skills.Select(skill => $"\t- {skill.Name} ({skill.GetType().Name})")) +
+               (Effects.Count > 0
+                   ? $" ~ Effets : {string.Join(", ", Effects.Select(effect => $"{effect.Key} ({effect.Value} tour{(effect.Value > 1 ? "s" : "")})"))}"
+                   : string.Empty);
     }
 }

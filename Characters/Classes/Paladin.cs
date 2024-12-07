@@ -42,12 +42,12 @@ public class Paladin : Character, IMana
         Skills.AddRange([
             new Attack<Character>(
                 name: "Frappe du croisé",
-                description: () => $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.",
+                description: () => $"Inflige 100% de la puissance d’attaque physique ({GetAttack(DamageType.Physical)}) à la cible.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 5,
-                damage: PhysicalAttack,
+                damage: GetAttack(DamageType.Physical),
                 attackType: DamageType.Physical,
                 additional:
                 [
@@ -55,12 +55,12 @@ public class Paladin : Character, IMana
                 ]),
             new Attack<Character>(
                 name: "Jugement",
-                description: () => $"Inflige 100% de la puissance d’attaque magique ({MagicalAttack}) à la cible.",
+                description: () => $"Inflige 100% de la puissance d’attaque magique ({GetAttack(DamageType.Magical)}) à la cible.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 10,
-                damage: MagicalAttack,
+                damage: GetAttack(DamageType.Magical),
                 attackType: DamageType.Magical,
                 additional:
                 [
@@ -69,12 +69,12 @@ public class Paladin : Character, IMana
             new SpecialAbility<Character>(
                 name: "Eclair lumineux",
                 description: () =>
-                    $"Soigne la cible d’un montant de 125% de la puissance d’attaque magique ({(int)(MagicalAttack * 1.25m)} PV).",
+                    $"Soigne la cible d’un montant de 125% de la puissance d’attaque magique ({(int)(GetAttack(DamageType.Magical) * 1.25m)} PV).",
                 owner: this,
                 targetType: TargetType.Teammate,
                 reloadTime: 1,
                 manaCost: 25,
-                effect: target => $"{target.Name} est soigné de {target.Heal((int)(MagicalAttack * 1.25m))} PV."),
+                effect: target => $"{target.Name} est soigné de {target.Heal((int)(GetAttack(DamageType.Magical) * 1.25m))} PV."),
             ((IMana)this).Drink(this)
         ]);
     }

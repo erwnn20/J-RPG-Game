@@ -43,25 +43,25 @@ public class Priest : Character, IMana
             new Attack<Character>(
                 name: "Châtiment",
                 description: () =>
-                    $"Inflige 75% de la puissance d’attaque magique ({(int)(MagicalAttack * 0.75m)}) à la cible.\n" +
-                    $"Inflige 150% ({(int)(MagicalAttack * 1.50m)}) à la cible si celle ci n'est ni un {nameof(Priest)} ni un {nameof(Paladin)}.",
+                    $"Inflige 75% de la puissance d’attaque magique ({(int)(GetAttack(DamageType.Magical) * 0.75m)}) à la cible.\n" +
+                    $"Inflige 150% ({(int)(GetAttack(DamageType.Magical) * 1.50m)}) à la cible si celle ci n'est ni un {nameof(Priest)} ni un {nameof(Paladin)}.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 15,
                 damage: target =>
-                    (int)(MagicalAttack * (target.GetType() == typeof(Priest) || target.GetType() == typeof(Paladin)
+                    (int)(GetAttack(DamageType.Magical) * (target.GetType() == typeof(Priest) || target.GetType() == typeof(Paladin)
                         ? 0.75m
                         : 1.50m)),
                 attackType: DamageType.Magical),
             new SpecialAbility<Team>(
                 name: "Cercle de soins",
-                description: () => $"Soigne toute l'équipe sélectionné de {(int)(MagicalAttack * 0.75m)} PV.",
+                description: () => $"Soigne toute l'équipe sélectionné de {(int)(GetAttack(DamageType.Magical) * 0.75m)} PV.",
                 owner: this,
                 targetType: TargetType.TeamAllied,
                 reloadTime: 2,
                 manaCost: 30,
-                effect: target => $"{target.Name} à été soigné de {target.Heal((int)(MagicalAttack * 0.75m))} PV."),
+                effect: target => $"{target.Name} à été soigné de {target.Heal((int)(GetAttack(DamageType.Magical) * 0.75m))} PV."),
             ((IMana)this).Drink(this)
         ]);
     }

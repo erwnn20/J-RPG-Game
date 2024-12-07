@@ -114,6 +114,11 @@ public class Attack<TTarget>(
     public override void Execute()
     {
         if (!Owner.IsAlive(false)) return;
+        if (Owner.Effects.ContainsKey(StatusEffect.Stun) && new Random().NextDouble() < 0.15)
+        {
+            Console.WriteLine($"{Owner.Name} est étourdi est rate son attaque {Name}.");
+            return;
+        }
 
         if (!IsTargetCorrect())
         {

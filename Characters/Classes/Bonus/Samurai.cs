@@ -43,38 +43,39 @@ public class Samurai : Character
         Skills.AddRange([
             new Attack<Character>(
                 name: "Coup tranchant",
-                description: () => $"Inflige 100% de la puissance d’attaque physique ({PhysicalAttack}) à la cible.",
+                description: () =>
+                    $"Inflige 100% de la puissance d’attaque physique ({GetAttack(DamageType.Physical)}) à la cible.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 0,
-                damage: PhysicalAttack,
+                damage: GetAttack(DamageType.Physical),
                 attackType: DamageType.Physical),
             new Attack<Character>(
                 name: "Coup fatal",
                 description: () =>
-                    $"Inflige 120% de la puissance d’attaque physique ({(int)(PhysicalAttack * 1.20m)}) à la cible.\n" +
-                    $"A une chance d'infliger 160% de la puissance d’attaque physique ({(int)(PhysicalAttack * 1.60m)}).",
+                    $"Inflige 120% de la puissance d’attaque physique ({(int)(GetAttack(DamageType.Physical) * 1.20m)}) à la cible.\n" +
+                    $"A une chance d'infliger 160% de la puissance d’attaque physique ({(int)(GetAttack(DamageType.Physical) * 1.60m)}).",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 4,
                 manaCost: 0,
-                damage: _ => (int)(PhysicalAttack * (new Random().NextDouble() < 0.10 ? 1.60m : 1.20m)),
+                damage: _ => (int)(GetAttack(DamageType.Physical) * (new Random().NextDouble() < 0.10 ? 1.60m : 1.20m)),
                 attackType: DamageType.Physical),
             new Attack<Team>(
                 name: "Danse des lames",
                 description: () =>
-                    $"Inflige 40% de la puissance d’attaque physique ({(int)(PhysicalAttack * 0.40m)}) toute l’équipe ciblé.",
+                    $"Inflige 40% de la puissance d’attaque physique ({(int)(GetAttack(DamageType.Physical) * 0.40m)}) toute l’équipe ciblé.",
                 owner: this,
                 targetType: TargetType.TeamEnemy,
                 reloadTime: 2,
                 manaCost: 0,
-                damage: (int)(PhysicalAttack * 0.4m),
+                damage: (int)(GetAttack(DamageType.Physical) * 0.4m),
                 attackType: DamageType.Physical),
             new SpecialAbility<Character>(
                 name: "Force intérieure",
                 description: () =>
-                    $"Augmente la puissance d’attaque physique ({PhysicalAttack}) de {InnerStrengthAttack} pendant 3 tours.\n" +
+                    $"Augmente la puissance d’attaque physique ({GetAttack(DamageType.Physical)}) de {InnerStrengthAttack} pendant 3 tours.\n" +
                     $"Augmente les chances d'esquiver ({DodgeChance:P}) de {InnerStrengthDodge:P} pendant 3 tours.",
                 owner: this,
                 targetType: TargetType.Self,
@@ -135,13 +136,13 @@ public class Samurai : Character
             name: "Dernier souffle",
             owner: this,
             description: () =>
-                $"Si il reste mon de 5 PV au samouraï, il déclenche une attaque qui inflige 200% de la puissance d’attaque physique ({(int)(PhysicalAttack * 2.00m)}) à l’attaquant.\n" +
+                $"Si il reste mon de 5 PV au samouraï, il déclenche une attaque qui inflige 200% de la puissance d’attaque physique ({(int)(GetAttack(DamageType.Physical) * 2.00m)}) à l’attaquant.\n" +
                 $"A 50% de chances de tuer le samouraï.",
             target: attackFrom.Owner,
             targetType: TargetType.Enemy,
             reloadTime: 0,
             manaCost: 0,
-            damage: (int)(PhysicalAttack * 2.00m),
+            damage: (int)(GetAttack(DamageType.Physical) * 2.00m),
             attackType: DamageType.Physical,
             additional:
             [
@@ -171,7 +172,7 @@ public class Samurai : Character
             InnerStrengthCooldown--;
             if (InnerStrengthCooldown > 0)
                 Console.WriteLine(
-                    $"L'effet de Force intérieure ne fait effet sur {Name} pendant plus que {InnerStrengthCooldown} tour{(InnerStrengthCooldown > 1 ? "s" : string.Empty)}.");
+                    $"L'effet de Force intérieure fait effet sur {Name} pendant encore {InnerStrengthCooldown} tour{(InnerStrengthCooldown > 1 ? "s" : string.Empty)}.");
             else
             {
                 Console.WriteLine(

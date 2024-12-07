@@ -42,13 +42,13 @@ public class Mage : Character, IMana
         Skills.AddRange([
             new Attack<Character>(
                 name: "Eclair de givre",
-                description: () => $"Inflige 100% de la puissance d’attaque magique ({MagicalAttack}) à la cible.\n" +
+                description: () => $"Inflige 100% de la puissance d’attaque magique ({GetAttack(DamageType.Magical)}) à la cible.\n" +
                                    $"Réduit la vitesse de la cible de 25% si celui ci n'a pas résisté à l'attaque.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 15,
-                damage: MagicalAttack,
+                damage: GetAttack(DamageType.Magical),
                 attackType: DamageType.Magical,
                 additional:
                 [
@@ -80,13 +80,13 @@ public class Mage : Character, IMana
             new Attack<Team>(
                 name: "Blizzard",
                 description: () =>
-                    $"Inflige 50% de la puissance d’attaque magique ({(int)(MagicalAttack * 0.50m)}) à toute l’équipe ciblé.\n" +
+                    $"Inflige 50% de la puissance d’attaque magique ({(int)(GetAttack(DamageType.Magical) * 0.50m)}) à toute l’équipe ciblé.\n" +
                     $"A une chance de baisser la vitesse de chaque cible de 15%.",
                 owner: this,
                 targetType: TargetType.TeamEnemy,
                 reloadTime: 2,
                 manaCost: 25,
-                damage: (int)(MagicalAttack * 0.5m),
+                damage: (int)(GetAttack(DamageType.Magical) * 0.5m),
                 attackType: DamageType.Magical,
                 additional:
                 [

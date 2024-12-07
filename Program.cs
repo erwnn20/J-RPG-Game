@@ -89,7 +89,7 @@ public static class Program
 
             Console.WriteLine($"Execution du tour {turn}...");
 
-            turnActions = turnActions.OrderByDescending(action => action.Owner.Speed).ToList();
+            turnActions = turnActions.OrderByDescending(action => action.Owner.GetSpeed()).ToList();
             turnActions.ForEach(action =>
             {
                 action.Execute();

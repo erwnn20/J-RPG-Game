@@ -164,6 +164,7 @@ public class Samurai : Character
     /// </remarks>
     protected override void ApplyEndTurn()
     {
+        base.ApplyEndTurn();
         if (InnerStrengthCooldown > 0)
         {
             InnerStrengthCooldown--;

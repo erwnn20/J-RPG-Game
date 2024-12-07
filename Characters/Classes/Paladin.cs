@@ -106,10 +106,6 @@ public class Paladin : Character, IMana
                 $"{Name} se soigne de {healed} PV garce à sa capacité spéciale.");
     };
 
-    protected override void ApplyEndTurn()
-    {
-    }
-
     //
 
     /// <summary>

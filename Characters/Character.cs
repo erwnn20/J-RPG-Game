@@ -270,7 +270,8 @@ public abstract class Character : ITarget
                 "Sur qui voulez vous utiliser cette capacité ?",
                 target => target switch
                 {
-                    Character tCharacter => $"{tCharacter.Name} - {tCharacter.Health.Current}/{tCharacter.Health.Max} PV",
+                    Character tCharacter =>
+                        $"{tCharacter.Name} - {tCharacter.Health.Current}/{tCharacter.Health.Max} PV",
                     Team tTeam =>
                         $"{tTeam.Name} - {tTeam.Characters.Count(character => character.IsAlive(false))} personnage(s) en vie",
                     _ => target.Name
@@ -365,7 +366,9 @@ public abstract class Character : ITarget
         return (false, null);
     }
 
-    protected abstract void ApplyEndTurn();
+    protected virtual void ApplyEndTurn()
+    {
+    }
 
     //
 

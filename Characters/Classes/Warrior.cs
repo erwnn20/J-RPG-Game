@@ -127,8 +127,4 @@ public class Warrior : Character
         conterAttack.Execute();
         conterAttack.Damage = _ => 0;
     };
-
-    protected override void ApplyEndTurn()
-    {
-    }
 }

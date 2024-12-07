@@ -102,10 +102,6 @@ public class Doctor : Character
         return TakeDamage((int)from.StatusInfo.Damage);
     }
 
-    protected override void ApplyEndTurn()
-    {
-    }
-
     //
 
     /// <summary>

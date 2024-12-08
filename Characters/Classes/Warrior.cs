@@ -46,7 +46,7 @@ public class Warrior : Character
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 0,
-                damage: GetAttack(DamageType.Physical),
+                damage: _ => GetAttack(DamageType.Physical),
                 attackType: DamageType.Physical,
                 additional:
                 [
@@ -81,7 +81,7 @@ public class Warrior : Character
                 targetType: TargetType.TeamEnemy,
                 reloadTime: 2,
                 manaCost: 0,
-                damage: (int)(GetAttack(DamageType.Physical) * 0.33m),
+                damage: _ => (int)(GetAttack(DamageType.Physical) * 0.33m),
                 attackType: DamageType.Physical,
                 additional:
                 [

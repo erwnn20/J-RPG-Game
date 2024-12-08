@@ -101,7 +101,7 @@ public abstract class Character : ITarget
             StatusEffect.Speed => 10,
             StatusEffect.Slowness => -10,
             _ => 0
-        }).Aggregate((x, y) => x + y);
+        }).Sum();
     }
 
     protected int GetAttack(DamageType damageType)
@@ -117,7 +117,7 @@ public abstract class Character : ITarget
             StatusEffect.Focus => 10,
             StatusEffect.AdrenalinRush => 15,
             _ => 0
-        }).Aggregate((x, y) => x + y);
+        }).Sum();
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ public abstract class Character : ITarget
             {
                 StatusEffect.AdrenalinRush => 0.95m,
                 _ => 1m
-            }).Aggregate((x, y) => x * y));
+            }).Aggregate(1m, (x, y) => x * y));
 
         Console.WriteLine($"{Name} est actuellement invincible et ne prends aucun dégâts.");
         return 0;
@@ -173,7 +173,7 @@ public abstract class Character : ITarget
                StatusEffect.Slowness => 0.75m,
                StatusEffect.Stun => 0.95m,
                _ => 1m
-           }).Aggregate((x, y) => x * y);
+           }).Aggregate(1m, (x, y) => x * y);
 
     /// <summary>
     /// Attempts to parry a physical or distance attack using <see cref="ParadeChance"/> attribute.
@@ -192,7 +192,7 @@ public abstract class Character : ITarget
             {
                 StatusEffect.Stun => 0.50m,
                 _ => 1m
-            }).Aggregate((x, y) => x * y);
+            }).Aggregate(1m, (x, y) => x * y);
 
     /// <summary>
     /// Attempts to resist a magical attack using <see cref="SpellResistanceChance"/> attribute.
@@ -473,18 +473,8 @@ public abstract class Character : ITarget
                 var healed = Heal((int)(Health.Max * 0.05m));
                 if (healed > 0) Console.WriteLine($"{Name} a régénéré sa vie de {healed} PV.");
                 break;
-            case StatusEffect.Invincibility:
-                break;
-            case StatusEffect.Speed:
-                break;
-            case StatusEffect.Focus:
-                break;
             case StatusEffect.Poison:
                 Console.WriteLine($"{Name} à pris {TakeDamage(5)} dégâts de poison.");
-                break;
-            case StatusEffect.Slowness:
-                break;
-            case StatusEffect.Stun:
                 break;
             case StatusEffect.Bleeding:
                 Console.WriteLine($"{Name} à pris {TakeDamage((int)(Health.Max * 0.05m))} dégâts de saignement.");
@@ -497,8 +487,6 @@ public abstract class Character : ITarget
                 Console.WriteLine($"{Name} à pris {TakeDamage(random.Next(1, 15))} dégâts de brulure.");
                 if (random.NextDouble() < 0.25) Effects[StatusEffect.Burn] = 0;
                 break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(effect), effect, null);
         }
 
         Effects[effect]--;
@@ -539,7 +527,11 @@ public abstract class Character : ITarget
 
     public static void EndTurn() => List
         .Where(character => character.IsAlive(false)).ToList()
-        .ForEach(character => character.ApplyEndTurn());
+        .ForEach(character =>
+        {
+            character.ApplyEndTurn();
+            Console.WriteLine();
+        });
 
     //
 
@@ -555,13 +547,13 @@ public abstract class Character : ITarget
                $" ~ Attaque Physique: {PhysicalAttack}\n" +
                $" ~ Attaque Magique: {MagicalAttack}\n" +
                $" ~ Attaque à Distance: {DistanceAttack}\n" +
-               $" ~ Chances d'Esquiver: {DodgeChance:P}\n" +
-               $" ~ Chances de Parade: {ParadeChance:P}\n" +
-               $" ~ Chances de Resister aux Sorts: {SpellResistanceChance:P}\n" +
+               $" ~ Chances d'Esquiver: {DodgeChance.Current:P}\n" +
+               $" ~ Chances de Parade: {ParadeChance.Current:P}\n" +
+               $" ~ Chances de Resister aux Sorts: {SpellResistanceChance.Current:P}\n" +
                $" ~ Compétences :\n" +
                string.Join("\n", Skills.Select(skill => $"\t- {skill.Name} ({skill.GetType().Name})")) +
                (Effects.Count > 0
-                   ? $" ~ Effets : {string.Join(", ", Effects.Select(effect => $"{effect.Key} ({effect.Value} tour{(effect.Value > 1 ? "s" : "")})"))}"
+                   ? $"\n ~ Effets : {string.Join(", ", Effects.Select(effect => $"{effect.Key} ({effect.Value} tour{(effect.Value > 1 ? "s" : "")})"))}"
                    : string.Empty);
     }
 }

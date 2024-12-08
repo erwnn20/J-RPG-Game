@@ -48,7 +48,7 @@ public class Paladin : Character, IMana
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 5,
-                damage: GetAttack(DamageType.Physical),
+                damage: _ => GetAttack(DamageType.Physical),
                 attackType: DamageType.Physical,
                 additional:
                 [
@@ -62,7 +62,7 @@ public class Paladin : Character, IMana
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 10,
-                damage: GetAttack(DamageType.Magical),
+                damage: _ => GetAttack(DamageType.Magical),
                 attackType: DamageType.Magical,
                 additional:
                 [

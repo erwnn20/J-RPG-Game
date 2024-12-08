@@ -69,7 +69,7 @@ public class Doctor : Character
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 0,
-                damage: GetAttack(DamageType.Physical),
+                damage: _ => GetAttack(DamageType.Physical),
                 attackType: DamageType.Physical,
                 additional:
                 [
@@ -93,7 +93,7 @@ public class Doctor : Character
                 manaCost: 0,
                 effect: target =>
                 {
-                    if (HeathPoints > 0) return "";
+                    if (HeathPoints <= 0) return "";
                     var healed = target.Heal(HeathPoints);
                     HeathPoints -= healed;
                     return $"{target.Name} a été soigné de {healed} PV.\n" +

@@ -52,7 +52,7 @@ public class Mage : Character, IMana
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 15,
-                damage: GetAttack(DamageType.Magical),
+                damage: _ => GetAttack(DamageType.Magical),
                 attackType: DamageType.Magical,
                 additional:
                 [
@@ -104,7 +104,7 @@ public class Mage : Character, IMana
                 targetType: TargetType.TeamEnemy,
                 reloadTime: 2,
                 manaCost: 25,
-                damage: (int)(GetAttack(DamageType.Magical) * 0.5m),
+                damage: _ => (int)(GetAttack(DamageType.Magical) * 0.5m),
                 attackType: DamageType.Magical,
                 additional:
                 [

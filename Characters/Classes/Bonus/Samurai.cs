@@ -46,7 +46,7 @@ public class Samurai : Character
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 0,
-                damage: GetAttack(DamageType.Physical),
+                damage: _ => GetAttack(DamageType.Physical),
                 attackType: DamageType.Physical,
                 additional:
                 [
@@ -76,7 +76,7 @@ public class Samurai : Character
                 targetType: TargetType.TeamEnemy,
                 reloadTime: 2,
                 manaCost: 0,
-                damage: (int)(GetAttack(DamageType.Physical) * 0.4m),
+                damage: _ => (int)(GetAttack(DamageType.Physical) * 0.4m),
                 attackType: DamageType.Physical),
             new SpecialAbility<Character>(
                 name: "Force intérieure",
@@ -132,7 +132,7 @@ public class Samurai : Character
             targetType: TargetType.Enemy,
             reloadTime: 0,
             manaCost: 0,
-            damage: (int)(GetAttack(DamageType.Physical) * 2.00m),
+            damage: _ => (int)(GetAttack(DamageType.Physical) * 2.00m),
             attackType: DamageType.Physical,
             additional:
             [

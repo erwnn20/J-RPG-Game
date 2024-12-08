@@ -42,8 +42,12 @@ public class Mage : Character, IMana
         Skills.AddRange([
             new Attack<Character>(
                 name: "Eclair de givre",
-                description: () => $"Inflige 100% de la puissance d’attaque magique ({GetAttack(DamageType.Magical)}) à la cible.\n" +
-                                   $"Réduit la vitesse de la cible de 25% si celui ci n'a pas résisté à l'attaque.",
+                description: () =>
+                    $"Inflige 100% de la puissance d’attaque magique ({GetAttack(DamageType.Magical)}) à la cible.\n" +
+                    "Si la cible ne résiste pas à l'attaque :\n" +
+                    "   - elle est ralenti pendant pendant 3 tours\n" +
+                    "   - a 15% de chance d'être paralysée pendant 2 tours\n" +
+                    "   - a 5% de chance de voir sa vitesse diminuée définitivement de 15%",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
@@ -57,16 +61,27 @@ public class Mage : Character, IMana
                         if (attack.StatusInfo.Resisted) return;
                         if (attack.Target is not Character target) return;
 
-                        target.Speed = (int)(target.Speed * 0.75m);
-                        Console.WriteLine($"La vitesse de {target.Name} à diminué de 25%.");
+                        Console.WriteLine(
+                            $"{target.Name} est ralenti pendant {target.AddEffect(StatusEffect.Slowness, 3)} tours.");
+
+                        var random = new Random();
+                        if (random.NextDouble() < 0.15)
+                            Console.WriteLine(
+                                $"{target.Name} est paralysé pendant {target.AddEffect(StatusEffect.Paralysis, 2)} tours.");
+
+                        if (random.NextDouble() < 0.05)
+                        {
+                            target.Speed = (int)(target.Speed * 0.85m);
+                            Console.WriteLine($"La vitesse de {target.Name} à diminué de 15%.");
+                        }
                     }
                 ]),
             new SpecialAbility<Character>(
                 name: "Barrière de givre",
-                description: () => $"Réduit les dégâts des deux prochaines attaques subies.\n" +
-                                   $"\t- {ReduceDamagePhysical:P} sur les attaques physiques.\n" +
-                                   $"\t- {ReduceDamageMagical:P} sur les attaques magiques.\n" +
-                                   $"\t- {ReduceDamageDistance:P} sur les attaques à distance.",
+                description: () => "Réduit les dégâts des deux prochaines attaques subies de :\n" +
+                                   $"   - {ReduceDamagePhysical:P} sur les attaques physiques\n" +
+                                   $"   - {ReduceDamageMagical:P} sur les attaques magiques\n" +
+                                   $"   - {ReduceDamageDistance:P} sur les attaques à distance",
                 owner: this,
                 targetType: TargetType.Self,
                 reloadTime: 2,
@@ -81,7 +96,10 @@ public class Mage : Character, IMana
                 name: "Blizzard",
                 description: () =>
                     $"Inflige 50% de la puissance d’attaque magique ({(int)(GetAttack(DamageType.Magical) * 0.50m)}) à toute l’équipe ciblé.\n" +
-                    $"A une chance de baisser la vitesse de chaque cible de 15%.",
+                    "Si la cible ne résiste pas à l'attaque :\n" +
+                    "   - elle est ralenti pendant pendant 2 tours\n" +
+                    "   - a 10% de chance d'être paralysée pendant 1 tours\n" +
+                    "   - a 5% de chance de voir sa vitesse diminuée définitivement de 5%",
                 owner: this,
                 targetType: TargetType.TeamEnemy,
                 reloadTime: 2,
@@ -95,8 +113,19 @@ public class Mage : Character, IMana
                         if (attack.StatusInfo.Resisted) return;
                         if (attack.Target is not Character target) return;
 
-                        target.Speed = (int)(target.Speed * 0.85m);
-                        Console.WriteLine($"La vitesse de {target.Name} à diminué de 15%.");
+                        Console.WriteLine(
+                            $"{target.Name} est ralenti pendant {target.AddEffect(StatusEffect.Slowness, 2)} tours.");
+
+                        var random = new Random();
+                        if (random.NextDouble() < 0.10)
+                            Console.WriteLine(
+                                $"{target.Name} est paralysé pendant {target.AddEffect(StatusEffect.Paralysis, 1)} tours.");
+
+                        if (random.NextDouble() < 0.05)
+                        {
+                            target.Speed = (int)(target.Speed * 0.95m);
+                            Console.WriteLine($"La vitesse de {target.Name} à diminué de 5%.");
+                        }
                     }
                 ]),
             new SpecialAbility<Character>(

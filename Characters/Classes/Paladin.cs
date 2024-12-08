@@ -42,7 +42,8 @@ public class Paladin : Character, IMana
         Skills.AddRange([
             new Attack<Character>(
                 name: "Frappe du croisé",
-                description: () => $"Inflige 100% de la puissance d’attaque physique ({GetAttack(DamageType.Physical)}) à la cible.",
+                description: () =>
+                    $"Inflige 100% de la puissance d’attaque physique ({GetAttack(DamageType.Physical)}) à la cible.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
@@ -55,7 +56,8 @@ public class Paladin : Character, IMana
                 ]),
             new Attack<Character>(
                 name: "Jugement",
-                description: () => $"Inflige 100% de la puissance d’attaque magique ({GetAttack(DamageType.Magical)}) à la cible.",
+                description: () =>
+                    $"Inflige 100% de la puissance d’attaque magique ({GetAttack(DamageType.Magical)}) à la cible.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
@@ -69,12 +71,15 @@ public class Paladin : Character, IMana
             new SpecialAbility<Character>(
                 name: "Eclair lumineux",
                 description: () =>
-                    $"Soigne la cible d’un montant de 125% de la puissance d’attaque magique ({(int)(GetAttack(DamageType.Magical) * 1.25m)} PV).",
+                    $"Soigne la cible d’un montant de 125% de la puissance d’attaque magique ({(int)(GetAttack(DamageType.Magical) * 1.25m)} PV).\n" +
+                    "Rend la cible invincible pendant 2 tours.",
                 owner: this,
                 targetType: TargetType.Teammate,
                 reloadTime: 1,
                 manaCost: 25,
-                effect: target => $"{target.Name} est soigné de {target.Heal((int)(GetAttack(DamageType.Magical) * 1.25m))} PV."),
+                effect: target =>
+                    $"{target.Name} est soigné de {target.Heal((int)(GetAttack(DamageType.Magical) * 1.25m))} PV.\n" +
+                    $"Il est maintenant invincible pendant {target.AddEffect(StatusEffect.Invincibility, 2)} tours."),
             ((IMana)this).Drink(this)
         ]);
     }

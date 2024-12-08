@@ -50,18 +50,23 @@ public class Priest : Character, IMana
                 reloadTime: 1,
                 manaCost: 15,
                 damage: target =>
-                    (int)(GetAttack(DamageType.Magical) * (target.GetType() == typeof(Priest) || target.GetType() == typeof(Paladin)
-                        ? 0.75m
-                        : 1.50m)),
+                    (int)(GetAttack(DamageType.Magical) *
+                          (target.GetType() == typeof(Priest) || target.GetType() == typeof(Paladin)
+                              ? 0.75m
+                              : 1.50m)),
                 attackType: DamageType.Magical),
             new SpecialAbility<Team>(
                 name: "Cercle de soins",
-                description: () => $"Soigne toute l'équipe sélectionné de {(int)(GetAttack(DamageType.Magical) * 0.75m)} PV.",
+                description: () =>
+                    $"Soigne toute l'équipe sélectionné de 15% des dégâts magiques ({(int)(GetAttack(DamageType.Magical) * 0.15m)} PV).\n" +
+                    "Donne l'effet régénération à l'équipe pendant 3 tours.",
                 owner: this,
                 targetType: TargetType.TeamAllied,
                 reloadTime: 2,
                 manaCost: 30,
-                effect: target => $"{target.Name} à été soigné de {target.Heal((int)(GetAttack(DamageType.Magical) * 0.75m))} PV."),
+                effect: target =>
+                    $"{target.Name} a été soigné de {target.Heal((int)(GetAttack(DamageType.Magical) * 0.15m))} PV.\n" +
+                    $"{target.Name} a maintenant l'effet régénération pendant {target.AddEffect(StatusEffect.Regeneration, 3)} tours!."),
             ((IMana)this).Drink(this)
         ]);
     }

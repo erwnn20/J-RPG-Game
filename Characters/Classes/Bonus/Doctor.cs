@@ -50,17 +50,21 @@ public class Doctor : Character
                     $"{target.Name} est soigné de {target.Heal((int)(target.Health.Max * 0.20m))} PV."),
             new SpecialAbility<Team>(
                 name: "Soin de groupe",
-                description: () => "Soigne tous les alliés de 45% de leurs santé maximale.",
+                description: () => "Soigne tous les alliés de 35% de leurs santé maximale.\n" +
+                                   "Donne l'effet 'régénération' à la cible pendant 2 tours.",
                 owner: this,
                 targetType: TargetType.TeamAllied,
                 reloadTime: 4,
                 manaCost: 0,
                 effect: target =>
-                    $"{target.Name} est soigné de {target.Heal((int)(target.Health.Max * 0.45m))} PV."),
+                    $"{target.Name} est soigné de {target.Heal((int)(target.Health.Max * 0.35m))} PV.\n" +
+                    $"{target.Name} a l'effet 'régénération' pendant {target.AddEffect(StatusEffect.Regeneration, 2)} tours."),
             new Attack<Character>(
                 name: "Saignée",
-                description: () => $"Inflige 100% de la puissance d'attaque physique ({GetAttack(DamageType.Physical)}) à la cible.\n" +
-                                   $"Draine les dégâts infligés pour les utiliser avec 'Transfusion'.",
+                description: () =>
+                    $"Inflige 100% de la puissance d'attaque physique ({GetAttack(DamageType.Physical)}) à la cible.\n" +
+                    "Draine les dégâts infligés pour les utiliser avec 'Transfusion'.\n" +
+                    "Si l'attaque n'est pas esquivée, cause un saignement pendant 4 tours.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
@@ -69,11 +73,20 @@ public class Doctor : Character
                 attackType: DamageType.Physical,
                 additional:
                 [
-                    attack => HeathPoints += (int)attack.StatusInfo.Damage
+                    attack =>
+                    {
+                        HeathPoints += (int)attack.StatusInfo.Damage;
+
+                        if (attack is { StatusInfo.Dodged: false, Target: Character target })
+                            Console.WriteLine(
+                                $"{target.Name} subit des saignements pendant {target.AddEffect(StatusEffect.Bleeding, 4)} tours.");
+                    }
                 ]),
             new SpecialAbility<Character>(
                 name: "Transfusion",
-                description: () => $"Soigne un allié de la quantité de PV drainé par 'Saignée' ({HeathPoints} PV).",
+                description: () => $"Soigne un allié de la quantité de PV drainé par 'Saignée' ({HeathPoints} PV).\n" +
+                                   "Cause des saignement pendant 1 tour.\n" +
+                                   "Donne l'effet régénération pendant 3 tours.",
                 owner: this,
                 targetType: TargetType.Teammate,
                 reloadTime: 2,
@@ -83,7 +96,9 @@ public class Doctor : Character
                     if (HeathPoints > 0) return "";
                     var healed = target.Heal(HeathPoints);
                     HeathPoints -= healed;
-                    return $"{target.Name} a été soigné de {healed} PV.";
+                    return $"{target.Name} a été soigné de {healed} PV.\n" +
+                           $"{target.Name} subit des saignements pendant {target.AddEffect(StatusEffect.Bleeding, 1)} tour(s).\n" +
+                           $"{target.Name} a l'effet 'régénération' pendant {target.AddEffect(StatusEffect.Regeneration, 3)} tours.";
                 })
         ]);
     }

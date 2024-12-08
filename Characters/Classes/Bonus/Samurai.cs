@@ -12,10 +12,6 @@ namespace JRPG_Game.Characters.Classes.Bonus;
 /// </remarks>
 public class Samurai : Character
 {
-    private int InnerStrengthCooldown { get; set; }
-    private static int InnerStrengthAttack => 5;
-    private static decimal InnerStrengthDodge => 0.10m;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Samurai"/> class.
     /// </summary>
@@ -44,13 +40,23 @@ public class Samurai : Character
             new Attack<Character>(
                 name: "Coup tranchant",
                 description: () =>
-                    $"Inflige 100% de la puissance d’attaque physique ({GetAttack(DamageType.Physical)}) à la cible.",
+                    $"Inflige 100% de la puissance d’attaque physique ({GetAttack(DamageType.Physical)}) à la cible.\n" +
+                    "Si l'attaque n'est pas esquivée, cause un saignement pendant 2 tours.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 0,
                 damage: GetAttack(DamageType.Physical),
-                attackType: DamageType.Physical),
+                attackType: DamageType.Physical,
+                additional:
+                [
+                    attack =>
+                    {
+                        if (attack is { StatusInfo.Dodged: false, Target: Character target })
+                            Console.WriteLine(
+                                $"{target.Name} subit des saignements pendant {target.AddEffect(StatusEffect.Bleeding, 2)} tours.");
+                    }
+                ]),
             new Attack<Character>(
                 name: "Coup fatal",
                 description: () =>
@@ -74,30 +80,13 @@ public class Samurai : Character
                 attackType: DamageType.Physical),
             new SpecialAbility<Character>(
                 name: "Force intérieure",
-                description: () =>
-                    $"Augmente la puissance d’attaque physique ({GetAttack(DamageType.Physical)}) de {InnerStrengthAttack} pendant 3 tours.\n" +
-                    $"Augmente les chances d'esquiver ({DodgeChance:P}) de {InnerStrengthDodge:P} pendant 3 tours.",
+                description: () => "Donne l'effet 'Focus' pendant 3 tours.",
                 owner: this,
                 targetType: TargetType.Self,
                 reloadTime: 2,
                 manaCost: 0,
-                effect: _ =>
-                {
-                    InnerStrengthCooldown = 3;
-
-                    var output = "";
-                    var oldPhysicalAttack = PhysicalAttack;
-                    PhysicalAttack += InnerStrengthAttack;
-                    output +=
-                        $"{Name} augmente sa puissance d’attaque physique de {PhysicalAttack - oldPhysicalAttack} ({oldPhysicalAttack} -> {PhysicalAttack})";
-
-                    var oldDodgeChance = DodgeChance;
-                    DodgeChance += InnerStrengthDodge;
-                    output +=
-                        $"\n{Name} augmente ses chances d'esquive de {DodgeChance - oldDodgeChance:P} ({oldDodgeChance:P} -> {DodgeChance:P})";
-
-                    return output;
-                })
+                effect: target =>
+                    $"{target.Name} est maintenant 'Focus' pendant {target.AddEffect(StatusEffect.Focus, 3)} tours.")
         ]);
     }
 
@@ -137,6 +126,7 @@ public class Samurai : Character
             owner: this,
             description: () =>
                 $"Si il reste mon de 5 PV au samouraï, il déclenche une attaque qui inflige 200% de la puissance d’attaque physique ({(int)(GetAttack(DamageType.Physical) * 2.00m)}) à l’attaquant.\n" +
+                $"Si l'attaque n'est pas esquivée, cause des saignements et étourdi la cible pendant 3 tours.\n" +
                 $"A 50% de chances de tuer le samouraï.",
             target: attackFrom.Owner,
             targetType: TargetType.Enemy,
@@ -146,6 +136,16 @@ public class Samurai : Character
             attackType: DamageType.Physical,
             additional:
             [
+                attack =>
+                {
+                    if (attack is { StatusInfo.Dodged: false, Target: Character target })
+                    {
+                        Console.WriteLine(
+                            $"{target.Name} subit des saignements pendant {target.AddEffect(StatusEffect.Bleeding, 3)} tours.");
+                        Console.WriteLine(
+                            $"{target.Name} est étourdi pendant {target.AddEffect(StatusEffect.Stun, 3)} tours.");
+                    }
+                },
                 _ =>
                 {
                     if (!(new Random().NextDouble() < 0.5)) return;
@@ -157,29 +157,4 @@ public class Samurai : Character
         conterAttack.Execute();
         conterAttack.Damage = _ => 0;
     };
-
-    /// <summary>
-    /// Applies end-of-turn effects for the samurai.
-    /// </summary>
-    /// <remarks>
-    /// Reduces the cooldown for the "Force intérieure" ability and resets its effects once the duration ends.
-    /// </remarks>
-    protected override void ApplyEndTurn()
-    {
-        base.ApplyEndTurn();
-        if (InnerStrengthCooldown > 0)
-        {
-            InnerStrengthCooldown--;
-            if (InnerStrengthCooldown > 0)
-                Console.WriteLine(
-                    $"L'effet de Force intérieure fait effet sur {Name} pendant encore {InnerStrengthCooldown} tour{(InnerStrengthCooldown > 1 ? "s" : string.Empty)}.");
-            else
-            {
-                Console.WriteLine(
-                    $"L'Force intérieure ne fait plus effet sur {Name}.");
-                PhysicalAttack -= InnerStrengthAttack;
-                DodgeChance -= InnerStrengthDodge;
-            }
-        }
-    }
 }

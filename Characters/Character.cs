@@ -459,9 +459,10 @@ public abstract class Character : ITarget
         return (false, null);
     }
 
-    public void AddEffect(StatusEffect effect, int duration)
+    public int AddEffect(StatusEffect effect, int duration)
     {
         if (!Effects.TryAdd(effect, duration)) Effects[effect] += duration;
+        return Effects[effect];
     }
 
     private void ApplyEffect(StatusEffect effect)

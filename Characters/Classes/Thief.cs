@@ -40,8 +40,9 @@ public class Thief : Character
         Skills.AddRange([
             new Attack<Character>(
                 name: "Coup bas",
-                description: () => $"Inflige 100% de la puissance d’attaque physique ({GetAttack(DamageType.Physical)}) à la cible.\n" +
-                                   $"Inflige 150% si la cible a moins de la moitié de ses points de vie.",
+                description: () =>
+                    $"Inflige 100% de la puissance d’attaque physique ({GetAttack(DamageType.Physical)}) à la cible.\n" +
+                    $"Inflige 150% si la cible a moins de la moitié de ses points de vie.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
@@ -53,30 +54,43 @@ public class Thief : Character
             new SpecialAbility<Character>(
                 name: "Evasion",
                 description: () =>
-                    $"Augmente les chances d'esquive de 20% (max 80%) ({DodgeChance:P} {(DodgeChance == 0.80m
-                        ? "MAX"
-                        : $"-> {Math.Min(DodgeChance + 0.20m, 0.80m):P}{(Math.Min(DodgeChance + 0.20m, 0.80m) == 0.5m ? " MAX" : string.Empty)}")})\n" +
-                    $"Augmente les chances de resister aux sorts de 20% (max 50%) ({SpellResistanceChance:P} {(SpellResistanceChance == 0.5m
-                        ? "MAX"
-                        : $"-> {Math.Min(SpellResistanceChance + 0.20m, 0.5m):P}{(Math.Min(SpellResistanceChance + 0.20m, 0.5m) == 0.5m ? " MAX" : string.Empty)}")})",
+                {
+                    const decimal dodgeAugment = 0.10m;
+                    var newDodge = DodgeChance.Current + dodgeAugment;
+                    const decimal resistAugment = 0.05m;
+                    var newResist = SpellResistanceChance.Current + resistAugment;
+
+                    return
+                        $"Augmente les chances d'esquive de {dodgeAugment:P} (max {DodgeChance.Max:P}) ({DodgeChance.Current:P} {(DodgeChance.Current == DodgeChance.Max
+                            ? "MAX"
+                            : $"-> {Math.Min(newDodge, DodgeChance.Max):P}{(Math.Min(newDodge, DodgeChance.Max) == DodgeChance.Max ? " MAX" : string.Empty)}")})\n" +
+                        $"Augmente les chances de resister aux sorts de {resistAugment:P} (max {SpellResistanceChance.Max:P}) ({SpellResistanceChance.Current:P} {(SpellResistanceChance.Current == SpellResistanceChance.Max
+                            ? "MAX"
+                            : $"-> {Math.Min(newResist, SpellResistanceChance.Max):P}{(Math.Min(newResist, SpellResistanceChance.Max) == SpellResistanceChance.Max ? " MAX" : string.Empty)}")})\n" +
+                        $"Donne l'effet 'vitesse' pendant 2 tours.";
+                },
                 owner: this,
                 targetType: TargetType.Self,
                 reloadTime: 1,
                 manaCost: 0,
                 effect: _ =>
                 {
-                    var output = "";
-                    var oldDodgeChance = DodgeChance;
-                    DodgeChance = Math.Min(0.80m, DodgeChance + 0.20m);
-                    output += oldDodgeChance != DodgeChance
-                        ? $"{Name} augmente ses chances d'esquive de {DodgeChance - oldDodgeChance:P} ({oldDodgeChance:P} -> {DodgeChance:P}{(DodgeChance == 0.80m ? " MAX" : string.Empty)})"
-                        : $"{Name} a ses chances d'esquive au max : {DodgeChance:P}{(DodgeChance == 0.80m ? " MAX" : string.Empty)}";
+                    const decimal dodgeAugment = 0.10m;
+                    const decimal resistAugment = 0.05m;
 
-                    var oldSpellResistanceChance = SpellResistanceChance;
-                    SpellResistanceChance = Math.Min(0.5m, SpellResistanceChance + 0.2m);
-                    output += oldSpellResistanceChance != SpellResistanceChance
-                        ? $"\n{Name} augmente ses chances  de resister aux sorts de {SpellResistanceChance - oldSpellResistanceChance:P} ({oldSpellResistanceChance:P} -> {SpellResistanceChance:P}{(SpellResistanceChance == 0.5m ? " MAX" : string.Empty)})"
-                        : $"\n{Name} a ses chances de resister aux sorts au maximum : {SpellResistanceChance:P}{(SpellResistanceChance == 0.5m ? " MAX" : string.Empty)}";
+                    var output = "";
+                    var addedDodge = DodgeChance.Add(dodgeAugment);
+                    output += addedDodge > 0
+                        ? $"{Name} augmente ses chances d'esquive de {addedDodge:P} ({DodgeChance.Current - addedDodge:P} -> {DodgeChance.Current:P}{(DodgeChance.Current == DodgeChance.Max ? " MAX" : string.Empty)})."
+                        : $"{Name} a ses chances d'esquive au maximum -> {DodgeChance.Current:P}.";
+
+                    var addedResistance = SpellResistanceChance.Add(resistAugment);
+                    output += addedResistance > 0
+                        ? $"\n{Name} augmente ses chances  de resister aux sorts de {addedResistance:P} ({SpellResistanceChance.Current - addedResistance:P} -> {SpellResistanceChance.Current:P}{(SpellResistanceChance.Current == SpellResistanceChance.Max ? " MAX" : string.Empty)})"
+                        : $"\n{Name} a ses chances de resister aux sorts au maximum -> {SpellResistanceChance.Current:P}.";
+
+                    output +=
+                        $"{Name} a l'effet 'vitesse' pendant {AddEffect(StatusEffect.Speed, 2)} tours.";
 
                     return output;
                 })
@@ -115,13 +129,23 @@ public class Thief : Character
             name: "Poignard dans le dos",
             owner: this,
             description: () =>
-                "Lorsque le voleur esquive une attaque ennemie, il déclenche une attaque qui inflige 15 points de dégâts physiques à l’attaquant.",
+                "Lorsque le voleur esquive une attaque ennemie, il déclenche une attaque qui inflige 15 points de dégâts physiques à l’attaquant.\n" +
+                "Si l'attaque n'est ni esquivée, ni parée, cause un saignement pendant 2 tours.",
             target: attackFrom.Owner,
             targetType: TargetType.Enemy,
             reloadTime: 0,
             manaCost: 0,
             damage: 15,
-            attackType: DamageType.Physical
+            attackType: DamageType.Physical,
+            additional:
+            [
+                attack =>
+                {
+                    if (attack is { StatusInfo: { Dodged: false, Blocked: false }, Target: Character target })
+                        Console.WriteLine(
+                            $"{target.Name} subit des saignements pendant {target.AddEffect(StatusEffect.Bleeding, 2)} tours.");
+                }
+            ]
         );
         conterAttack.Execute();
         conterAttack.Damage = _ => 0;

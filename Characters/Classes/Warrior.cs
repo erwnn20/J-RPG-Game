@@ -40,36 +40,58 @@ public class Warrior : Character
             new Attack<Character>(
                 name: "Frappe héroïque",
                 description: () =>
-                    $"Inflige 100% de la puissance d’attaque physique ({GetAttack(DamageType.Physical)}) à la cible.",
+                    $"Inflige 100% de la puissance d’attaque physique ({GetAttack(DamageType.Physical)}) à la cible.\n" +
+                    "Si l'attaque n'est pas esquivée, la cible sera étourdi étourdi pendant 3 tours.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 1,
                 manaCost: 0,
                 damage: GetAttack(DamageType.Physical),
-                attackType: DamageType.Physical),
+                attackType: DamageType.Physical,
+                additional:
+                [
+                    attack =>
+                    {
+                        if (attack is { StatusInfo.Dodged: false, Target: Character target })
+                            Console.WriteLine(
+                                $"{target.Name} est étourdi pendant {target.AddEffect(StatusEffect.Stun, 3)} tours.");
+                    }
+                ]),
             new SpecialAbility<Team>(
                 name: "Cri de bataille",
                 description: () =>
-                    "Augmente de 25 la puissance d’attaque physique de tous les personnages de l’équipe.",
+                    "Augmente de 5 la puissance d’attaque physique de tous les personnages de l’équipe.\n" +
+                    "Donne un rush d'adrénaline a tous les personnages de l’équipe pendant 3 tours.",
                 owner: this,
                 targetType: TargetType.TeamAllied,
                 reloadTime: 2,
                 manaCost: 0,
                 effect: target =>
                 {
-                    target.PhysicalAttack += 25;
-                    return $"La puissance d'attaque de {target.Name} a été augmentée de 25.";
+                    target.PhysicalAttack += 5;
+                    return $"La puissance d'attaque de {target.Name} a été augmentée de 5.\n" +
+                           $"{target.Name} a un rush d'adrénaline pendant {target.AddEffect(StatusEffect.AdrenalinRush, 3)} tours.";
                 }),
             new Attack<Team>(
                 name: "Tourbillon",
                 description: () =>
-                    $"Inflige 33% de la puissance d’attaque physique ({(int)(GetAttack(DamageType.Physical) * 0.33m)}) toute l’équipe ciblé.",
+                    $"Inflige 33% de la puissance d’attaque physique ({(int)(GetAttack(DamageType.Physical) * 0.33m)}) toute l’équipe ciblé.\n" +
+                    "Si l'attaque n'est pas esquivée, la cible sera étourdi pendant 2 tours.",
                 owner: this,
                 targetType: TargetType.TeamEnemy,
                 reloadTime: 2,
                 manaCost: 0,
                 damage: (int)(GetAttack(DamageType.Physical) * 0.33m),
-                attackType: DamageType.Physical)
+                attackType: DamageType.Physical,
+                additional:
+                [
+                    attack =>
+                    {
+                        if (attack is { StatusInfo.Dodged: false, Target: Character target })
+                            Console.WriteLine(
+                                $"{target.Name} est étourdi pendant {target.AddEffect(StatusEffect.Stun, 2)} tours.");
+                    }
+                ])
         ]);
     }
 

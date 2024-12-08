@@ -190,7 +190,7 @@ public class Mage : Character, IMana
 
         if (from.AttackType == DamageType.Magical && SpellReturn)
         {
-            (from.Additional ??= []).Add(Special);
+            from.Additional.List.Add(Special);
             SpellReturn = false;
         }
 
@@ -231,7 +231,7 @@ public class Mage : Character, IMana
             attackType: attackFrom.AttackType
         );
         conterAttack.Execute();
-        conterAttack.Damage = _ => 0;
+        attackFrom.Additional.ToRemove.Add(Special);
     };
 
     //

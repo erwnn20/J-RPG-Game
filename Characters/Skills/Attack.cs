@@ -29,7 +29,10 @@ public class Attack<TTarget>(
 {
     public Func<Character, int> Damage { get; set; } = damage;
     public DamageType AttackType { get; } = attackType;
-    public List<Action<Attack<Character>>>? Additional { get; set; } = additional;
+
+    public (List<Action<Attack<Character>>> List, List<Action<Attack<Character>>> ToRemove) Additional { get; } =
+        (additional ?? [], []);
+
     public Status StatusInfo { get; private set; } = new();
 
     public Attack(
@@ -183,7 +186,9 @@ public class Attack<TTarget>(
         if (StatusInfo.Damage > 0) Console.WriteLine($"{Name} a fait {StatusInfo.Damage} de dégâts à {target.Name}.");
         target.IsAlive(true);
 
-        Additional?.ForEach(add => add(attack));
+        Additional.List.ForEach(additional => additional(attack));
+        Additional.List.RemoveAll(additional => Additional.ToRemove.Contains(additional));
+        Additional.ToRemove.Clear();
     }
 
     /// <summary>
@@ -218,7 +223,7 @@ public class Attack<TTarget>(
                     manaCost: 0,
                     damage: Damage,
                     attackType: AttackType,
-                    additional: Additional
+                    additional: Additional.List
                 ).Execute(trgt, t => $"{Name} atteint {t.Name}.");
             });
     }

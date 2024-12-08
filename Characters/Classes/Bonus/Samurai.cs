@@ -107,7 +107,7 @@ public class Samurai : Character
 
         var damages = TakeDamage((int)from.StatusInfo.Damage);
 
-        if (Health.Current <= 5) (from.Additional ??= []).Add(Special);
+        if (Health.Current <= 5) from.Additional.List.Add(Special);
 
         return damages;
     }
@@ -155,6 +155,6 @@ public class Samurai : Character
             ]
         );
         conterAttack.Execute();
-        conterAttack.Damage = _ => 0;
+        attackFrom.Additional.ToRemove.Add(Special);
     };
 }

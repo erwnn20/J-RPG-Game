@@ -118,7 +118,7 @@ public class Warrior : Character
         from.StatusInfo.Set(from, (false, false, false));
         from.StatusInfo.SetDamage(from, damageParameter);
 
-        if (from.StatusInfo.Blocked || new Random().NextDouble() < 0.25) (from.Additional ??= []).Add(Special);
+        if (from.StatusInfo.Blocked || new Random().NextDouble() < 0.25) from.Additional.List.Add(Special);
 
         return TakeDamage((int)from.StatusInfo.Damage);
     }
@@ -147,6 +147,6 @@ public class Warrior : Character
             attackType: DamageType.Physical
         );
         conterAttack.Execute();
-        conterAttack.Damage = _ => 0;
+        attackFrom.Additional.ToRemove.Add(Special);
     };
 }

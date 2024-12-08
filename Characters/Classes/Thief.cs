@@ -112,7 +112,7 @@ public class Thief : Character
         from.StatusInfo.Set(from, (false, false, false));
         from.StatusInfo.SetDamage(from, damageParameter);
 
-        if (from.StatusInfo.Dodged) (from.Additional ??= []).Add(Special);
+        if (from.StatusInfo.Dodged) from.Additional.List.Add(Special);
 
         return TakeDamage((int)from.StatusInfo.Damage);
     }
@@ -148,6 +148,6 @@ public class Thief : Character
             ]
         );
         conterAttack.Execute();
-        conterAttack.Damage = _ => 0;
+        attackFrom.Additional.ToRemove.Add(Special);
     };
 }

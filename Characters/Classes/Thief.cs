@@ -1,5 +1,6 @@
 ﻿using JRPG_Game.Characters.Skills;
 using JRPG_Game.Enums;
+using JRPG_Game.Utils;
 
 namespace JRPG_Game.Characters.Classes;
 
@@ -31,9 +32,9 @@ public class Thief : Character
             physicalAttack: 45,
             magicalAttack: 0,
             distanceAttack: 0,
-            paradeChance: 0.10m,
-            dodgeChance: 0.40m,
-            spellResistanceChance: 0.10m,
+            paradeChance: new NumericContainer<decimal>(0, 0.10m, 1),
+            dodgeChance: new NumericContainer<decimal>(0, 0.40m, 0.80m),
+            spellResistanceChance: new NumericContainer<decimal>(0, 0.10m, 0.50m),
             skills: [])
     {
         Skills.AddRange([

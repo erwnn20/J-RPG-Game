@@ -14,7 +14,7 @@ namespace JRPG_Game.Characters.Classes;
 /// </remarks>
 public class Paladin : Character, IMana
 {
-    public NumericContainer Mana { get; } = new(0, 60, 60);
+    public NumericContainer<int> Mana { get; } = new(0, 60, 60);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Paladin"/> class.

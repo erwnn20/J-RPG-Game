@@ -10,7 +10,7 @@ namespace JRPG_Game.Interfaces;
 /// </summary>
 public interface IMana
 {
-    NumericContainer Mana { get; }
+    NumericContainer<int> Mana { get; }
 
     /// <summary>
     /// Creates a special ability to drink a potion and regenerate mana by 50%.

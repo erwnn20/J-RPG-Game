@@ -19,14 +19,14 @@ public abstract class Character : ITarget
         int magicalAttack,
         int distanceAttack,
         ArmorType armor,
-        decimal paradeChance,
-        decimal dodgeChance,
-        decimal spellResistanceChance,
+        NumericContainer<decimal> paradeChance,
+        NumericContainer<decimal> dodgeChance,
+        NumericContainer<decimal> spellResistanceChance,
         List<Skill> skills)
     {
         Name = name;
         Team = team;
-        Health = new NumericContainer(0, maxHealth, maxHealth);
+        Health = new NumericContainer<int>(0, maxHealth, maxHealth);
         Speed = speed;
         PhysicalAttack = physicalAttack;
         MagicalAttack = magicalAttack;
@@ -41,17 +41,47 @@ public abstract class Character : ITarget
         List.Add(this);
     }
 
+    protected Character(
+        string name,
+        Team team,
+        int maxHealth,
+        int speed,
+        int physicalAttack,
+        int magicalAttack,
+        int distanceAttack,
+        ArmorType armor,
+        decimal paradeChance,
+        decimal dodgeChance,
+        decimal spellResistanceChance,
+        List<Skill> skills)
+        : this(
+            name: name,
+            team: team,
+            maxHealth: maxHealth,
+            speed: speed,
+            physicalAttack: physicalAttack,
+            magicalAttack: magicalAttack,
+            distanceAttack: distanceAttack,
+            armor: armor,
+            paradeChance: new NumericContainer<decimal>(0, paradeChance, 1),
+            dodgeChance: new NumericContainer<decimal>(0, dodgeChance, 1),
+            spellResistanceChance: new NumericContainer<decimal>(0, spellResistanceChance, 1),
+            skills: skills
+        )
+    {
+    }
+
     public string Name { get; }
     public Team Team { get; }
-    public NumericContainer Health { get; }
+    public NumericContainer<int> Health { get; }
     public int Speed { get; set; }
     public int PhysicalAttack { get; set; }
     private int MagicalAttack { get; }
     private int DistanceAttack { get; }
     private ArmorType Armor { get; }
-    protected decimal DodgeChance { get; set; }
-    private decimal ParadeChance { get; }
-    protected decimal SpellResistanceChance { get; set; }
+    protected NumericContainer<decimal> DodgeChance { get; set; }
+    private NumericContainer<decimal> ParadeChance { get; }
+    protected NumericContainer<decimal> SpellResistanceChance { get; set; }
     protected List<Skill> Skills { get; }
     public Dictionary<StatusEffect, int> Effects { get; }
 
@@ -132,7 +162,7 @@ public abstract class Character : ITarget
     /// <returns><c>true</c> if the dodge is successful; otherwise, <c>false</c>.</returns>
     public bool Dodge<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
         => attack.AttackType is DamageType.Physical or DamageType.Distance
-           && (decimal)new Random().NextDouble() < DodgeChance
+           && (decimal)new Random().NextDouble() < DodgeChance.Current
            * Effects.Keys.Select(effect => effect switch
            {
                StatusEffect.Speed => 1.25m,
@@ -149,7 +179,7 @@ public abstract class Character : ITarget
     /// <param name="attack">The attack to parry.</param>
     /// <returns><c>true</c> if the parry is successful; otherwise, <c>false</c>.</returns>
     public bool Parade<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
-        => (decimal)new Random().NextDouble() < ParadeChance
+        => (decimal)new Random().NextDouble() < ParadeChance.Current
             * attack.AttackType switch
             {
                 DamageType.Physical => 1,
@@ -169,7 +199,7 @@ public abstract class Character : ITarget
     /// <returns><c>true</c> if the resistance is successful; otherwise, <c>false</c>.</returns>
     public bool SpellResistance<TTarget>(Attack<TTarget> attack) where TTarget : class, ITarget
         => attack.AttackType == DamageType.Magical
-           && (decimal)new Random().NextDouble() < SpellResistanceChance;
+           && (decimal)new Random().NextDouble() < SpellResistanceChance.Current;
 
     /// <summary>
     /// Calculates damage reduction based on the character's armor type (<see cref="ArmorType"/>)

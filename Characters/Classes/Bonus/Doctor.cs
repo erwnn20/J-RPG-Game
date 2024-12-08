@@ -12,8 +12,6 @@ namespace JRPG_Game.Characters.Classes.Bonus;
 /// </remarks>
 public class Doctor : Character
 {
-    private int HeathPoints { get; set; }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Doctor"/> class.
     /// </summary>
@@ -103,6 +101,8 @@ public class Doctor : Character
         ]);
     }
 
+    private int HeathPoints { get; set; }
+    
     /// <summary>
     /// Handles the doctor's defense logic against incoming attacks.
     /// </summary>

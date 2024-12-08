@@ -115,6 +115,7 @@ public abstract class Character : ITarget
         } + Effects.Keys.Select(effect => effect switch
         {
             StatusEffect.Focus => 10,
+            StatusEffect.AdrenalinRush => 15,
             _ => 0
         }).Aggregate((x, y) => x + y);
     }
@@ -138,13 +139,15 @@ public abstract class Character : ITarget
     /// <returns>The actual damage taken, capped at the character's remaining health.</returns>
     protected int TakeDamage(int damage)
     {
-        if (Effects.ContainsKey(StatusEffect.Invincibility))
-        {
-            Console.WriteLine($"{Name} est actuellement invincible et ne prends aucun dégâts.");
-            return 0;
-        }
+        if (!Effects.ContainsKey(StatusEffect.Invincibility))
+            return (int)(Health.Subtract(damage) * Effects.Keys.Select(effect => effect switch
+            {
+                StatusEffect.AdrenalinRush => 0.95m,
+                _ => 1m
+            }).Aggregate((x, y) => x * y));
 
-        return Health.Subtract(damage);
+        Console.WriteLine($"{Name} est actuellement invincible et ne prends aucun dégâts.");
+        return 0;
     }
 
     /// <summary>

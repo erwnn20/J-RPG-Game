@@ -27,33 +27,39 @@ public enum StatusEffect
     /// </summary>
     Focus,
 
+    /// <summary>
+    /// Increases all types of damage by 15 and reduces damage taken by the character by 5%.
+    /// </summary>
+    AdrenalinRush,
+
+
     // negative effects
 
     /// <summary>
     /// Inflicts 5 damage per turn.
     /// </summary>
     Poison,
-    
+
     /// <summary>
     /// Reduces chance of avoidance by 25% and speed by 10
     /// </summary>
     Slowness,
-    
+
     /// <summary>
     /// Reduces the chance of avoiding enemy attacks by 5%, the chance of parrying by 50% and the character has a 15% chance of missing skills.
     /// </summary>
     Stun,
-    
+
     /// <summary>
     /// Reduces health points by 5% of maximum each turn and prevents regeneration.
     /// </summary>
     Bleeding,
-    
+
     /// <summary>
     /// Prevents all skill use, reduces speed to 0, has a 15% chance of freeing itself each turn.
     /// </summary>
     Paralysis,
-    
+
     /// <summary>
     /// Inflicts between 1 and 15 damage to the character each turn, with a 25% chance of disappearing each turn
     /// </summary>

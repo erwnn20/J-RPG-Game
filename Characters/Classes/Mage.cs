@@ -14,8 +14,6 @@ namespace JRPG_Game.Characters.Classes;
 /// </remarks>
 public class Mage : Character, IMana
 {
-    public NumericContainer<int> Mana { get; } = new(0, 100, 100);
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Mage"/> class.
     /// </summary>
@@ -159,6 +157,7 @@ public class Mage : Character, IMana
         ]);
     }
 
+    public NumericContainer<int> Mana { get; } = new(0, 100, 100);
     private static decimal ReduceDamagePhysical => 0.60m;
     private static decimal ReduceDamageMagical => 0.50m;
     private static decimal ReduceDamageDistance => 0.70m;

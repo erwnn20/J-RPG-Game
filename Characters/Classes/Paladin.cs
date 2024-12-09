@@ -14,8 +14,6 @@ namespace JRPG_Game.Characters.Classes;
 /// </remarks>
 public class Paladin : Character, IMana
 {
-    public NumericContainer<int> Mana { get; } = new(0, 60, 60);
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Paladin"/> class.
     /// </summary>
@@ -83,6 +81,8 @@ public class Paladin : Character, IMana
             ((IMana)this).Drink(this)
         ]);
     }
+
+    public NumericContainer<int> Mana { get; } = new(0, 60, 60);
 
     /// <summary>
     /// Handles the paladin's defense against incoming attacks.

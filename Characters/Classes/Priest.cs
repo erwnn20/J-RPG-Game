@@ -14,8 +14,6 @@ namespace JRPG_Game.Characters.Classes;
 /// </remarks>
 public class Priest : Character, IMana
 {
-    public NumericContainer<int> Mana { get; } = new(0, 100, 100);
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Priest"/> class.
     /// </summary>
@@ -70,6 +68,8 @@ public class Priest : Character, IMana
             ((IMana)this).Drink(this)
         ]);
     }
+
+    public NumericContainer<int> Mana { get; } = new(0, 100, 100);
 
     /// <summary>
     /// Handles the priest's defense against incoming attacks.

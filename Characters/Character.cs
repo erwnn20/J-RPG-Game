@@ -341,6 +341,9 @@ public abstract class Character : ITarget
             case TargetType.Teammate:
                 targets = [..Team.Characters.Where(character => character != this && character.IsAlive(false))];
                 break;
+            case TargetType.TeammateDead:
+                targets = [..Team.Characters.Where(character => character != this && !character.IsAlive(false))];
+                break;
             case TargetType.Enemy:
                 targets = [..List.Where(character => character.Team != Team && character.IsAlive(false))];
                 break;

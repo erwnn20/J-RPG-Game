@@ -9,8 +9,11 @@ public enum TargetType
 {
     Self,
     Teammate,
+    TeammateDead,
     Enemy,
 
+    //
+    
     TeamAllied,
     TeamEnemy
 }

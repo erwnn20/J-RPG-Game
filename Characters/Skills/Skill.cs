@@ -134,8 +134,9 @@ public abstract class Skill
         return TargetType switch
         {
             TargetType.Self => checkedTarget == Owner,
-            TargetType.Teammate => checkedTarget is Character t && t != Owner && t.Team == Owner.Team,
-            TargetType.Enemy => checkedTarget is Character t && t.Team != Owner.Team,
+            TargetType.Teammate => checkedTarget is Character t && t != Owner && t.Team == Owner.Team && t.IsAlive(false),
+            TargetType.TeammateDead => checkedTarget is Character t && t != Owner && t.Team == Owner.Team && !t.IsAlive(false),
+            TargetType.Enemy => checkedTarget is Character t && t.Team != Owner.Team && t.IsAlive(false),
             TargetType.TeamAllied => checkedTarget is Team t && t == Owner.Team,
             TargetType.TeamEnemy => checkedTarget is Team t && t != Owner.Team,
             _ => HandleUnknownTargetType(TargetType)
@@ -172,6 +173,7 @@ public abstract class Skill
         {
             TargetType.Self => "soi-même",
             TargetType.Teammate => "un allié",
+            TargetType.TeammateDead => "un allié mort",
             TargetType.Enemy => "un ennemi",
             TargetType.TeamAllied => "son équipe",
             TargetType.TeamEnemy => "une équipe ennemi",

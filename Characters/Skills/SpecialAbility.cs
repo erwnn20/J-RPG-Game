@@ -105,12 +105,6 @@ public class SpecialAbility<TTarget>(
             return;
         }
 
-        if (!target.IsAlive(false))
-        {
-            Console.WriteLine($"La cible de {Name} ({Target.Name}) par {Owner.Name} est deja morte.");
-            return;
-        }
-
         message ??= t =>
             $"{Owner.Name} fait {Name}{(TargetType != TargetType.Self ? $" sur {t.Name}" : string.Empty)}.";
 

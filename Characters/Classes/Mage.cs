@@ -126,6 +126,31 @@ public class Mage : Character, IMana
                         }
                     }
                 ]),
+            new Attack<Character>(
+                name: "Boule de feu",
+                description: () =>
+                {
+                    int distanceDamage = (int)(GetAttack(DamageType.Distance) * 0.5m),
+                        magicDamage = (int)(GetAttack(DamageType.Magical) * 0.5m);
+                    return
+                        $"Inflige 50% des dégâts d'attaque à distance ({distanceDamage}) plus 50% des dégâts d'attaque magique ({magicDamage}, total: {distanceDamage + magicDamage}) à la cible.\n" +
+                        "Si l'attaque n'est pas esquivée, inflige des dégâts de brulure pendant 1 à 3 tours.";
+                },
+                owner: this,
+                targetType: TargetType.Enemy,
+                reloadTime: 1,
+                manaCost: 15,
+                damage: _ => (int)(GetAttack(DamageType.Distance) * 0.5m) + (int)(GetAttack(DamageType.Magical) * 0.5m),
+                attackType: DamageType.Distance,
+                additional:
+                [
+                    attack =>
+                    {
+                        if (attack is { StatusInfo.Dodged: false, Target: Character target })
+                            Console.WriteLine(
+                                $"{target.Name} est brulé pendant {target.AddEffect(StatusEffect.Burn, new Random().Next(1, 3))} tours.");
+                    }
+                ]),
             new SpecialAbility<Character>(
                 name: "Brulure de mana",
                 description: () => "Réduit de moitié la quantité de points de mana de la cible.",

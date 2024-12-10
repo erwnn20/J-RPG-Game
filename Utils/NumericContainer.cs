@@ -8,9 +8,9 @@
 /// </typeparam>
 public class NumericContainer<T> where T : struct, IComparable<T>, IComparable
 {
-    public T Min { get; private set; }
+    private T Min { get; }
     public T Current { get; private set; }
-    public T Max { get; private set; }
+    public T Max { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NumericContainer{T}"/> class.

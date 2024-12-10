@@ -92,6 +92,16 @@ public abstract class Character : ITarget
 
     //
 
+    /// <summary>
+    /// Calculates the character's effective speed, accounting for active status effects.
+    /// </summary>
+    /// <returns>
+    /// The adjusted speed value. If the character is affected by <see cref="StatusEffect.Paralysis"/>, returns 0.
+    /// </returns>
+    /// <remarks>
+    /// Certain status effects, such as <see cref="StatusEffect.Speed"/> or <see cref="StatusEffect.Slowness"/>, 
+    /// modify the character's base speed.
+    /// </remarks>
     public int GetSpeed()
     {
         if (Effects.ContainsKey(StatusEffect.Paralysis)) return 0;
@@ -104,6 +114,17 @@ public abstract class Character : ITarget
         }).Sum();
     }
 
+    /// <summary>
+    /// Calculates the character's attack power for a specific damage type, accounting for status effects.
+    /// </summary>
+    /// <param name="damageType">The type of damage (e.g., <see cref="DamageType.Physical"/>, <see cref="DamageType.Magical"/>, or <see cref="DamageType.Distance"/>).</param>
+    /// <returns>
+    /// The adjusted attack value for the specified damage type.
+    /// </returns>
+    /// <remarks>
+    /// Status effects like <see cref="StatusEffect.Focus"/>, <see cref="StatusEffect.AdrenalinRush"/>, 
+    /// or <see cref="StatusEffect.Strength"/> can increase the attack power.
+    /// </remarks>
     protected int GetAttack(DamageType damageType)
     {
         return damageType switch
@@ -463,12 +484,31 @@ public abstract class Character : ITarget
         return (false, null);
     }
 
+    /// <summary>
+    /// Adds or extends a <see cref="StatusEffect"/> applied to the character.
+    /// </summary>
+    /// <param name="effect">The status effect to add or extend.</param>
+    /// <param name="duration">The duration to add or extend the effect by, in turns.</param>
+    /// <returns>
+    /// The total duration of the status effect after the addition.
+    /// </returns>
+    /// <remarks>
+    /// If the effect is already active, its duration is extended by the specified value.
+    /// </remarks>
     public int AddEffect(StatusEffect effect, int duration)
     {
         if (!Effects.TryAdd(effect, duration)) Effects[effect] += duration;
         return Effects[effect];
     }
 
+    /// <summary>
+    /// Applies the logic of a specific <see cref="StatusEffect"/> to the character at the end of a turn.
+    /// </summary>
+    /// <param name="effect">The status effect to apply.</param>
+    /// <remarks>
+    /// Handles various effects such as regeneration, poison, bleeding, paralysis, and burn, 
+    /// including special conditions for each effect.
+    /// </remarks>
     private void ApplyEffect(StatusEffect effect)
     {
         switch (effect)
@@ -497,7 +537,14 @@ public abstract class Character : ITarget
         if (Effects[effect] <= 0) Effects.Remove(effect);
     }
 
-    protected virtual void ApplyEndTurn()
+    /// <summary>
+    /// Applies all active <see cref="StatusEffect"/> to the character at the end of their turn.
+    /// </summary>
+    /// <remarks>
+    /// Iterates over all active effects, applying their logic and removing them if their duration expires.
+    /// Ends the process early if the character dies during the effect application.
+    /// </remarks>
+    private void ApplyEndTurn()
     {
         foreach (var effect in Effects.Keys)
         {
@@ -529,6 +576,12 @@ public abstract class Character : ITarget
         }
     }
 
+    /// <summary>
+    /// Processes the end-of-turn logic for all living characters.
+    /// </summary>
+    /// <remarks>
+    /// Iterates through all alive characters in the game, calling their <see cref="ApplyEndTurn"/> method.
+    /// </remarks>
     public static void EndTurn() => List
         .Where(character => character.IsAlive(false)).ToList()
         .ForEach(character =>

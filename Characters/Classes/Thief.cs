@@ -55,10 +55,9 @@ public class Thief : Character
                 name: "Evasion",
                 description: () =>
                 {
-                    const decimal dodgeAugment = 0.10m;
-                    var newDodge = DodgeChance.Current + dodgeAugment;
-                    const decimal resistAugment = 0.05m;
-                    var newResist = SpellResistanceChance.Current + resistAugment;
+                    const decimal dodgeAugment = 0.10m, resistAugment = 0.05m;
+                    decimal newDodge = DodgeChance.Current + dodgeAugment,
+                        newResist = SpellResistanceChance.Current + resistAugment;
 
                     return
                         $"Augmente les chances d'esquive de {dodgeAugment:P} (max {DodgeChance.Max:P}) ({DodgeChance.Current:P} {(DodgeChance.Current == DodgeChance.Max
@@ -75,8 +74,7 @@ public class Thief : Character
                 manaCost: 0,
                 effect: _ =>
                 {
-                    const decimal dodgeAugment = 0.10m;
-                    const decimal resistAugment = 0.05m;
+                    const decimal dodgeAugment = 0.10m, resistAugment = 0.05m;
 
                     var output = "";
                     var addedDodge = DodgeChance.Add(dodgeAugment);

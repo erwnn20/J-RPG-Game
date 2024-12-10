@@ -138,7 +138,7 @@ public abstract class Character : ITarget
     /// </summary>
     /// <param name="damage">The amount of damage to apply.</param>
     /// <returns>The actual damage taken, capped at the character's remaining health.</returns>
-    protected int TakeDamage(int damage)
+    public int TakeDamage(int damage)
     {
         if (!Effects.ContainsKey(StatusEffect.Invincibility))
             return (int)(Health.Subtract(damage) * Effects.Keys.Select(effect => effect switch

@@ -56,8 +56,7 @@ public class Mage : Character, IMana
                 [
                     attack =>
                     {
-                        if (attack.StatusInfo.Resisted) return;
-                        if (attack.Target is not Character target) return;
+                        if (attack is not { StatusInfo.Resisted: false, Target: Character target }) return;
 
                         Console.WriteLine(
                             $"{target.Name} est ralenti pendant {target.AddEffect(StatusEffect.Slowness, 3)} tours.");
@@ -108,8 +107,7 @@ public class Mage : Character, IMana
                 [
                     attack =>
                     {
-                        if (attack.StatusInfo.Resisted) return;
-                        if (attack.Target is not Character target) return;
+                        if (attack is not { StatusInfo.Resisted: false, Target: Character target }) return;
 
                         Console.WriteLine(
                             $"{target.Name} est ralenti pendant {target.AddEffect(StatusEffect.Slowness, 2)} tours.");
@@ -159,13 +157,9 @@ public class Mage : Character, IMana
                 reloadTime: 3,
                 manaCost: 20,
                 effect: target =>
-                {
-                    if (target is not IMana t)
-                        return $"{target.Name} n'utilise pas de mana.";
-
-                    var manaTaken = Math.Max(40, t.Mana.Current / 2);
-                    return $"{target.Name} perd {t.LoseMana(manaTaken)} de mana.";
-                }),
+                    target is IMana t
+                        ? $"{target.Name} perd {t.LoseMana(Math.Max(40, t.Mana.Current / 2))} de mana."
+                        : $"{target.Name} n'utilise pas de mana."),
             new SpecialAbility<Character>(
                 name: "Renvoi de sort",
                 description: () => "Renvoie la prochaine attaque magique subie à l’assaillant.",

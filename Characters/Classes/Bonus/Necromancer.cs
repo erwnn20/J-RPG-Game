@@ -57,19 +57,22 @@ public class Necromancer : Character, IMana
             new Attack<Character>(
                 name: "Force magique",
                 description: () =>
-                    $"Inflige 100% de la puissance magique ({GetAttack(DamageType.Magical)}) à la cible.\n" +
+                    $"Inflige 135% de la puissance magique ({GetAttack(DamageType.Magical)}) à la cible.\n" +
                     $"Inflige 35% des dégâts infligé par l'attaque à {Name}.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 2,
                 manaCost: 30,
-                damage: _ => GetAttack(DamageType.Magical),
+                damage: _ => (int)(GetAttack(DamageType.Magical) * 1.35m),
                 attackType: DamageType.Magical,
                 additional:
                 [
-                    attack => Console.WriteLine(attack.StatusInfo.Damage > 0
-                        ? $"{attack.Owner.Name} s'inflige {TakeDamage((int)(attack.StatusInfo.Damage * 0.35m))} de dégâts suite à {attack.Name}."
-                        : string.Empty)
+                    attack =>
+                    {
+                        if (attack.StatusInfo.Damage > 0)
+                            Console.WriteLine(
+                                $"{attack.Owner.Name} s'inflige {attack.Owner.TakeDamage((int)(attack.StatusInfo.Damage * 0.35m))} de dégâts suite à {attack.Name}.");
+                    }
                 ]),
             new Attack<Character>(
                 name: "Drain d'âme",
@@ -93,8 +96,12 @@ public class Necromancer : Character, IMana
                 attackType: DamageType.Magical,
                 additional:
                 [
-                    attack => Console.WriteLine(
-                        $"{attack.Owner.Name} a drainé {attack.Owner.Heal((int)attack.StatusInfo.Damage)} PV.")
+                    attack =>
+                    {
+                        if (attack.StatusInfo.Damage > 0)
+                            Console.WriteLine(
+                                $"{attack.Owner.Name} a drainé {attack.Owner.Heal((int)attack.StatusInfo.Damage)} PV.");
+                    }
                 ]),
             new SpecialAbility<Character>(
                 name: "Renvoi de sort",

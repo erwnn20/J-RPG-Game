@@ -61,13 +61,23 @@ public class Samurai : Character
                 name: "Coup fatal",
                 description: () =>
                     $"Inflige 120% de la puissance d’attaque physique ({(int)(GetAttack(DamageType.Physical) * 1.20m)}) à la cible.\n" +
-                    $"A une chance d'infliger 160% de la puissance d’attaque physique ({(int)(GetAttack(DamageType.Physical) * 1.60m)}).",
+                    $"A une chance d'infliger 160% de la puissance d’attaque physique ({(int)(GetAttack(DamageType.Physical) * 1.60m)}).\n" +
+                    $"Inflige a {Name} 25% des dégâts fait.",
                 owner: this,
                 targetType: TargetType.Enemy,
                 reloadTime: 4,
                 manaCost: 0,
                 damage: _ => (int)(GetAttack(DamageType.Physical) * (new Random().NextDouble() < 0.10 ? 1.60m : 1.20m)),
-                attackType: DamageType.Physical),
+                attackType: DamageType.Physical,
+                additional:
+                [
+                    attack =>
+                    {
+                        if (attack.StatusInfo.Damage > 0)
+                            Console.WriteLine(
+                                $"{attack.Owner.Name} s'inflige {attack.Owner.TakeDamage((int)(attack.StatusInfo.Damage * 0.25m))} de dégâts suite à {attack.Name}.");
+                    }
+                ]),
             new Attack<Team>(
                 name: "Danse des lames",
                 description: () =>
@@ -76,7 +86,7 @@ public class Samurai : Character
                 targetType: TargetType.TeamEnemy,
                 reloadTime: 2,
                 manaCost: 0,
-                damage: _ => (int)(GetAttack(DamageType.Physical) * 0.4m),
+                damage: _ => (int)(GetAttack(DamageType.Physical) * 0.40m),
                 attackType: DamageType.Physical),
             new SpecialAbility<Character>(
                 name: "Force intérieure",
@@ -138,19 +148,18 @@ public class Samurai : Character
             [
                 attack =>
                 {
-                    if (attack is { StatusInfo.Dodged: false, Target: Character target })
-                    {
-                        Console.WriteLine(
-                            $"{target.Name} subit des saignements pendant {target.AddEffect(StatusEffect.Bleeding, 3)} tours.");
-                        Console.WriteLine(
-                            $"{target.Name} est étourdi pendant {target.AddEffect(StatusEffect.Stun, 3)} tours.");
-                    }
+                    if (attack is not { StatusInfo.Dodged: false, Target: Character target }) return;
+
+                    Console.WriteLine(
+                        $"{target.Name} subit des saignements pendant {target.AddEffect(StatusEffect.Bleeding, 3)} tours.");
+                    Console.WriteLine(
+                        $"{target.Name} est étourdi pendant {target.AddEffect(StatusEffect.Stun, 3)} tours.");
                 },
-                _ =>
+                attack =>
                 {
                     if (!(new Random().NextDouble() < 0.5)) return;
                     Health.Subtract(Health.Current);
-                    Console.WriteLine($"{Name} est mort après avoir fait Dernier souffle.");
+                    Console.WriteLine($"{attack.Owner.Name} est mort après avoir fait 'Dernier souffle'.");
                 }
             ]
         );

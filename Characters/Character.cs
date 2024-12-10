@@ -116,6 +116,7 @@ public abstract class Character : ITarget
         {
             StatusEffect.Focus => 10,
             StatusEffect.AdrenalinRush => 15,
+            StatusEffect.Strength => 20,
             _ => 0
         }).Sum();
     }

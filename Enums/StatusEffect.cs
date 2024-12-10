@@ -32,6 +32,11 @@ public enum StatusEffect
     /// </summary>
     AdrenalinRush,
 
+    /// <summary>
+    /// Increases all types of damage by 20.
+    /// </summary>
+    Strength,
+
 
     // negative effects
 

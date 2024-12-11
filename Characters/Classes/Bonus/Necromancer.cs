@@ -72,6 +72,7 @@ public class Necromancer : Character, IMana
                         if (attack.StatusInfo.Damage > 0)
                             Console.WriteLine(
                                 $"{attack.Owner.Name} s'inflige {attack.Owner.TakeDamage((int)(attack.StatusInfo.Damage * 0.35m))} de dégâts suite à {attack.Name}.");
+                        IsAlive(true);
                     }
                 ]),
             new Attack<Character>(

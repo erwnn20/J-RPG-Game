@@ -519,9 +519,11 @@ public abstract class Character : ITarget
                 break;
             case StatusEffect.Poison:
                 Console.WriteLine($"{Name} à pris {TakeDamage(5)} dégâts de poison.");
+                IsAlive(true);
                 break;
             case StatusEffect.Bleeding:
                 Console.WriteLine($"{Name} à pris {TakeDamage((int)(Health.Max * 0.05m))} dégâts de saignement.");
+                IsAlive(true);
                 break;
             case StatusEffect.Paralysis:
                 if (new Random().NextDouble() < 0.15) Effects[StatusEffect.Paralysis] = 0;
@@ -530,6 +532,7 @@ public abstract class Character : ITarget
                 var random = new Random();
                 Console.WriteLine($"{Name} à pris {TakeDamage(random.Next(1, 15))} dégâts de brulure.");
                 if (random.NextDouble() < 0.25) Effects[StatusEffect.Burn] = 0;
+                IsAlive(true);
                 break;
         }
 
@@ -608,7 +611,7 @@ public abstract class Character : ITarget
                $" ~ Chances de Parade: {ParadeChance.Current:P}\n" +
                $" ~ Chances de Resister aux Sorts: {SpellResistanceChance.Current:P}\n" +
                $" ~ Compétences :\n" +
-               string.Join("\n", Skills.Select(skill => $"\t- {skill.Name} ({skill.GetType().Name})")) +
+               string.Join("\n", Skills.Select(skill => $"     - {skill.Name} ({skill.GetType().Name})")) +
                (Effects.Count > 0
                    ? $"\n ~ Effets : {string.Join(", ", Effects.Select(effect => $"{effect.Key} ({effect.Value} tour{(effect.Value > 1 ? "s" : "")})"))}"
                    : string.Empty);

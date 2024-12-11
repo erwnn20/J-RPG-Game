@@ -76,6 +76,7 @@ public class Samurai : Character
                         if (attack.StatusInfo.Damage > 0)
                             Console.WriteLine(
                                 $"{attack.Owner.Name} s'inflige {attack.Owner.TakeDamage((int)(attack.StatusInfo.Damage * 0.25m))} de dégâts suite à {attack.Name}.");
+                        IsAlive(true);
                     }
                 ]),
             new Attack<Team>(

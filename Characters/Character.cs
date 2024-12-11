@@ -302,7 +302,7 @@ public abstract class Character : ITarget
         {
             var selectedSkill = Skills.ElementAt(Prompt.Select("Quel compétence voulez vous utiliser ?",
                 skill =>
-                    $"{skill.Name} ({skill.GetType().Name}){(!skill.IsUsable() ? $" - Disponible dans : {skill.ReloadCooldown} tour{(skill.ReloadCooldown > 1 ? "s" : string.Empty)}" : string.Empty)}",
+                    $"{skill.Name} ({skill.GetType().Name}){(!skill.IsUsable() ? $" - Disponible dans : {skill.Reload.Current} tour{(skill.Reload.Current > 1 ? "s" : string.Empty)}" : string.Empty)}",
                 Skills) - 1);
             Console.WriteLine();
 
@@ -310,7 +310,7 @@ public abstract class Character : ITarget
             if (selectedSkill.IsUsable()) choices.Add("Confirmer");
             else
                 Console.WriteLine(
-                    $"Vous ne pouvez pas utiliser {selectedSkill.Name} actuellement. Disponible dans : {selectedSkill.ReloadCooldown} tour{(selectedSkill.ReloadCooldown > 1 ? "s" : string.Empty)}.");
+                    $"Vous ne pouvez pas utiliser {selectedSkill.Name} actuellement. Disponible dans : {selectedSkill.Reload.Current} tour{(selectedSkill.Reload.Current > 1 ? "s" : string.Empty)}.");
 
             var exit = false;
             do

@@ -1,5 +1,6 @@
 ﻿using JRPG_Game.Enums;
 using JRPG_Game.Interfaces;
+using JRPG_Game.Utils;
 
 namespace JRPG_Game.Characters.Skills;
 
@@ -13,8 +14,7 @@ public abstract class Skill
     public TargetType TargetType { get; }
     public ITarget? Target { get; protected set; }
     public Func<string> Description { get; }
-    private int ReloadTime { get; }
-    public int ReloadCooldown { get; private set; }
+    public NumericContainer<int> Reload { get; }
     private int ManaCost { get; }
 
     /// <summary>
@@ -36,7 +36,7 @@ public abstract class Skill
         Target = target;
         TargetType = targetType;
         Description = description;
-        ReloadTime = reloadTime;
+        Reload = new NumericContainer<int>(0, 0, reloadTime);
         ManaCost = manaCost;
 
         List.Add(this);
@@ -64,7 +64,7 @@ public abstract class Skill
         if (!IsUsable())
         {
             Console.WriteLine(
-                $"{Name} est en recharge pour {ReloadCooldown} tour{(ReloadCooldown > 1 ? "s" : string.Empty)}.");
+                $"{Name} est en recharge pour {Reload.Current} tour{(Reload.Current > 1 ? "s" : string.Empty)}.");
             return (false, false);
         }
 
@@ -98,7 +98,7 @@ public abstract class Skill
             }
         }
 
-        ReloadCooldown = ReloadTime;
+        Reload.Add(Reload.Max);
         return (true, true);
     }
 
@@ -111,14 +111,14 @@ public abstract class Skill
     /// Checks if the skill is not in cooldown.
     /// </summary>
     /// <returns><c>true</c> if the skill is in a cooldown, otherwise <c>false</c>.</returns>
-    public bool IsUsable() => ReloadCooldown <= 0;
+    public bool IsUsable() => Reload.Current <= 0;
 
     /// <summary>
     /// Reduces the skill's reload time by 1 turn.
     /// </summary>
     private void ReduceReload()
     {
-        if (ReloadCooldown > 0) ReloadCooldown--;
+        if (Reload.Current > 0) Reload.Subtract(1);
     }
 
     /// <summary>
@@ -180,7 +180,7 @@ public abstract class Skill
             _ => $"une cible ({TargetType} non reconnu)"
         })}\n" +
                $"  -> {Description().Replace("\n", "\n     ")}\n" +
-               $"Disponible {(IsUsable() ? "maintenant" : ReloadCooldown > 1 ? $"dans {ReloadCooldown} tours" : "au prochain tour")} - Temps de recharge : {ReloadTime} tour(s)." +
+               $"Disponible {(IsUsable() ? "maintenant" : Reload.Current > 1 ? $"dans {Reload.Current} tours" : "au prochain tour")} - Temps de recharge : {Reload.Max} tour(s)." +
                (ManaCost > 0 ? $"\nCoût en mana : {ManaCost}" : string.Empty);
     }
 }

@@ -29,7 +29,8 @@ public abstract class Skill
         TargetType targetType,
         Func<string> description,
         int reloadTime,
-        int manaCost)
+        int manaCost,
+        bool addToGlobalList)
     {
         Name = name;
         Owner = owner;
@@ -39,7 +40,7 @@ public abstract class Skill
         Reload = new NumericContainer<int>(0, 0, reloadTime);
         ManaCost = manaCost;
 
-        List.Add(this);
+        if (addToGlobalList) List.Add(this);
     }
 
     /// <summary>
@@ -134,8 +135,10 @@ public abstract class Skill
         return TargetType switch
         {
             TargetType.Self => checkedTarget == Owner,
-            TargetType.Teammate => checkedTarget is Character t && t != Owner && t.Team == Owner.Team && t.IsAlive(false),
-            TargetType.TeammateDead => checkedTarget is Character t && t != Owner && t.Team == Owner.Team && !t.IsAlive(false),
+            TargetType.Teammate => checkedTarget is Character t && t != Owner && t.Team == Owner.Team &&
+                                   t.IsAlive(false),
+            TargetType.TeammateDead => checkedTarget is Character t && t != Owner && t.Team == Owner.Team &&
+                                       !t.IsAlive(false),
             TargetType.Enemy => checkedTarget is Character t && t.Team != Owner.Team && t.IsAlive(false),
             TargetType.TeamAllied => checkedTarget is Team t && t == Owner.Team,
             TargetType.TeamEnemy => checkedTarget is Team t && t != Owner.Team,

@@ -144,7 +144,8 @@ public class Warrior : Character
             reloadTime: 0,
             manaCost: 0,
             damage: _ => (int)(GetAttack(DamageType.Physical) * (attackFrom.StatusInfo.Blocked ? 1.50m : 0.50m)),
-            attackType: DamageType.Physical
+            attackType: DamageType.Physical,
+            addToGlobalList: false
         );
         conterAttack.Execute();
         attackFrom.Additional.ToRemove.Add(Special);

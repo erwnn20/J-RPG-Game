@@ -15,7 +15,8 @@ public class SpecialAbility<TTarget>(
     Func<string> description,
     int reloadTime,
     int manaCost,
-    Func<Character, string> effect) :
+    Func<Character, string> effect,
+    bool addToGlobalList = true) :
     Skill(
         name: name,
         owner: owner,
@@ -23,7 +24,8 @@ public class SpecialAbility<TTarget>(
         targetType: targetType,
         description: description,
         reloadTime: reloadTime,
-        manaCost: manaCost
+        manaCost: manaCost,
+        addToGlobalList: addToGlobalList
     ) where TTarget : class, ITarget
 {
     private Func<Character, string> Effect { get; } = effect;
@@ -35,7 +37,8 @@ public class SpecialAbility<TTarget>(
         Func<string> description,
         int reloadTime,
         int manaCost,
-        Func<Character, string> effect) :
+        Func<Character, string> effect,
+        bool addToGlobalList = true) :
         this(
             name: name,
             owner: owner,
@@ -44,7 +47,8 @@ public class SpecialAbility<TTarget>(
             description: description,
             reloadTime: reloadTime,
             manaCost: manaCost,
-            effect: effect
+            effect: effect,
+            addToGlobalList: addToGlobalList
         )
     {
     }
@@ -142,7 +146,8 @@ public class SpecialAbility<TTarget>(
                     targetType: TargetType.Enemy,
                     reloadTime: 0,
                     manaCost: 0,
-                    effect: Effect
+                    effect: Effect,
+                    addToGlobalList: false
                 ).Execute(trgt, t => $"{Name} atteint {t.Name}.");
             });
     }

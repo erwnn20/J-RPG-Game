@@ -17,6 +17,7 @@ public class Attack<TTarget>(
     int manaCost,
     Func<Character, int> damage,
     DamageType attackType,
+    bool addToGlobalList = true,
     List<Action<Attack<Character>>>? additional = null)
     : Skill(name: name,
         owner: owner,
@@ -24,7 +25,8 @@ public class Attack<TTarget>(
         targetType: targetType,
         description: description,
         reloadTime: reloadTime,
-        manaCost: manaCost)
+        manaCost: manaCost,
+        addToGlobalList: addToGlobalList)
     where TTarget : class, ITarget
 {
     public Func<Character, int> Damage { get; set; } = damage;
@@ -44,6 +46,7 @@ public class Attack<TTarget>(
         int manaCost,
         Func<Character, int> damage,
         DamageType attackType,
+        bool addToGlobalList = true,
         List<Action<Attack<Character>>>? additional = null) :
         this(
             name: name,
@@ -55,6 +58,7 @@ public class Attack<TTarget>(
             manaCost: manaCost,
             damage: damage,
             attackType: attackType,
+            addToGlobalList: addToGlobalList,
             additional: additional
         )
     {
@@ -70,6 +74,7 @@ public class Attack<TTarget>(
         int manaCost,
         int damage,
         DamageType attackType,
+        bool addToGlobalList = true,
         List<Action<Attack<Character>>>? additional = null) :
         this(
             name: name,
@@ -81,6 +86,7 @@ public class Attack<TTarget>(
             manaCost: manaCost,
             damage: _ => damage,
             attackType: attackType,
+            addToGlobalList: addToGlobalList,
             additional: additional
         )
     {
@@ -95,6 +101,7 @@ public class Attack<TTarget>(
         int manaCost,
         int damage,
         DamageType attackType,
+        bool addToGlobalList = true,
         List<Action<Attack<Character>>>? additional = null) :
         this(
             name: name,
@@ -106,6 +113,7 @@ public class Attack<TTarget>(
             manaCost: manaCost,
             damage: _ => damage,
             attackType: attackType,
+            addToGlobalList: addToGlobalList,
             additional: additional
         )
     {
@@ -223,6 +231,7 @@ public class Attack<TTarget>(
                     manaCost: 0,
                     damage: Damage,
                     attackType: AttackType,
+                    addToGlobalList: false,
                     additional: Additional.List
                 ).Execute(trgt, t => $"{Name} atteint {t.Name}.");
             });

@@ -145,11 +145,13 @@ public class Samurai : Character
             manaCost: 0,
             damage: _ => (int)(GetAttack(DamageType.Physical) * 2.00m),
             attackType: DamageType.Physical,
+            addToGlobalList: false,
             additional:
             [
                 attack =>
                 {
                     if (attack is not { StatusInfo.Dodged: false, Target: Character target }) return;
+                    if (!target.IsAlive(false)) return;
 
                     Console.WriteLine(
                         $"{target.Name} subit des saignements pendant {target.AddEffect(StatusEffect.Bleeding, 3)} tours.");

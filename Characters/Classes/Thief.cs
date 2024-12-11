@@ -135,6 +135,7 @@ public class Thief : Character
             manaCost: 0,
             damage: 15,
             attackType: DamageType.Physical,
+            addToGlobalList: false,
             additional:
             [
                 attack =>

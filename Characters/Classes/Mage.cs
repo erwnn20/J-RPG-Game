@@ -248,6 +248,7 @@ public class Mage : Character, IMana
             reloadTime: 0,
             manaCost: 0,
             damage: attackFrom.Damage,
+            addToGlobalList: false,
             attackType: attackFrom.AttackType
         );
         conterAttack.Execute();

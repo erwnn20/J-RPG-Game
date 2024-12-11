@@ -75,7 +75,7 @@ public class Doctor : Character
                     {
                         HeathPoints += (int)attack.StatusInfo.Damage;
 
-                        if (attack is { StatusInfo.Dodged: false, Target: Character target })
+                        if (attack is { StatusInfo.Dodged: false, Target: Character target } && target.IsAlive(false))
                             Console.WriteLine(
                                 $"{target.Name} subit des saignements pendant {target.AddEffect(StatusEffect.Bleeding, 4)} tours.");
                     }
@@ -102,7 +102,7 @@ public class Doctor : Character
     }
 
     private int HeathPoints { get; set; }
-    
+
     /// <summary>
     /// Handles the doctor's defense logic against incoming attacks.
     /// </summary>

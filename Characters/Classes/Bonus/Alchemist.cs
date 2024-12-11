@@ -95,7 +95,8 @@ public class Alchemist : Character, IMana
                 [
                     attack =>
                     {
-                        if (attack is { StatusInfo : { Dodged: false, Blocked: false }, Target: Character target })
+                        if (attack is { StatusInfo : { Dodged: false, Blocked: false }, Target: Character target } &&
+                            target.IsAlive(false))
                             Console.WriteLine(
                                 $"{target.Name} est empoisonné pendant {target.AddEffect(StatusEffect.Poison, new Random().Next(1, 3))} tours.");
                     }

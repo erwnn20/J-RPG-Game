@@ -139,7 +139,8 @@ public class Thief : Character
             [
                 attack =>
                 {
-                    if (attack is { StatusInfo: { Dodged: false, Blocked: false }, Target: Character target })
+                    if (attack is { StatusInfo: { Dodged: false, Blocked: false }, Target: Character target } &&
+                        target.IsAlive(false))
                         Console.WriteLine(
                             $"{target.Name} subit des saignements pendant {target.AddEffect(StatusEffect.Bleeding, 2)} tours.");
                 }

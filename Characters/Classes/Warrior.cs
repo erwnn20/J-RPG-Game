@@ -52,7 +52,7 @@ public class Warrior : Character
                 [
                     attack =>
                     {
-                        if (attack is { StatusInfo.Dodged: false, Target: Character target })
+                        if (attack is { StatusInfo.Dodged: false, Target: Character target } && target.IsAlive(false))
                             Console.WriteLine(
                                 $"{target.Name} est étourdi pendant {target.AddEffect(StatusEffect.Stun, 3)} tours.");
                     }
@@ -87,7 +87,7 @@ public class Warrior : Character
                 [
                     attack =>
                     {
-                        if (attack is { StatusInfo.Dodged: false, Target: Character target })
+                        if (attack is { StatusInfo.Dodged: false, Target: Character target } && target.IsAlive(false))
                             Console.WriteLine(
                                 $"{target.Name} est étourdi pendant {target.AddEffect(StatusEffect.Stun, 2)} tours.");
                     }

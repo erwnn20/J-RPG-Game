@@ -66,7 +66,8 @@ public class Archer : Character
                 [
                     attack =>
                     {
-                        if (attack is { StatusInfo: { Dodged: false, Blocked: false }, Target: Character target })
+                        if (attack is { StatusInfo: { Dodged: false, Blocked: false }, Target: Character target } &&
+                            target.IsAlive(false))
                             Console.WriteLine(
                                 $"{target.Name} est empoisonnée pendant {target.AddEffect(StatusEffect.Poison, 2)} tours.");
                     },
@@ -87,7 +88,7 @@ public class Archer : Character
                 [
                     attack =>
                     {
-                        if (attack is { StatusInfo.Dodged: false, Target: Character target })
+                        if (attack is { StatusInfo.Dodged: false, Target: Character target } && target.IsAlive(false))
                             Console.WriteLine(
                                 $"{target.Name} est brulé pendant {target.AddEffect(StatusEffect.Burn, 3)} tours.");
                     },

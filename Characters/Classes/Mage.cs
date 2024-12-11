@@ -57,6 +57,7 @@ public class Mage : Character, IMana
                     attack =>
                     {
                         if (attack is not { StatusInfo.Resisted: false, Target: Character target }) return;
+                        if (!target.IsAlive(false)) return;
 
                         Console.WriteLine(
                             $"{target.Name} est ralenti pendant {target.AddEffect(StatusEffect.Slowness, 3)} tours.");
@@ -108,6 +109,7 @@ public class Mage : Character, IMana
                     attack =>
                     {
                         if (attack is not { StatusInfo.Resisted: false, Target: Character target }) return;
+                        if (!target.IsAlive(false)) return;
 
                         Console.WriteLine(
                             $"{target.Name} est ralenti pendant {target.AddEffect(StatusEffect.Slowness, 2)} tours.");
@@ -144,7 +146,7 @@ public class Mage : Character, IMana
                 [
                     attack =>
                     {
-                        if (attack is { StatusInfo.Dodged: false, Target: Character target })
+                        if (attack is { StatusInfo.Dodged: false, Target: Character target } && target.IsAlive(false))
                             Console.WriteLine(
                                 $"{target.Name} est brulé pendant {target.AddEffect(StatusEffect.Burn, new Random().Next(1, 3))} tours.");
                     }

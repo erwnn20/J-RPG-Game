@@ -8,7 +8,7 @@
 /// </typeparam>
 public class NumericContainer<T> where T : struct, IComparable<T>, IComparable
 {
-    private T Min { get; }
+    public T Min { get; }
     public T Current { get; private set; }
     public T Max { get; }
 

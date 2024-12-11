@@ -79,16 +79,16 @@ public abstract class Character : ITarget
     private int MagicalAttack { get; }
     private int DistanceAttack { get; }
     private ArmorType Armor { get; }
-    protected NumericContainer<decimal> DodgeChance { get; set; }
+    protected NumericContainer<decimal> DodgeChance { get; }
     private NumericContainer<decimal> ParadeChance { get; }
-    protected NumericContainer<decimal> SpellResistanceChance { get; set; }
-    protected List<Skill> Skills { get; }
+    protected NumericContainer<decimal> SpellResistanceChance { get; }
+    public List<Skill> Skills { get; }
     public Dictionary<StatusEffect, int> Effects { get; }
 
     /// <summary>
     /// List containing all instantiated characters.
     /// </summary>
-    private static readonly List<Character> List = [];
+    public static readonly List<Character> List = [];
 
     //
 

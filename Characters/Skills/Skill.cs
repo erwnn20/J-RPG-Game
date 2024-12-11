@@ -20,7 +20,7 @@ public abstract class Skill
     /// <summary>
     /// List containing all instantiated skills.
     /// </summary>
-    private static readonly List<Skill> List = [];
+    public static readonly List<Skill> List = [];
 
     protected Skill(
         string name,

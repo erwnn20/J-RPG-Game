@@ -27,6 +27,53 @@ public class Team : ITarget
     //
 
     /// <summary>
+    /// Restores all characters in the team to their initial state.
+    /// </summary>
+    /// <remarks>
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>Restores each character's health to maximum.</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>Removes all active effects.</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>Resets skill cooldowns to their minimum.</description>
+    ///     </item>
+    /// </list>
+    /// </remarks>
+    public void Reset()
+    {
+        Characters.ForEach(character =>
+        {
+            character.Health.Add(character.Health.Max);
+            character.Effects.Clear();
+            character.Skills.ForEach(skill => skill.Reload.Subtract(skill.Reload.Max - skill.Reload.Min));
+        });
+    }
+
+    /// <summary>
+    /// Adjusts the team size by adding new characters if needed.
+    /// </summary>
+    /// <param name="newSize">The desired number of characters in the team.</param>
+    /// <returns>The updated team instance.</returns>
+    /// <remarks>
+    /// If the team has fewer characters than the specified size, new characters are created and added.
+    /// </remarks>
+    public Team UpdateSize(int newSize)
+    {
+        Console.WriteLine($"Mise a jour de la taille de l'équipe {Name}");
+        for (var i = Characters.Count; i < newSize; i++)
+        {
+            Console.WriteLine();
+            Console.WriteLine($"Creation du {i + 1}{(i + 1 == 1 ? "er" : "ème")} personnage...");
+            Add(Character.Create(this));
+        }
+
+        return this;
+    }
+
+    /// <summary>
     /// Adds a character to the team.
     /// </summary>
     /// <param name="character">The <see cref="Character"/> to add to the team.</param>

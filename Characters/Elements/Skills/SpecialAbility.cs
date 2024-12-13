@@ -1,7 +1,7 @@
 ﻿using JRPG_Game.Enums;
 using JRPG_Game.Interfaces;
 
-namespace JRPG_Game.Characters.Skills;
+namespace JRPG_Game.Characters.Elements.Skills;
 
 /// <summary>
 /// Represents a skill in the form of a special ability, capable of targeting a character or a team.

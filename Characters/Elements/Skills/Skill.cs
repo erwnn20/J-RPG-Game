@@ -2,7 +2,7 @@
 using JRPG_Game.Interfaces;
 using JRPG_Game.Utils;
 
-namespace JRPG_Game.Characters.Skills;
+namespace JRPG_Game.Characters.Elements.Skills;
 
 /// <summary>
 /// Class representing the skills used by the characters

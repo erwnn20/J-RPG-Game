@@ -1,5 +1,5 @@
 ﻿using JRPG_Game.Characters.Elements;
-using JRPG_Game.Characters.Skills;
+using JRPG_Game.Characters.Elements.Skills;
 using JRPG_Game.Enums;
 using JRPG_Game.Interfaces;
 using JRPG_Game.Utils;

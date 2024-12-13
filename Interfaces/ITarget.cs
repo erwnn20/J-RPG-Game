@@ -1,4 +1,4 @@
-﻿using JRPG_Game.Characters.Skills;
+﻿using JRPG_Game.Characters.Elements.Skills;
 
 namespace JRPG_Game.Interfaces;
 

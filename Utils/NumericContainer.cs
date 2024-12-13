@@ -8,9 +8,9 @@
 /// </typeparam>
 public class NumericContainer<T> where T : struct, IComparable<T>, IComparable
 {
-    public T Min { get; }
+    public T? Min { get; }
     public T Current { get; private set; }
-    public T Max { get; }
+    public T? Max { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NumericContainer{T}"/> class.
@@ -21,9 +21,9 @@ public class NumericContainer<T> where T : struct, IComparable<T>, IComparable
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="min"/> is greater than <paramref name="max"/>.
     /// </exception>
-    public NumericContainer(T min, T current, T max)
+    public NumericContainer(T? min, T current, T? max)
     {
-        if (min.CompareTo(max) > 0)
+        if (min.HasValue && max.HasValue && min.Value.CompareTo(max.Value) > 0)
             throw new ArgumentException("Minimum value cannot be greater than the maximum value.");
 
         Min = min;
@@ -36,9 +36,9 @@ public class NumericContainer<T> where T : struct, IComparable<T>, IComparable
     /// </summary>
     /// <param name="value">The value to add.</param>
     /// <returns>The actual value added to <see cref="Current"/>.</returns>
-    public T Add(T value)
+    public T Add(T? value)
     {
-        var result = AddValues(Current, value);
+        var result = AddValues(Current, value ?? default);
         var clamped = Clamp(result, Min, Max);
         var added = SubtractValues(clamped, Current);
         Current = clamped;
@@ -50,9 +50,9 @@ public class NumericContainer<T> where T : struct, IComparable<T>, IComparable
     /// </summary>
     /// <param name="value">The value to subtract.</param>
     /// <returns>The actual value subtracted from <see cref="Current"/>.</returns>
-    public T Subtract(T value)
+    public T Subtract(T? value)
     {
-        var result = SubtractValues(Current, value);
+        var result = SubtractValues(Current, value ?? default);
         var clamped = Clamp(result, Min, Max);
         var subtracted = SubtractValues(Current, clamped);
         Current = clamped;
@@ -66,10 +66,10 @@ public class NumericContainer<T> where T : struct, IComparable<T>, IComparable
     /// <param name="min">The minimum value.</param>
     /// <param name="max">The maximum value.</param>
     /// <returns>The clamped value.</returns>
-    private static T Clamp(T value, T min, T max)
+    private static T Clamp(T value, T? min, T? max)
     {
-        if (value.CompareTo(min) < 0) return min;
-        if (value.CompareTo(max) > 0) return max;
+        if (min.HasValue && value.CompareTo(min.Value) < 0) return min.Value;
+        if (max.HasValue && value.CompareTo(max.Value) > 0) return max.Value;
         return value;
     }
 
@@ -92,13 +92,25 @@ public class NumericContainer<T> where T : struct, IComparable<T>, IComparable
     /// <param name="a">The first value.</param>
     /// <param name="b">The second value.</param>
     /// <returns>The difference between the two values.</returns>
-    private static T SubtractValues(T a, T b)
+    public static T SubtractValues(T a, T b)
     {
         dynamic da = a;
         dynamic db = b;
         return (T)(da - db);
     }
 
-    /// <returns>A string representation of the numeric container in the format "Min/Current/Max".</returns>
-    public override string ToString() => $"{Min}/{Current}/{Max}";
+    /// <summary>
+    /// Returns a string representation of the numeric container, showing its minimum, current, and maximum values.
+    /// </summary>
+    /// <returns>A string describing the state of the numeric container.</returns>
+    /// <example>
+    /// For a container with Min = 10, Current = 50, and Max = 100, the output will be:
+    /// <code>"NumericContainer&lt;Int32&gt;: [Min: 10, Current: 50, Max: 100]"</code>
+    /// If the Min value is not set, it will display:
+    /// <code>"NumericContainer&lt;Int32&gt;: [Current: 50, Max: 100]"</code>
+    /// If the Max value is not set, it will display:
+    /// <code>"NumericContainer&lt;Int32&gt;: [Min: 10, Current: 50]"</code>
+    /// </example>
+    public override string ToString() =>
+        $"NumericContainer<{typeof(T).Name}>: [{(Min.HasValue ? $"Min: {Min.Value}, " : string.Empty)}Current: {Current}{(Max.HasValue ? $", Max: {Max.Value}" : string.Empty)}]";
 }

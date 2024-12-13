@@ -1,4 +1,5 @@
-﻿using JRPG_Game.Characters.Skills;
+﻿using JRPG_Game.Characters.Elements;
+using JRPG_Game.Characters.Skills;
 using JRPG_Game.Enums;
 using JRPG_Game.Interfaces;
 using JRPG_Game.Utils;
@@ -27,6 +28,7 @@ public abstract class Character : ITarget
         Name = name;
         Team = team;
         Health = new NumericContainer<int>(0, maxHealth, maxHealth);
+        Xp = new Experience(0, 0, 50, 0);
         Speed = new NumericContainer<int>(0, speed, null);
         PhysicalAttack = new NumericContainer<int>(0, physicalAttack, null);
         MagicalAttack = new NumericContainer<int>(0, magicalAttack, null);
@@ -74,6 +76,7 @@ public abstract class Character : ITarget
     public string Name { get; }
     public Team Team { get; }
     public NumericContainer<int> Health { get; }
+    private Experience Xp { get; }
     public NumericContainer<int> Speed { get; }
     public NumericContainer<int> PhysicalAttack { get; }
     private NumericContainer<int> MagicalAttack { get; }
@@ -178,6 +181,12 @@ public abstract class Character : ITarget
     /// <param name="healthPoint">The amount of health to heal.</param>
     /// <returns>The actual amount of health restored.</returns>
     public int Heal(int healthPoint) => Health.Add(healthPoint);
+
+    /// <summary>
+    /// Adds experience points (XP) to the character.
+    /// </summary>
+    /// <param name="xp">The amount of XP to add.</param>
+    public void GainXp(int xp) => Xp.Add(xp);
 
     /// <summary>
     /// Attempts to dodge a physical attack using <see cref="DodgeChance"/> attribute.
@@ -542,18 +551,67 @@ public abstract class Character : ITarget
     }
 
     /// <summary>
-    /// Applies all active <see cref="StatusEffect"/> to the character at the end of their turn.
+    /// Checks and applies experience points (XP) progression.
     /// </summary>
-    /// <remarks>
-    /// Iterates over all active effects, applying their logic and removing them if their duration expires.
-    /// Ends the process early if the character dies during the effect application.
-    /// </remarks>
+    /// <returns>The number of levels gained after applying XP progression.</returns>
+    private int CheckXp()
+    {
+        while (Xp.CanXpUp()) Xp.Up();
+        return Xp.AddedLevel;
+    }
+
+    /// <summary>
+    /// Applies end-of-turn actions, including XP progression and effect resolution.
+    /// </summary>
     private void ApplyEndTurn()
     {
+        if (CheckXp() is var addedLevel and > 0)
+            Console.WriteLine($"{Name} a progressé de {addedLevel} niveau{(addedLevel > 1 ? "x" : string.Empty)}.");
+
         foreach (var effect in Effects.Keys)
         {
             ApplyEffect(effect);
             if (!IsAlive(true)) break;
+        }
+    }
+
+    /// <summary>
+    /// Levels up the character by allowing attribute upgrades based on available points.
+    /// </summary>
+    public void LevelUp()
+    {
+        var attributes = new List<IAttributeUpgrade>
+        {
+            new AttributeUpgrade<int>(nameof(Speed), 0, Speed, 5, () => true),
+            new AttributeUpgrade<int>(nameof(PhysicalAttack), 0, PhysicalAttack, 5, () => true),
+            new AttributeUpgrade<int>(nameof(MagicalAttack), 0, MagicalAttack, 5, () => true),
+            new AttributeUpgrade<int>(nameof(DistanceAttack), 0, DistanceAttack, 5, () => true),
+            new AttributeUpgrade<decimal>(nameof(DodgeChance), 0, DodgeChance, 0.05m,
+                () => DodgeChance.Current < DodgeChance.Max),
+            new AttributeUpgrade<decimal>(nameof(ParadeChance), 0, ParadeChance, 0.05m,
+                () => ParadeChance.Current < ParadeChance.Max),
+            new AttributeUpgrade<decimal>(nameof(SpellResistanceChance), 0, SpellResistanceChance, 0.05m,
+                () => SpellResistanceChance.Current < SpellResistanceChance.Max),
+        };
+
+        while (Xp.CanLevelUp())
+        {
+            var availableChoices = attributes
+                .Where(attr => attr.Condition())
+                .Select(attr => attr.ToString())
+                .ToList();
+
+            Console.WriteLine($"{Name} Level up !");
+            var selectedIndex = Prompt.Select(
+                $"Quel attribut voulez-vous améliorer ? {Xp.AddedLevel} point{(Xp.AddedLevel > 1 ? "s" : string.Empty)} restant{(Xp.AddedLevel > 1 ? "s" : string.Empty)}",
+                s => s, availableChoices) - 1;
+
+            var selectedAttribute = attributes[selectedIndex];
+            selectedAttribute.Upgrade();
+
+            Xp.LevelUp();
+
+            Program.Next();
         }
     }
 
@@ -602,19 +660,21 @@ public abstract class Character : ITarget
     /// <returns>A string that represents the <c>Character</c></returns>
     public override string ToString()
     {
-        return $"{GetType().Name}: {Name} ({Health.Current}/{Health.Max} PV) - Armure: {Armor}\n" +
-               $"Stats :\n" +
-               $" ~ Vitesse: {Speed}\n" +
-               $" ~ Attaque Physique: {PhysicalAttack}\n" +
-               $" ~ Attaque Magique: {MagicalAttack}\n" +
-               $" ~ Attaque à Distance: {DistanceAttack}\n" +
-               $" ~ Chances d'Esquiver: {DodgeChance.Current:P}\n" +
-               $" ~ Chances de Parade: {ParadeChance.Current:P}\n" +
-               $" ~ Chances de Resister aux Sorts: {SpellResistanceChance.Current:P}\n" +
-               $" ~ Compétences :\n" +
-               string.Join("\n", Skills.Select(skill => $"     - {skill.Name} ({skill.GetType().Name})")) +
-               (Effects.Count > 0
-                   ? $"\n ~ Effets : {string.Join(", ", Effects.Select(effect => $"{effect.Key} ({effect.Value} tour{(effect.Value > 1 ? "s" : "")})"))}"
-                   : string.Empty);
+        return
+            $"{GetType().Name} : {Name} ({Health.Current}/{Health.Max} PV) - Niveaux {Xp.Level} ({Xp.Current}/{Xp.Next})\n" +
+            $"Armure : {Armor}\n" +
+            $"Stats :\n" +
+            $" ~ Vitesse: {Speed.Current}\n" +
+            $" ~ Attaque Physique: {PhysicalAttack.Current}\n" +
+            $" ~ Attaque Magique: {MagicalAttack.Current}\n" +
+            $" ~ Attaque à Distance: {DistanceAttack.Current}\n" +
+            $" ~ Chances d'Esquiver: {DodgeChance.Current:P}\n" +
+            $" ~ Chances de Parade: {ParadeChance.Current:P}\n" +
+            $" ~ Chances de Resister aux Sorts: {SpellResistanceChance.Current:P}\n" +
+            $" ~ Compétences :\n" +
+            string.Join("\n", Skills.Select(skill => $"     - {skill.Name} ({skill.GetType().Name})")) +
+            (Effects.Count > 0
+                ? $"\n ~ Effets : {string.Join(", ", Effects.Select(effect => $"{effect.Key} ({effect.Value} tour{(effect.Value > 1 ? "s" : "")})"))}"
+                : string.Empty);
     }
 }

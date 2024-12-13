@@ -139,6 +139,8 @@ public static class Program
                         do
                         {
                             Console.WriteLine($"Au tour de {character.Name} - {character.Team.Name}");
+                            character.LevelUp();
+
                             if (first)
                             {
                                 Console.WriteLine($"{character}\n");

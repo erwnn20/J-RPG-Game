@@ -193,6 +193,7 @@ public class Attack<TTarget>(
         if (StatusInfo.Blocked) Console.WriteLine($"{target.Name} a paré un partie des dégâts de {Name}.");
         if (StatusInfo.Damage > 0) Console.WriteLine($"{Name} a fait {StatusInfo.Damage} de dégâts à {target.Name}.");
         target.IsAlive(true);
+        Owner.GainXp(2 * (int)StatusInfo.Damage);
 
         Additional.List.ForEach(additional => additional(attack));
         Additional.List.RemoveAll(additional => Additional.ToRemove.Contains(additional));

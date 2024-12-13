@@ -62,11 +62,11 @@ public class Thief : Character
                     return
                         $"Augmente les chances d'esquive de {dodgeAugment:P} (max {DodgeChance.Max:P}) ({DodgeChance.Current:P} {(DodgeChance.Current == DodgeChance.Max
                             ? "MAX"
-                            : $"-> {Math.Min(newDodge, DodgeChance.Max ?? newDodge):P}{(Math.Min(newDodge, DodgeChance.Max ?? newDodge) == DodgeChance.Max ? " MAX" : string.Empty)}")})\n" +
-                        $"Augmente les chances de resister aux sorts de {resistAugment:P} (max {SpellResistanceChance.Max:P}) ({SpellResistanceChance.Current:P} {(SpellResistanceChance.Current == SpellResistanceChance.Max
+                            : $"-> {Math.Min(newDodge, DodgeChance.Max ?? newDodge):P}{(Math.Min(newDodge, DodgeChance.Max ?? newDodge) == DodgeChance.Max ? " MAX" : string.Empty)}")})" +
+                        $"\nAugmente les chances de resister aux sorts de {resistAugment:P} (max {SpellResistanceChance.Max:P}) ({SpellResistanceChance.Current:P} {(SpellResistanceChance.Current == SpellResistanceChance.Max
                             ? "MAX"
-                            : $"-> {Math.Min(newResist, SpellResistanceChance.Max ?? newResist):P}{(Math.Min(newResist, SpellResistanceChance.Max ?? newResist) == SpellResistanceChance.Max ? " MAX" : string.Empty)}")})\n" +
-                        $"Donne l'effet 'vitesse' pendant 2 tours.";
+                            : $"-> {Math.Min(newResist, SpellResistanceChance.Max ?? newResist):P}{(Math.Min(newResist, SpellResistanceChance.Max ?? newResist) == SpellResistanceChance.Max ? " MAX" : string.Empty)}")})" +
+                        $"\nDonne l'effet 'vitesse' pendant 2 tours.";
                 },
                 owner: this,
                 targetType: TargetType.Self,
@@ -88,7 +88,7 @@ public class Thief : Character
                         : $"\n{Name} a ses chances de resister aux sorts au maximum -> {SpellResistanceChance.Current:P}.";
 
                     output +=
-                        $"{Name} a l'effet 'vitesse' pendant {AddEffect(StatusEffect.Speed, 2)} tours.";
+                        $"\n{Name} a l'effet 'vitesse' pendant {AddEffect(StatusEffect.Speed, 2)} tours.";
 
                     return output;
                 })

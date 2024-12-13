@@ -568,6 +568,7 @@ public abstract class Character : ITarget
         if (CheckXp() is var addedLevel and > 0)
             Console.WriteLine($"{Name} a progressé de {addedLevel} niveau{(addedLevel > 1 ? "x" : string.Empty)}.");
 
+        if (!IsAlive(true)) return;
         foreach (var effect in Effects.Keys)
         {
             ApplyEffect(effect);

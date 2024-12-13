@@ -69,7 +69,7 @@ public class Mage : Character, IMana
 
                         if (random.NextDouble() < 0.05)
                         {
-                            target.Speed = (int)(target.Speed * 0.85m);
+                            target.Speed.Subtract((int)(target.Speed.Current * 0.15m));
                             Console.WriteLine($"La vitesse de {target.Name} à diminué de 15%.");
                         }
                     }
@@ -121,7 +121,7 @@ public class Mage : Character, IMana
 
                         if (random.NextDouble() < 0.05)
                         {
-                            target.Speed = (int)(target.Speed * 0.95m);
+                            target.Speed.Subtract((int)(target.Speed.Current * 0.05m));
                             Console.WriteLine($"La vitesse de {target.Name} à diminué de 5%.");
                         }
                     }

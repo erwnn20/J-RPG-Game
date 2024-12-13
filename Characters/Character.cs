@@ -27,10 +27,10 @@ public abstract class Character : ITarget
         Name = name;
         Team = team;
         Health = new NumericContainer<int>(0, maxHealth, maxHealth);
-        Speed = speed;
-        PhysicalAttack = physicalAttack;
-        MagicalAttack = magicalAttack;
-        DistanceAttack = distanceAttack;
+        Speed = new NumericContainer<int>(0, speed, null);
+        PhysicalAttack = new NumericContainer<int>(0, physicalAttack, null);
+        MagicalAttack = new NumericContainer<int>(0, magicalAttack, null);
+        DistanceAttack = new NumericContainer<int>(0, distanceAttack, null);
         Armor = armor;
         ParadeChance = paradeChance;
         DodgeChance = dodgeChance;
@@ -74,10 +74,10 @@ public abstract class Character : ITarget
     public string Name { get; }
     public Team Team { get; }
     public NumericContainer<int> Health { get; }
-    public int Speed { get; set; }
-    public int PhysicalAttack { get; set; }
-    private int MagicalAttack { get; }
-    private int DistanceAttack { get; }
+    public NumericContainer<int> Speed { get; }
+    public NumericContainer<int> PhysicalAttack { get; }
+    private NumericContainer<int> MagicalAttack { get; }
+    private NumericContainer<int> DistanceAttack { get; }
     private ArmorType Armor { get; }
     protected NumericContainer<decimal> DodgeChance { get; }
     private NumericContainer<decimal> ParadeChance { get; }
@@ -106,7 +106,7 @@ public abstract class Character : ITarget
     {
         if (Effects.ContainsKey(StatusEffect.Paralysis)) return 0;
 
-        return Speed + Effects.Keys.Select(effect => effect switch
+        return Speed.Current + Effects.Keys.Select(effect => effect switch
         {
             StatusEffect.Speed => 10,
             StatusEffect.Slowness => -10,
@@ -129,9 +129,9 @@ public abstract class Character : ITarget
     {
         return damageType switch
         {
-            DamageType.Physical => PhysicalAttack,
-            DamageType.Magical => MagicalAttack,
-            DamageType.Distance => DistanceAttack,
+            DamageType.Physical => PhysicalAttack.Current,
+            DamageType.Magical => MagicalAttack.Current,
+            DamageType.Distance => DistanceAttack.Current,
             _ => 0,
         } + Effects.Keys.Select(effect => effect switch
         {
@@ -514,7 +514,7 @@ public abstract class Character : ITarget
         switch (effect)
         {
             case StatusEffect.Regeneration when !Effects.ContainsKey(StatusEffect.Bleeding):
-                var healed = Heal((int)(Health.Max * 0.05m));
+                var healed = Heal((int)((Health.Max ?? default) * 0.05m));
                 if (healed > 0) Console.WriteLine($"{Name} a régénéré sa vie de {healed} PV.");
                 break;
             case StatusEffect.Poison:
@@ -522,7 +522,8 @@ public abstract class Character : ITarget
                 IsAlive(true);
                 break;
             case StatusEffect.Bleeding:
-                Console.WriteLine($"{Name} à pris {TakeDamage((int)(Health.Max * 0.05m))} dégâts de saignement.");
+                Console.WriteLine(
+                    $"{Name} à pris {TakeDamage((int)((Health.Max ?? default) * 0.05m))} dégâts de saignement.");
                 IsAlive(true);
                 break;
             case StatusEffect.Paralysis:

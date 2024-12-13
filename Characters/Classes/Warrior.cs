@@ -68,7 +68,7 @@ public class Warrior : Character
                 manaCost: 0,
                 effect: target =>
                 {
-                    target.PhysicalAttack += 5;
+                    target.PhysicalAttack.Add(5);
                     return $"La puissance d'attaque de {target.Name} a été augmentée de 5.\n" +
                            $"{target.Name} a un rush d'adrénaline pendant {target.AddEffect(StatusEffect.AdrenalinRush, 3)} tours.";
                 }),

@@ -62,10 +62,10 @@ public class Thief : Character
                     return
                         $"Augmente les chances d'esquive de {dodgeAugment:P} (max {DodgeChance.Max:P}) ({DodgeChance.Current:P} {(DodgeChance.Current == DodgeChance.Max
                             ? "MAX"
-                            : $"-> {Math.Min(newDodge, DodgeChance.Max):P}{(Math.Min(newDodge, DodgeChance.Max) == DodgeChance.Max ? " MAX" : string.Empty)}")})\n" +
+                            : $"-> {Math.Min(newDodge, DodgeChance.Max ?? newDodge):P}{(Math.Min(newDodge, DodgeChance.Max ?? newDodge) == DodgeChance.Max ? " MAX" : string.Empty)}")})\n" +
                         $"Augmente les chances de resister aux sorts de {resistAugment:P} (max {SpellResistanceChance.Max:P}) ({SpellResistanceChance.Current:P} {(SpellResistanceChance.Current == SpellResistanceChance.Max
                             ? "MAX"
-                            : $"-> {Math.Min(newResist, SpellResistanceChance.Max):P}{(Math.Min(newResist, SpellResistanceChance.Max) == SpellResistanceChance.Max ? " MAX" : string.Empty)}")})\n" +
+                            : $"-> {Math.Min(newResist, SpellResistanceChance.Max ?? newResist):P}{(Math.Min(newResist, SpellResistanceChance.Max ?? newResist) == SpellResistanceChance.Max ? " MAX" : string.Empty)}")})\n" +
                         $"Donne l'effet 'vitesse' pendant 2 tours.";
                 },
                 owner: this,

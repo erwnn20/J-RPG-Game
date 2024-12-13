@@ -20,14 +20,14 @@ public interface IMana
     public SpecialAbility<ITarget> Drink(Character character) => new(
         name: "Boire une potion",
         description: () =>
-            $"Régénère le mana de 50% ({Mana.Current} -> {Math.Min(Mana.Max, Mana.Current + (int)(Mana.Max * 0.50m))}/{Mana.Max})",
+            $"Régénère le mana de 50% ({Mana.Current} -> {Math.Min(Mana.Max ?? default, Mana.Current + (int)((Mana.Max ?? default) * 0.50m))}/{Mana.Max})",
         owner: character,
         targetType: TargetType.Self,
         reloadTime: 1,
         manaCost: 0,
         effect: target =>
         {
-            var added = Mana.Add((int)(Mana.Max * 0.50m));
+            var added = Mana.Add((int)((Mana.Max ?? default) * 0.50m));
             return added > 0
                 ? $"{target.Name} régénère son mana de {added} ({Mana.Current}/{Mana.Max})"
                 : $"{target.Name} a déja son mana au maximum : {Mana.Current}/{Mana.Max}";

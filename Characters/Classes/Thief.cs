@@ -32,9 +32,9 @@ public class Thief : Character
             physicalAttack: 45,
             magicalAttack: 0,
             distanceAttack: 0,
-            paradeChance: new NumericContainer<decimal>(0, 0.10m, 1),
-            dodgeChance: new NumericContainer<decimal>(0, 0.40m, 0.80m),
-            spellResistanceChance: new NumericContainer<decimal>(0, 0.10m, 0.50m),
+            paradeChance: new NumericContainer<decimal>(0, 0.10m, 0.80m),
+            dodgeChance: new NumericContainer<decimal>(0, 0.40m, 0.90m),
+            spellResistanceChance: new NumericContainer<decimal>(0, 0.10m, 0.70m),
             skills: [])
     {
         Skills.AddRange([

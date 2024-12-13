@@ -65,9 +65,9 @@ public abstract class Character : ITarget
             magicalAttack: magicalAttack,
             distanceAttack: distanceAttack,
             armor: armor,
-            paradeChance: new NumericContainer<decimal>(0, paradeChance, 1),
-            dodgeChance: new NumericContainer<decimal>(0, dodgeChance, 1),
-            spellResistanceChance: new NumericContainer<decimal>(0, spellResistanceChance, 1),
+            paradeChance: new NumericContainer<decimal>(0, paradeChance, 0.80m),
+            dodgeChance: new NumericContainer<decimal>(0, dodgeChance, 0.80m),
+            spellResistanceChance: new NumericContainer<decimal>(0, spellResistanceChance, 0.80m),
             skills: skills
         )
     {

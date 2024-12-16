@@ -183,8 +183,8 @@ public static class Prompt
     /// </remarks>
     /// <example>
     /// <code>
-    /// int age = Prompt.Get&lt;int&gt;("Enter your age:", value => value &lt; 0, 0, 120);
-    /// Console.WriteLine($"Your age is: {age}");
+    /// int age = Prompt.Get&lt;int&gt;("Enter your age :", value => value &lt; 0, 0, 120);
+    /// Console.WriteLine($"Your age is : {age}");
     /// </code>
     /// </example>
     public static T Get<T>(string message, Func<T, bool> excludedCondition, params T[] excluded)

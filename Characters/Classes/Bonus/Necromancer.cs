@@ -9,7 +9,7 @@ namespace JRPG_Game.Characters.Classes.Bonus;
 /// Represents a Necromancer character specializing in dark magic and soul manipulation.
 /// </summary>
 /// <remarks>
-/// The Necromancer is a spellcaster with abilities to resurrect allies, deal magical damage, 
+/// The Necromancer is a spell caster with abilities to resurrect allies, deal magical damage, 
 /// and reflect incoming magical attacks. Its skills often come with trade-offs, like self-damage
 /// or paralysis after use.
 /// </remarks>
@@ -50,7 +50,7 @@ public class Necromancer : Character, IMana
                 manaCost: 35,
                 effect: target =>
                 {
-                    target.Health.Add((int)(target.Health.Max * 0.75m));
+                    target.Health.Add((int)((target.Health.Max ?? 0) * 0.75m));
                     return $"{target.Name} a été ressuscité.\n" +
                            $"{Name} est paralysé pendant {AddEffect(StatusEffect.Paralysis, 3)} tours.";
                 }),

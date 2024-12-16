@@ -45,7 +45,7 @@ public class Doctor : Character
                 reloadTime: 2,
                 manaCost: 0,
                 effect: target =>
-                    $"{target.Name} est soigné de {target.Heal((int)(target.Health.Max * 0.20m))} PV."),
+                    $"{target.Name} est soigné de {target.Heal((int)((target.Health.Max ?? 0) * 0.20m))} PV."),
             new SpecialAbility<Team>(
                 name: "Soin de groupe",
                 description: () => "Soigne tous les alliés de 35% de leurs santé maximale.\n" +
@@ -55,7 +55,7 @@ public class Doctor : Character
                 reloadTime: 4,
                 manaCost: 0,
                 effect: target =>
-                    $"{target.Name} est soigné de {target.Heal((int)(target.Health.Max * 0.35m))} PV.\n" +
+                    $"{target.Name} est soigné de {target.Heal((int)((target.Health.Max ?? 0) * 0.35m))} PV.\n" +
                     $"{target.Name} a l'effet 'régénération' pendant {target.AddEffect(StatusEffect.Regeneration, 2)} tours."),
             new Attack<Character>(
                 name: "Saignée",

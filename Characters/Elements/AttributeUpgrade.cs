@@ -47,7 +47,7 @@ public class AttributeUpgrade<TAttribute>(
         dynamic db = b;
         return (TAttribute)(da * db);
     }
-    
+
     //
 
     /// <summary>
@@ -77,4 +77,10 @@ public interface IAttributeUpgrade
     /// Upgrades the attribute by incrementing its value and increasing the upgrade count.
     /// </summary>
     void Upgrade();
+
+    /// <summary>
+    /// Gets a string representing the current and potential value of the attribute after upgrading.
+    /// </summary>
+    /// <returns>A formatted string displaying the attribute name, its current value, and the upgrade value.</returns>
+    string ToString();
 }

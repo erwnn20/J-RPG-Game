@@ -197,7 +197,7 @@ public static class Program
                 Console.WriteLine("Une erreur est survenue : il n'y a pas qu'un seul gagnant.");
                 break;
             default:
-                Console.WriteLine("Une erreur est survenue : aucun gagnant.");
+                Console.WriteLine("Tout les personnages sont morts, c'est une égalité !");
                 break;
         }
 
